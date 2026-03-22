@@ -202,13 +202,13 @@ IRQ 5, DMA 1/5 are default values and match our system perfectly.
 
 ; Boot menu - displayed at startup with 10 second countdown
 [MENU]
-MENUITEM=NORMAL,  1) Normal          - NOEMS 607KB
-MENUITEM=EMS,     2) EMS/Games       - RAM   595KB (DOS extenders, old games)
-MENUITEM=BARE,    3) Bare DOS        - no drivers
+MENUITEM=NORMAL,Normal          - NOEMS 607KB
+MENUITEM=EMS,   EMS/Games       - RAM   595KB (DOS extenders, old games)
+MENUITEM=BARE,  Bare DOS        - no drivers
 ; Default profile if no key is pressed within timeout
 MENUDEFAULT=NORMAL,10
 ; Menu colors: text color 11 (bright cyan), background 1 (blue)
-MENUCOLOR=11,1
+;MENUCOLOR=11,1
 
 ; -----------------------------------------------
 ; Common settings loaded for ALL profiles
@@ -334,9 +334,7 @@ REM UNISOUND NEŘEŠÍ EMU8000 - AWEUTIL je nutný pro AWE32 wavetable funkce
 REM /S = inicializace EMU8000 dle BLASTER proměnné (E620 = port EMU8000)
 REM Nutný pro: hry s AWE32 podporou, AWEUTIL /EM:GM/GS/MT32 MIDI emulaci
 REM Soubory: C:\DRIVERS\SB16\AWEUTIL.EXE + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
-AWEUTIL /S
-
-REM --- SoftMPU - intelligent mode MPU-401 emulace pro MT-32 hry ---
+C:\DRIVERS\SB16\AWEUTIL /S
 REM Nutný pro: Monkey Island 1, Sierra hry, Ultima Underworld
 REM AWE32 podporuje pouze UART mode - SoftMPU přidá intelligent mode
 REM /MPU:330 = MPU-401 port (musí odpovídat P330 v BLASTER)
@@ -368,7 +366,7 @@ LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 
 REM --- AWEUTIL - inicializace EMU8000 wavetable syntezátoru ---
 REM Pozor: AWEUTIL /EM:* NEFUNGUJE s DOS extendery (DOS4GW) - pouze /S init
-AWEUTIL /S
+C:\DRIVERS\SB16\AWEUTIL /S
 
 REM --- SoftMPU - intelligent mode MPU-401 emulace ---
 REM /MPU:330 = MPU-401 port (musí odpovídat P330 v BLASTER)
@@ -510,8 +508,23 @@ Všechny soubory patří do `C:\DRIVERS\SB16\` (nebo kam ukazuje `SET SOUND=`):
 | `Synthgs.sbk` | GS soundfont (nutný pro `/EM:GS`) |
 | `Synthmt.sbk` | MT-32 soundfont (nutný pro `/EM:MT32`) |
 
-Stažení: Creative AWE32 driver package v2.0 obsahuje všechny tyto soubory.
-Hledej `AWE32DRV.ZIP` nebo `SB16AWE32_DOS.ZIP` na archive.org nebo vogons.org.
+**Stažení — přesný zdroj:**
+
+Balíček `AWEUTIL.EXE` + všechny `.SBK` soundfonty je součástí **Creative AWE32/SB32 DOS driver v2.00**:
+
+```
+archive.org → hledej: "Creative Sound Blaster AWE32 Drivers"
+              soubor:  AWE32DRV.EXE  nebo  SB32V200.EXE
+vogons.org  → Files sekce → Sound Blaster AWE32
+```
+
+Po rozbalení zkopíruj do `C:\DRIVERS\SB16\`:
+- `AWEUTIL.EXE`
+- `SYNTHGM.SBK`  (→ přejmenuj na `Synthgm.sbk`)
+- `SYNTHGS.SBK`  (→ přejmenuj na `Synthgs.sbk`)
+- `SYNTHMT.SBK`  (→ přejmenuj na `Synthmt.sbk`)
+
+> Soubory jsou velké ~1 MB každý — přenos přes FTP nebo CD-ROM.
 
 ### AWEUTIL příkazy
 
@@ -546,20 +559,67 @@ AWEUTIL /C:3            ← Chorus level 3 (0-7)
 - Nemůže emulovat MPU-401 intelligent mode (proto SoftMPU zůstává)
 - Protected mode software nepodporuje MIDI emulaci
 
+### AWEUTIL a paměť — klíčový rozdíl
+
+| Příkaz | Chování | Paměť po skončení |
+|---|---|---|
+| `AWEUTIL /S` | inicializuje EMU8000, okamžitě skončí | **0 KB** |
+| `AWEUTIL /EM:GM` | nahraje TSR, zůstane rezidentní | **~26 KB** |
+| `AWEUTIL /U` | uvolní TSR z paměti | 0 KB |
+
+**`AWEUTIL /S` patří do AUTOEXEC** — inicializuje hardware, nežere paměť.
+
+**`AWEUTIL /EM:*` NEPATŘÍ do AUTOEXEC** — spouštět ručně před hrou s `LH`:
+
+```bat
+LH C:\DRIVERS\SB16\AWEUTIL /EM:GS    ← nahraje TSR do UMB (~26 KB, vejde se do volných ~40 KB)
+hra.exe
+C:\DRIVERS\SB16\AWEUTIL /U           ← uvolnit po hře (důležité!)
+``` — u her co potřebují maximum
+konvenční RAM (pod 640 KB) to může vadit.
+
+**Proč nepouštět `/EM` při bootu:**
+- Různé hry potřebují různé módy (GM / GS / MT32) — musíš přepínat
+- GUS hry (Doom, Duke3D) a hry s DOS extenderem AWEUTIL /EM ignorují
+- TSR by zbytečně seděl v paměti pro hry kde ho nepotřebuješ
+
+### AWEUTIL — workflow před hrou
+
+```bat
+REM MT-32 hra (Sierra, LucasArts floppy) — AWEUTIL nepotřebuješ
+REM fyzický MT-32 je na portu 330h, SoftMPU aktivní
+KQ5.EXE
+
+REM GM/GS hra bez připojeného SC-55:
+LH C:\DRIVERS\SB16\AWEUTIL /EM:GS
+MONKEY2.EXE
+C:\DRIVERS\SB16\AWEUTIL /U
+
+REM GM/GS hra — máš SC-55 připojený:
+REM AWEUTIL vůbec nepouštěj, SC-55 >> EMU8000 emulace
+MONKEY2.EXE
+
+REM AWE32 nativní hra:
+REM AWEUTIL /S běžel při bootu, stačí spustit hru
+FIFA95.EXE
+
+REM GUS hra (Doom, Duke3D, Heretic):
+REM AWEUTIL vůbec nepouštěj, GUS je přes PicoGUS
+DOOM.EXE
+
+REM Přepnutí módu mezi hrami:
+C:\DRIVERS\SB16\AWEUTIL /U              ← nejdřív uvolnit
+LH C:\DRIVERS\SB16\AWEUTIL /EM:MT32    ← pak nový mód
+```
+
 ### AWEUTIL v AUTOEXEC.BAT
 
 ```bat
-REM Pořadí musí být: UNISOUND → AWEUTIL /S
+REM Pořadí musí být: UNISOUND → AWEUTIL /S → SoftMPU
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL /S             ← jen init, 0 KB paměti
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
-AWEUTIL /S
-REM Volitelně — výchozí MIDI emulace při bootu:
-REM AWEUTIL /EM:GS
 ```
-
-> AWEUTIL /EM se typicky spouští ručně před konkrétní hrou, ne při bootu,
-> protože různé hry potřebují různé módy. Při přepínání vždy nejdřív
-> AWEUTIL /U, pak AWEUTIL /EM:nový.
 
 ### Hry s nativní AWE32 podporou (AWEUTIL /S stačí)
 
@@ -719,6 +779,9 @@ MIDI port     : 330
 > SC-55 musí být v GS módu (výchozí). Přepnutí: DOSMID /mpu=330 /preset=GS.
 > MT-32 je v MIDI chain před SC-55 (THRU) — MIDI data projdou přes MT-32
 > transparentně a přijdou na SC-55.
+>
+> **Warcraft 2 a Civilization 2** nabízejí také nativní AWE32 volbu —
+> ta zní lépe než GM přes SC-55. Viz Kategorie 4.
 
 ---
 
@@ -780,49 +843,79 @@ REM Quake (GLQuake s Voodoo2):
 ---
 
 ### Kategorie 4 — AWE32 nativní hry (EMU8000 wavetable)
-**Mixer: CH1 (AWE32 efekty + hudba) | AWEUTIL /S aktivní**
+**Mixer: CH1 (AWE32 vše) | AWEUTIL /S v AUTOEXEC — žádný extra krok**
 
-Tyto hry mají přímou AWE32 podporu — přistupují k EMU8000 syntezátoru
-přímo a nevyžadují MIDI emulaci. AWEUTIL /S musí být spuštěn před hrou.
+Tyto hry přistupují k EMU8000 syntezátoru přímo. `AWEUTIL /S` již běží
+z AUTOEXEC — před hrou nemusíš dělat nic navíc. Pokud hra nabízí GM i AWE32,
+vždy zvol AWE32 (native wavetable, lepší kvalita).
 
-| Hra | Rok | Setup |
-|---|---|---|
-| FIFA Soccer 95 | 1994 | AWE32, port 220, IRQ 5, DMA 1 |
-| FIFA Soccer 96 | 1995 | AWE32, port 220, IRQ 5, DMA 1 |
-| FIFA Soccer 97 | 1996 | AWE32, port 220, IRQ 5, DMA 1 |
-| NHL 96/97 | 1995/96 | AWE32, port 220, IRQ 5, DMA 1 |
-| Need for Speed (DOS) | 1994 | AWE32 nebo SB16 |
-| Warcraft 2 | 1995 | AWE32 nebo General MIDI |
-| Civilization 2 | 1996 | AWE32, port 220 |
-| Master of Orion 2 | 1996 | AWE32 nebo GM |
+| Hra | Rok | V setupu zvol | Poznámka |
+|---|---|---|---|
+| FIFA Soccer 95 | 1994 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| FIFA Soccer 96 | 1995 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| FIFA Soccer 97 | 1996 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| NHL 96 | 1995 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| NHL 97 | 1996 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| Need for Speed (DOS) | 1994 | AWE32 nebo SB16 | AWE32 preferuj |
+| Warcraft 2 | 1995 | AWE32 nebo GM | AWE32 → Mixer CH1; GM → Mixer CH1+CH4 (SC-55) |
+| Civilization 2 | 1996 | Sound Blaster AWE32 | nebo GM přes SC-55 |
+| Master of Orion 2 | 1996 | AWE32 nebo GM | AWE32 preferuj |
 
 ```
 Sound Card    : Sound Blaster AWE32
 Port          : 220   IRQ: 5   DMA: 1   DMA16: 5
 EMU8000 Port  : 620
-```
 
-> Spustit před hrou: `AWEUTIL /S` (pokud není v AUTOEXEC)
-> Pokud hra nabízí GM i AWE32 — AWE32 zní lépe (native wavetable)
+Před hrou: nic — AWEUTIL /S běží z AUTOEXEC automaticky
+```
 
 ---
 
-### Kategorie 5 — GM/GS hry bez externích modulů (X16GS)
-**Mixer: CH1 (AWE32 efekty) + CH2 (PicoGUS/X16GS)**
+### Kategorie 5 — GM/GS hry bez externích modulů
+**Mixer: CH1 (AWE32 efekty) + CH2 (PicoGUS/X16GS) nebo jen CH1 (AWEUTIL)**
 
-Použij když nechceš přepínat MIDI chain nebo SC-55 není dostupný.
-X16GS Bank 1 (Roland GS) zní velmi dobře jako SC-55 náhrada.
+Použij když SC-55 není připojený nebo nechceš přepínat MIDI chain.
+Dvě možnosti — X16GS nebo AWEUTIL /EM:GS:
 
-```
+| | X16GS (port 300h) | AWEUTIL /EM:GS (port 330h) |
+|---|---|---|
+| Kvalita zvuku | ✓✓ velmi dobrá | ✓ dobrá |
+| Paměť navíc | 0 KB | ~26 KB UMB |
+| Funguje s DOS extendery | ✓ ano | ✗ ne |
+| Potřeba PicoGUS | ✓ ano | ne |
+| Příprava | `DOSMID Slot1.mid` | `LH AWEUTIL /EM:GS` |
+
+**Varianta A — X16GS (doporučeno, lepší zvuk):**
+
+```bat
+REM Přepni X16GS na Bank 1 (Roland GS):
+DOSMID Slot1.mid
+
+REM V setupu hry:
 Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
 Music         : General MIDI
 MIDI port     : 300
+
+REM Mixer: CH1 + CH2
 ```
 
-Před spuštěním přepni X16GS na Bank 1 (Roland GS):
+**Varianta B — AWEUTIL /EM:GS (bez PicoGUS nebo pro jednoduchost):**
+
 ```bat
-DOSMID Slot1.mid
+LH C:\DRIVERS\SB16\AWEUTIL /EM:GS      ← nahraje TSR do UMB (~26 KB)
+
+REM V setupu hry:
+Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
+Music         : General MIDI
+MIDI port     : 330
+
+REM Mixer: pouze CH1 (AWEUTIL posílá audio přes AWE32 line out)
+REM Po hře:
+C:\DRIVERS\SB16\AWEUTIL /U
 ```
+
+> AWEUTIL /EM:GS nefunguje s hrami co používají DOS extender (DOS4GW) —
+> Descent, Magic Carpet, TIE Fighter atd. Pro tyto hry použij X16GS.
 
 ---
 
@@ -898,14 +991,15 @@ TOMBRAID.EXE
 
 ### Quick reference — co zapnout na mixeru
 
-| Hra / kategorie | CH1 AWE32 | CH2 PicoGUS | CH3 MT-32 | CH4 SC-55 |
-|---|---|---|---|---|
-| MT-32 hry (Sierra, LucasArts floppy) | on (efekty) | off | **ON** | off |
-| GM/GS hry — SC-55 | on (efekty) | off | off | **ON** |
-| GUS hry (Doom, Duke3D) | on (efekty) | **ON** | off | off |
-| AWE32 nativní hry | **ON** (vše) | off | off | off |
-| GM/GS — X16GS (bez ext. modulů) | on (efekty) | **ON** | off | off |
-| OPL3/AdLib only | **ON** (vše) | off | off | off |
+| Hra / kategorie | CH1 AWE32 | CH2 PicoGUS | CH3 MT-32 | CH4 SC-55 | AWEUTIL před hrou |
+|---|---|---|---|---|---|
+| MT-32 hry | on (efekty) | off | **ON** | off | — |
+| GM/GS hry — SC-55 | on (efekty) | off | off | **ON** | — |
+| GUS hry (Doom, Duke3D) | on (efekty) | **ON** | off | off | — |
+| AWE32 nativní hry | **ON** (vše) | off | off | off | `/S` již v AUTOEXEC |
+| GM/GS — X16GS | on (efekty) | **ON** | off | off | — |
+| GM/GS — AWEUTIL /EM:GS | **ON** (vše) | off | off | off | `LH AWEUTIL /EM:GS` |
+| OPL3/AdLib only | **ON** (vše) | off | off | off | — |
 
 ### Quick reference — MIDI port
 
