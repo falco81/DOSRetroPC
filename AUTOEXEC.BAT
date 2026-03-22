@@ -1,6 +1,6 @@
 @ECHO OFF
 PROMPT $P$G
-PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS
+PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS;C:\DRIVERS\SB16
 
 REM --- Environment variables ---
 SET SYMANTEC=C:\SYMANTEC
@@ -43,14 +43,14 @@ REM --- AWEUTIL - inicializace EMU8000 wavetable syntezatoru ---
 REM UNISOUND NERESI EMU8000 - AWEUTIL je nutny pro AWE32 wavetable funkce
 REM /S = inicializace EMU8000 dle BLASTER promenne (E620 = port EMU8000)
 REM Nutny pro: hry s AWE32 podporou, MIDI emulaci GM/GS/MT-32
-REM Soubory: C:\DRIVERS\SB16\AWEUTIL.EXE + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
+REM Soubory: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
 REM Rucni prepinani modu pred hrou:
-REM   AWEUTIL /EM:GM    <- General MIDI emulace
-REM   AWEUTIL /EM:GS    <- Roland GS emulace
-REM   AWEUTIL /EM:MT32  <- Roland MT-32 emulace
-REM   AWEUTIL /U        <- uvolnit z pameti (pred prepnutim modu)
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM    <- General MIDI emulace
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    <- Roland GS emulace
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32  <- Roland MT-32 emulace
+REM   C:\DRIVERS\SB16\AWEUTIL.COM /U           <- uvolnit z pameti (pred prepnutim modu)
 REM Pozor: AWEUTIL /EM nepracuje s DOS extendery (DOS4GW, DOS32A)
-AWEUTIL /S
+C:\DRIVERS\SB16\AWEUTIL.COM /S
 
 REM --- SoftMPU - intelligent mode MPU-401 emulace pro MT-32 hry ---
 REM Nutny pro: Monkey Island 1, Sierra hry, Ultima Underworld
@@ -84,7 +84,7 @@ LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 
 REM --- AWEUTIL - inicializace EMU8000 wavetable syntezatoru ---
 REM Pozor: AWEUTIL /EM:* NEFUNGUJE s DOS extendery (DOS4GW) - pouze /S init
-AWEUTIL /S
+C:\DRIVERS\SB16\AWEUTIL.COM /S
 
 REM --- SoftMPU - intelligent mode MPU-401 emulace ---
 REM /MPU:330 = MPU-401 port (musi odpovidat P330 v BLASTER)
