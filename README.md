@@ -333,7 +333,7 @@ REM --- AWEUTIL - inicializace EMU8000 wavetable syntezátoru ---
 REM UNISOUND NEŘEŠÍ EMU8000 - AWEUTIL je nutný pro AWE32 wavetable funkce
 REM /S = inicializace EMU8000 dle BLASTER proměnné (E620 = port EMU8000)
 REM Nutný pro: hry s AWE32 podporou, AWEUTIL /EM:GM/GS/MT32 MIDI emulaci
-REM Soubory: C:\DRIVERS\SB16\AWEUTIL.EXE + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
+REM Soubory: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
 C:\DRIVERS\SB16\AWEUTIL /S
 REM Nutný pro: Monkey Island 1, Sierra hry, Ultima Underworld
 REM AWE32 podporuje pouze UART mode - SoftMPU přidá intelligent mode
@@ -503,14 +503,14 @@ Všechny soubory patří do `C:\DRIVERS\SB16\` (nebo kam ukazuje `SET SOUND=`):
 
 | Soubor | Účel |
 |---|---|
-| `AWEUTIL.EXE` | Hlavní utility — init, MIDI emulace, soundfonty |
+| `AWEUTIL.COM` | Hlavní utility — init, MIDI emulace, soundfonty |
 | `Synthgm.sbk` | GM soundfont (nutný pro `/EM:GM`) |
 | `Synthgs.sbk` | GS soundfont (nutný pro `/EM:GS`) |
 | `Synthmt.sbk` | MT-32 soundfont (nutný pro `/EM:MT32`) |
 
 **Stažení — přesný zdroj:**
 
-Balíček `AWEUTIL.EXE` + všechny `.SBK` soundfonty je součástí **Creative AWE32/SB32 DOS driver v2.00**:
+Balíček `AWEUTIL.COM` + všechny `.SBK` soundfonty je součástí **Creative AWE32/SB32 DOS driver v2.00**:
 
 ```
 archive.org → hledej: "Creative Sound Blaster AWE32 Drivers"
@@ -519,7 +519,7 @@ vogons.org  → Files sekce → Sound Blaster AWE32
 ```
 
 Po rozbalení zkopíruj do `C:\DRIVERS\SB16\`:
-- `AWEUTIL.EXE`
+- `AWEUTIL.COM`
 - `SYNTHGM.SBK`  (→ přejmenuj na `Synthgm.sbk`)
 - `SYNTHGS.SBK`  (→ přejmenuj na `Synthgs.sbk`)
 - `SYNTHMT.SBK`  (→ přejmenuj na `Synthmt.sbk`)
