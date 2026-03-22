@@ -202,11 +202,13 @@ IRQ 5, DMA 1/5 are default values and match our system perfectly.
 
 ; Boot menu - displayed at startup with 10 second countdown
 [MENU]
-MENUITEM=NORMAL,Normal          - NOEMS 607KB
-MENUITEM=EMS,   EMS/Games       - RAM   595KB (DOS extenders, old games)
-MENUITEM=BARE,  Bare DOS        - no drivers
+MENUITEM=NOSOFTMPU, No SoftMPU          - NOEMS 607KB (AWEUTIL /EM)
+MENUITEM=NOSOFTEMU, No SoftMPU EMS      - RAM   595KB (AWEUTIL /EM + extenders)
+MENUITEM=NORMAL,    SoftMPU             - NOEMS 607KB (SoftMPU, MT-32)
+MENUITEM=EMS,       SoftMPU EMS         - RAM   595KB (SoftMPU + extenders)
+MENUITEM=BARE,      Bare DOS            - no drivers
 ; Default profile if no key is pressed within timeout
-MENUDEFAULT=NORMAL,10
+MENUDEFAULT=NOSOFTMPU,10
 ; Menu colors: text color 11 (bright cyan), background 1 (blue)
 ;MENUCOLOR=11,1
 
@@ -239,8 +241,33 @@ STACKS=9,256
 FCBS=1,0
 
 ; -----------------------------------------------
-; Profile 1: NORMAL - NOEMS (max UMB space, 607KB conventional)
-; Use for: everyday DOS, Norton Commander, GUS games, MIDI
+; Profile 1: NOSOFTMPU - NOEMS bez SoftMPU (607KB conventional)
+; Use for: AWEUTIL /EM:GM/GS/MT32 emulace (konflikt se SoftMPU)
+;          GM/GS hry pres AWEUTIL bez externiho MIDI
+; -----------------------------------------------
+[NOSOFTMPU]
+
+; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
+DEVICE=C:\DOS\EMM386.EXE NOEMS
+
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile 2: NOSOFTEMU - RAM + EMS bez SoftMPU (595KB conventional)
+; Use for: AWEUTIL /EM + DOS extender hry
+;          (AWEUTIL /EM nefunguje s extendery - pouzij spise profil 1)
+; -----------------------------------------------
+[NOSOFTEMU]
+
+DEVICE=C:\DOS\EMM386.EXE RAM
+
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile 3: NORMAL - NOEMS se SoftMPU (607KB conventional)
+; Use for: MT-32 hry (Sierra, LucasArts), GUS hry, kazodenne pouziti
 ; -----------------------------------------------
 [NORMAL]
 
@@ -259,7 +286,7 @@ INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 2: EMS/GAMES - RAM mode (EMS enabled, 595KB conventional)
+; Profile 4: EMS/GAMES - RAM se SoftMPU (595KB conventional)
 ; Use for: DOS extender games (Tyrian, etc.), programs requiring EMS memory
 ; Note: 12KB less conventional memory than NORMAL due to EMS page frame
 ; -----------------------------------------------
@@ -276,7 +303,7 @@ INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 3: BARE DOS - minimal (diagnostics, installation)
+; Profile 5: BARE DOS - minimal (diagnostics, installation)
 ; No sound, no CD-ROM, no mouse - just basic DOS
 ; -----------------------------------------------
 [BARE]
@@ -292,7 +319,7 @@ DEVICE=C:\DOS\EMM386.EXE NOEMS
 ```bat
 @ECHO OFF
 PROMPT $P$G
-PATH C:\DOS;C:\NC;C:\TOOLS\NU
+PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS;C:\DRIVERS\SB16
 
 REM --- Environment variables ---
 SET SYMANTEC=C:\SYMANTEC
@@ -304,95 +331,96 @@ SET TELIX=C:\TOOLS\TELIX
 REM --- AWE32 CT3900 settings ---
 REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
 REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
+REM CT3900 semi-PnP: UNISOUND naprogramuje IRQ/DMA dle techto hodnot
+REM Mozne hodnoty: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
 SET BLASTER=A220 I5 D1 H5 P330 E620 T6
 SET MIDI=SYNTH:1 MAP:E MODE:0
 
 REM --- PicoGUS / Gravis UltraSound settings (uncomment after card is installed) ---
-REM Format: port,DMA play,DMA rec,IRQ play,IRQ rec (DMA and IRQ are repeated)
-REM IRQ 7 = LPT1 must be disabled in BIOS to free this IRQ
 REM SET ULTRASND=240,3,3,7,7
-REM ULTRADIR must point to the GUS software root (not the MIDI subfolder)
 REM SET ULTRADIR=C:\DRIVERS\PICOGUS
 
 REM --- Route to profile-specific section ---
 GOTO %CONFIG%
 
 REM -----------------------------------------------
-REM Profile 1: NORMAL
+REM Profile 1: NOSOFTMPU - NOEMS bez SoftMPU
+REM Pouzij pro: AWEUTIL /EM:GM/GS/MT32 emulaci bez konfliktu
+REM -----------------------------------------------
+:NOSOFTMPU
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM SoftMPU NENI nacten - AWEUTIL /EM muze bezet bez konfliktu:
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32
+REM   C:\DRIVERS\SB16\AWEUTIL.COM /U
+REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile 2: NOSOFTEMU - EMS bez SoftMPU
+REM Pouzij pro: AWEUTIL /EM + EMS pamet
+REM Pozor: AWEUTIL /EM nefunguje s DOS extendery (DOS4GW)
+REM -----------------------------------------------
+:NOSOFTEMU
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM SoftMPU NENI nacten
+REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile 3: NORMAL - NOEMS se SoftMPU
+REM Pouzij pro: MT-32 hry (Sierra, LucasArts), GUS, AWE32, SC-55, X16GS
+REM POZOR: AWEUTIL /EM:* nelze kombinovat se SoftMPU!
 REM -----------------------------------------------
 :NORMAL
-REM --- AWE32 CT3900 initialization (UNISOUND) ---
-REM Inicializace hardware: IRQ, DMA, porty, OPL3, mixer
-REM CT3900 semi-PnP: UNISOUND naprogramuje IRQ/DMA dle BLASTER proměnné
-REM /V70 = master volume 70 (range 0-100)
-REM /VF90 = FM/OPL3 volume 90 - real OPL3 chip na CT3900 (CT1747)
+REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
+REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90 (real OPL3 CT1747)
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 
-REM --- AWEUTIL - inicializace EMU8000 wavetable syntezátoru ---
-REM UNISOUND NEŘEŠÍ EMU8000 - AWEUTIL je nutný pro AWE32 wavetable funkce
-REM /S = inicializace EMU8000 dle BLASTER proměnné (E620 = port EMU8000)
-REM Nutný pro: hry s AWE32 podporou, AWEUTIL /EM:GM/GS/MT32 MIDI emulaci
-REM Soubory: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
-C:\DRIVERS\SB16\AWEUTIL /S
-REM Nutný pro: Monkey Island 1, Sierra hry, Ultima Underworld
-REM AWE32 podporuje pouze UART mode - SoftMPU přidá intelligent mode
-REM /MPU:330 = MPU-401 port (musí odpovídat P330 v BLASTER)
+REM --- AWEUTIL - inicializace EMU8000 (pouze /S - 0KB pameti) ---
+REM Pozor: AWEUTIL /EM:* koliduje se SoftMPU - pouzij profil 1 (NOSOFTMPU)
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+
+REM --- SoftMPU - intelligent mode MPU-401 pro MT-32 hry ---
+REM /MPU:330 = MPU-401 port (musi odpovidat P330 v BLASTER)
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
 
-REM --- PicoGUS initialization (uncomment after card is installed) ---
-REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /v 95        = DreamBlaster X16GS wavetable volume (0-100)
+REM --- PicoGUS (uncomment after card is installed) ---
 REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
 
 REM --- CD-ROM ---
-REM /M:10 = 10 sector lookahead cache in extended memory
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
 
 REM --- Mouse ---
-REM /R2 = horizontal resolution 2 (movement sensitivity)
-REM COM port is auto-detected by CTMOUSE
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile 2: EMS/GAMES
+REM Profile 4: EMS/GAMES - RAM se SoftMPU
+REM Pouzij pro: DOS extender hry (Tyrian, Magic Carpet), EMS pamet
+REM POZOR: AWEUTIL /EM:* nefunguje s DOS extendery ani se SoftMPU
 REM -----------------------------------------------
 :EMS
-REM --- AWE32 CT3900 initialization (UNISOUND) ---
-REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-
-REM --- AWEUTIL - inicializace EMU8000 wavetable syntezátoru ---
-REM Pozor: AWEUTIL /EM:* NEFUNGUJE s DOS extendery (DOS4GW) - pouze /S init
-C:\DRIVERS\SB16\AWEUTIL /S
-
-REM --- SoftMPU - intelligent mode MPU-401 emulace ---
-REM /MPU:330 = MPU-401 port (musí odpovídat P330 v BLASTER)
+C:\DRIVERS\SB16\AWEUTIL.COM /S
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
-
-REM --- PicoGUS initialization (uncomment after card is installed) ---
-REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /v 95        = DreamBlaster X16GS wavetable volume (0-100)
 REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
-
-REM --- CD-ROM ---
-REM /M:10 = 10 sector lookahead cache in extended memory
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
-
-REM --- Mouse ---
-REM /R2 = horizontal resolution 2 (movement sensitivity)
-REM COM port is auto-detected by CTMOUSE
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile 3: BARE DOS
+REM Profile 5: BARE DOS
 REM -----------------------------------------------
 :BARE
-REM --- No drivers loaded in bare mode ---
 GOTO END
 
 :END
@@ -554,17 +582,53 @@ AWEUTIL /C:3            ← Chorus level 3 (0-7)
 | Máš SC-55 připojený | SC-55 >> AWEUTIL /EM:GS (SC-55 je lepší) |
 | Máš MT-32 připojený | MT-32 >> AWEUTIL /EM:MT32 (real HW vždy lepší) |
 
-**Omezení AWEUTIL:**
+**Omezení AWEUTIL /EM:**
 - Nefunguje s DOS extendery (DOS4GW, DOS32A) — hry jako Doom, Quake, Duke3D
-- Nemůže emulovat MPU-401 intelligent mode (proto SoftMPU zůstává)
+- **Nefunguje současně se SoftMPU** — viz níže
 - Protected mode software nepodporuje MIDI emulaci
+
+### ⚠️ Kritický konflikt: AWEUTIL /EM + SoftMPU
+
+`AWEUTIL /EM:*` a `SoftMPU` **nemohou běžet současně** — oba se pokoušejí
+ovládat MIDI rozhraní a navzájem si překáží.
+
+| Kombinace | Výsledek |
+|---|---|
+| `AWEUTIL /S` + SoftMPU | ✓ OK — `/S` jen inicializuje hardware, MIDI neovládá |
+| `AWEUTIL /EM:GS` + SoftMPU | ✗ **Konflikt** — nepouštět! |
+| `AWEUTIL /EM:MT32` + SoftMPU | ✗ **Konflikt** — nepouštět! |
+
+Praktické pravidlo: `AWEUTIL /EM:*` spouštěj **jen pro GM/GS hry bez
+intelligent mode** (tedy hry kde SoftMPU nepotřebuješ).
+MT-32 hry a starší Sierra/LucasArts potřebují SoftMPU → AWEUTIL /EM nikdy.
+
+### FixMPU — hanging note bug
+
+FixMPU řeší hanging note bug (zaseknuté MIDI noty) na kartách s DSP 4.11–4.13.
+
+**CT3900 s CT1747 čipem tento bug nemá** — FixMPU nepotřebuješ.
+Uvedeno zde pro úplnost — kdyby nastal problém na jiné kartě.
+
+FixMPU **není TSR** — funguje jako **launcher** kolem hry:
+
+```bat
+REM Místo přímého spuštění:
+DOOM.EXE
+
+REM S FixMPU:
+FIXMPU.COM DOOM.EXE
+FIXMPU.COM DUKE3D.EXE /xargs
+```
+
+Požadavky: správná BLASTER proměnná (A, I, P hodnoty), IRQ musí být < 8.
+Stažení: vogons.org → Files → FixMPU
 
 ### AWEUTIL a paměť — klíčový rozdíl
 
 | Příkaz | Chování | Paměť po skončení |
 |---|---|---|
 | `AWEUTIL /S` | inicializuje EMU8000, okamžitě skončí | **0 KB** |
-| `AWEUTIL /EM:GM` | nahraje TSR, zůstane rezidentní | **~26 KB** |
+| `LH AWEUTIL /EM:GS` | nahraje TSR do UMB, zůstane rezidentní | **~26 KB UMB** |
 | `AWEUTIL /U` | uvolní TSR z paměti | 0 KB |
 
 **`AWEUTIL /S` patří do AUTOEXEC** — inicializuje hardware, nežere paměť.
@@ -572,53 +636,76 @@ AWEUTIL /C:3            ← Chorus level 3 (0-7)
 **`AWEUTIL /EM:*` NEPATŘÍ do AUTOEXEC** — spouštět ručně před hrou s `LH`:
 
 ```bat
-LH C:\DRIVERS\SB16\AWEUTIL /EM:GS    ← nahraje TSR do UMB (~26 KB, vejde se do volných ~40 KB)
+LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    ← TSR do UMB (~26 KB z volných ~40 KB)
 hra.exe
-C:\DRIVERS\SB16\AWEUTIL /U           ← uvolnit po hře (důležité!)
-``` — u her co potřebují maximum
-konvenční RAM (pod 640 KB) to může vadit.
+C:\DRIVERS\SB16\AWEUTIL.COM /U           ← uvolnit po hře (nutné!)
+```
+
+Bez `LH` by TSR zabral ~26 KB konvenční paměti místo UMB.
 
 **Proč nepouštět `/EM` při bootu:**
 - Různé hry potřebují různé módy (GM / GS / MT32) — musíš přepínat
-- GUS hry (Doom, Duke3D) a hry s DOS extenderem AWEUTIL /EM ignorují
-- TSR by zbytečně seděl v paměti pro hry kde ho nepotřebuješ
+- GUS hry a hry s DOS extenderem AWEUTIL /EM ignorují
+- Konflikt se SoftMPU — viz výše
+- TSR by zbytečně seděl v paměti
 
 ### AWEUTIL — workflow před hrou
 
 ```bat
-REM MT-32 hra (Sierra, LucasArts floppy) — AWEUTIL nepotřebuješ
-REM fyzický MT-32 je na portu 330h, SoftMPU aktivní
+REM MT-32 hra (Sierra, LucasArts floppy):
+REM SoftMPU aktivní z AUTOEXEC, AWEUTIL /EM NEPOUŠTĚT (konflikt se SoftMPU)
 KQ5.EXE
 
-REM GM/GS hra bez připojeného SC-55:
-LH C:\DRIVERS\SB16\AWEUTIL /EM:GS
+REM GM/GS hra se SC-55 připojeným:
+REM AWEUTIL /EM vůbec nepouštěj — SC-55 >> EMU8000, SoftMPU zde nepřekáží
 MONKEY2.EXE
-C:\DRIVERS\SB16\AWEUTIL /U
 
-REM GM/GS hra — máš SC-55 připojený:
-REM AWEUTIL vůbec nepouštěj, SC-55 >> EMU8000 emulace
-MONKEY2.EXE
+REM GM/GS hra BEZ SC-55, BEZ DOS extenderu:
+REM SoftMPU stále v paměti ale /EM:GS s ním koliduje!
+REM → Použij raději X16GS (port 300h) — bez konfliktu
+REM → Nebo pokud NUTNĚ chceš AWEUTIL: restartovat bez SoftMPU (profil BARE + ruční load)
+LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS
+hra.exe
+C:\DRIVERS\SB16\AWEUTIL.COM /U
 
 REM AWE32 nativní hra:
-REM AWEUTIL /S běžel při bootu, stačí spustit hru
+REM AWEUTIL /S běžel při bootu, stačí spustit hru, SoftMPU nevadí
 FIFA95.EXE
 
 REM GUS hra (Doom, Duke3D, Heretic):
 REM AWEUTIL vůbec nepouštěj, GUS je přes PicoGUS
 DOOM.EXE
 
-REM Přepnutí módu mezi hrami:
-C:\DRIVERS\SB16\AWEUTIL /U              ← nejdřív uvolnit
-LH C:\DRIVERS\SB16\AWEUTIL /EM:MT32    ← pak nový mód
+REM Přepnutí AWEUTIL módu mezi hrami:
+C:\DRIVERS\SB16\AWEUTIL.COM /U              ← nejdřív uvolnit starý mód
+LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32    ← pak nový mód
 ```
 
-### AWEUTIL v AUTOEXEC.BAT
+> **Praktické doporučení:** Máš-li SC-55 a MT-32 zapojené, AWEUTIL /EM
+> skoro nikdy nepotřebuješ. SC-55 > EMU8000, MT-32 > EMU8000.
+> AWEUTIL /EM:GS použij jen cestou (bez externích modulů) nebo jako
+> rychlý test — a vždy přes X16GS (port 300h) bez konfliktu se SoftMPU.
+
+### AWEUTIL v AUTOEXEC.BAT — přehled profilů
+
+| Profil | SoftMPU | AWEUTIL /EM | Použití |
+|---|---|---|---|
+| **1 NOSOFTMPU** | ✗ ne | ✓ **ano** | GM/GS hry přes AWEUTIL emulaci |
+| **2 NOSOFTEMU** | ✗ ne | ✓ ano (bez extenderu) | AWEUTIL /EM + EMS paměť |
+| **3 NORMAL** | ✓ ano | ✗ ne | MT-32 hry, GUS, AWE32 nativní, SC-55 |
+| **4 EMS** | ✓ ano | ✗ ne | DOS extender hry + SoftMPU |
+| **5 BARE** | ✗ ne | ✗ ne | diagnostika, instalace |
 
 ```bat
-REM Pořadí musí být: UNISOUND → AWEUTIL /S → SoftMPU
+REM Profil 3 NORMAL — pořadí v AUTOEXEC:
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL /S             ← jen init, 0 KB paměti
+C:\DRIVERS\SB16\AWEUTIL.COM /S             ← jen hardware init, 0 KB paměti
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+
+REM Profil 1 NOSOFTMPU — pořadí v AUTOEXEC:
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S             ← jen hardware init, 0 KB paměti
+REM (SoftMPU není — AWEUTIL /EM lze pouštět ručně)
 ```
 
 ### Hry s nativní AWE32 podporou (AWEUTIL /S stačí)
@@ -901,8 +988,11 @@ REM Mixer: CH1 + CH2
 
 **Varianta B — AWEUTIL /EM:GS (bez PicoGUS nebo pro jednoduchost):**
 
+> ⚠️ **AWEUTIL /EM:GS koliduje se SoftMPU** který je načten z AUTOEXEC.
+> Preferuj Variantu A (X16GS) — bez konfliktu, lepší zvuk.
+
 ```bat
-LH C:\DRIVERS\SB16\AWEUTIL /EM:GS      ← nahraje TSR do UMB (~26 KB)
+LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS   ← TSR do UMB (~26 KB)
 
 REM V setupu hry:
 Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
@@ -911,7 +1001,7 @@ MIDI port     : 330
 
 REM Mixer: pouze CH1 (AWEUTIL posílá audio přes AWE32 line out)
 REM Po hře:
-C:\DRIVERS\SB16\AWEUTIL /U
+C:\DRIVERS\SB16\AWEUTIL.COM /U
 ```
 
 > AWEUTIL /EM:GS nefunguje s hrami co používají DOS extender (DOS4GW) —
