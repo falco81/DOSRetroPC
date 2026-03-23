@@ -1,9 +1,9 @@
 # DOS Retro PC — System Overview
 
-**Machine:** Rhino 15 Socket 7  
-**CPU:** Pentium MMX  
-**RAM:** 256 MB (2x 128 MB DIMM)  
-**OS:** MS-DOS 6.22  
+**Machine:** Rhino 15 Socket 7
+**CPU:** Pentium MMX
+**RAM:** 256 MB (2x 128 MB DIMM)
+**OS:** MS-DOS 6.22
 
 ---
 
@@ -22,1119 +22,9 @@
 | BIOS | Award Modular BIOS v4.51PG (09/18/97) | — |
 | MIDI module 1 | Roland MT-32 | MIDI chain (first) |
 | MIDI module 2 | Roland SC-55 | MIDI chain (THRU from MT-32) |
-
----
-
-## AWE64 CT4380 → AWE32 CT3900 Upgrade Guide
-
-### Why upgrade?
-
-| Feature | AWE64 CT4380 | AWE32 CT3900 |
-|---|---|---|
-| OPL3 FM | CQM emulation (fake) | **Real OPL3** (CT1747 w/ Yamaha license) |
-| CSP/ASP chip | Not supported | CT1748A included |
-| Waveblaster header | Not present | Present |
-| RAM expansion | Proprietary only | Standard 30-pin SIMM slots |
-| PnP | Yes (needs CTCM) | **No PnP — jumpers only** (simpler for DOS) |
-| Hanging notes bug | Not present | Not present (CT1747) |
-| EMU8000 synth | Yes, 512KB | Yes, 512KB |
-| Polyphony | 64 voices | 32 voices |
-
-The real OPL3 chip is the main reason for the upgrade — AdLib/FM games sound
-exactly as intended, not through CQM emulation which has a harsher, more
-metallic character.
-
-### Before you start
-
-- Back up CONFIG.SYS and AUTOEXEC.BAT
-- Note all current jumper settings on AWE64 for reference
-- Prepare a grounded workspace (antistatic mat or wrist strap)
-- Have a Phillips screwdriver ready
-
-### CT3900 Jumper Settings for this system
-
-**Audio I/O Address:**
-```
-JP17=Closed, JP18=Closed  →  port 220h
-```
-
-**MPU-401:**
-```
-JP15=Closed  →  MPU-401 enabled
-JP16=Closed  →  port 330h
-```
-
-**Joystick:**
-```
-JP14=Closed  →  enabled (gameport for MT-32/SC-55 MIDI out)
-```
-
-**IDE port — DISABLE (conflicts with motherboard IDE):**
-```
-JP2=Closed, JP3=Closed  →  IDE Disabled
-```
-
-**IDE IRQ — irrelevant when IDE is disabled, leave default:**
-```
-JP6=Closed  →  IRQ 11 (default, harmless when IDE disabled)
-```
-
-**CSP chip:**
-```
-If CT1748A chip is present:  APSD=Open,   IFSD=Open   →  Enabled
-If CT1748A chip is absent:   APSD=Closed, IFSD=Closed →  Disabled
-```
-
-**DRAM (SIMM slots):**
-```
-Without SIMMs:  JP2 Pins 2&3 closed  →  Memory upgrade disabled
-With SIMMs:     JP2 Pins 1&2 closed  →  Memory upgrade enabled
-```
-
-### SIMM Memory Upgrade
-
-CT3900 has two 30-pin SIMM slots. Both slots must be populated simultaneously
-(they form one bank). Always use identical modules in both slots.
-
-**Required spec:** 30-pin SIMM, FPM (Fast Page Mode), 80ns or faster, 5V
-
-| Configuration | Total RAM | Notes |
-|---|---|---|
-| No SIMMs | 512 KB | factory default |
-| 2× 1MB SIMM | 2.5 MB | basic |
-| **2× 4MB SIMM** | **8.5 MB** | **installed — odemkne GS/MT-32 emulaci a SoundFont editing** |
-| 2× 16MB SIMM | 28.5 MB | maximum — 16MB 30-pin jsou vzácné a drahé |
-
-**Instalované moduly: 2× 4MB 30-pin FPM SIMM**
-Jumper JP2 pins 1&2 closed (Memory upgrade enabled).
-
-**SIMMs záloha (vlastníš, 30-pin FPM kompatibilní):**
-
-| Chips on module | Brand | Speed | Size | Poznámka |
-|---|---|---|---|---|
-| GM71C4400BJ70 | Goldstar | 70ns | 1MB | použitelné |
-| KM41C1000CJ-6 | Samsung | 60ns | 1MB | nejrychlejší z trojice |
-| HM511000AJP7 | Hitachi | 70ns | 1MB | použitelné |
-
-### Co odemknou SIMM moduly (8,5 MB)
-
-S 8 MB SIMM RAM jsou dostupné plné AWE32 funkce v DOS:
-
-**AWEUTIL — EMU8000 MIDI emulace:**
-```bat
-AWEUTIL /EM:GM   ← General MIDI emulace (soubory Synthgm.sbk)
-AWEUTIL /EM:GS   ← General Sound / Roland GS (Synthgs.sbk)
-AWEUTIL /EM:MT32 ← Roland MT-32 emulace (Synthmt.sbk)
-AWEUTIL /U       ← uvolnit z paměti
-```
-
-> AWEUTIL funguje pouze v real mode — nefunguje s DOS extendery
-> (DOS4GW, DOS32A). Pro extender hry (Doom, Quake) použij GUS nebo
-> externí MIDI moduly. AWEUTIL také nemůže emulovat MPU-401 intelligent
-> mode — proto SoftMPU zůstává.
-
-**SoundFont loading (DOS):**
-Soundfonty lze nahrávat přes AWEUTIL i v DOS — soubory .SBK (starší
-formát, kompatibilní s EMU8000). Moderní .SF2 fonty vyžadují konverzi.
-
-**Maximální velikost SoundFontu:** 28 MB (limit EMU8000 sběrnice,
-bez ohledu na kolik RAM je nainstalováno).
-
-### Installation steps
-
-1. Power off PC, unplug power cable
-2. Remove AWE64 from ISA slot
-3. Set all jumpers on CT3900 as listed above
-4. Install SIMMs if upgrading (both slots, same modules)
-5. Insert CT3900 into ISA slot (same slot as AWE64)
-6. Secure bracket screw
-7. Connect MT-32/SC-55 MIDI chain to gameport (same as before)
-8. Power on — no driver changes needed, UNISOUND handles CT3900 automatically
-
-### CT3900 — Semi-PnP konfigurace (důležité!)
-
-CT3900 je **semi-PnP** karta — kombinace jumperů a softwarového nastavení:
-
-| Parametr | Metoda nastavení |
-|---|---|
-| I/O adresa (220/240/260/280h) | **Jumper** (IOS0, IOS1) |
-| MPU-401 adresa (300/330h) | **Jumper** (MSEL) |
-| CD-ROM port | **Jumper** |
-| **IRQ** | **Software** — DIAGNOSE.EXE /S nebo UNISOUND |
-| **Low DMA (8-bit)** | **Software** — DIAGNOSE.EXE /S nebo UNISOUND |
-| **High DMA (16-bit)** | **Software** — DIAGNOSE.EXE /S nebo UNISOUND |
-
-**Jak to funguje:** DIAGNOSE.EXE /S přečte proměnnou BLASTER a naprogramuje kartu
-podle ní. UNISOUND dělá totéž automaticky při každém bootu — proto u nás
-není DIAGNOSE.EXE potřeba.
-
-**Dostupné hodnoty (software-konfigurovatelné):**
-```
-IRQ:      2, 5, 7, 10
-Low DMA:  0, 1, 3
-High DMA: 5, 6, 7
-```
-
-Pokud by nastal IRQ/DMA konflikt s jinou kartou, stačí upravit BLASTER
-proměnnou v AUTOEXEC.BAT a UNISOUND to při příštím bootu naprogramuje do karty.
-
-### Software changes after swap
-
-**None required.** UNISOUND.COM initializes CT3900 automatically.
-The BLASTER environment variable remains exactly the same:
-```
-SET BLASTER=A220 I5 D1 H5 P330 E620 T6
-```
-
-CT3900 is non-PnP — no CTCM.EXE needed (UNISOUND replaces it).
-IRQ 5, DMA 1/5 are default values and match our system perfectly.
-
----
-
-## CONFIG.SYS
-
-```
-;===========================================
-; CONFIG.SYS - Boot menu
-; Rhino 15 / Pentium MMX / AWE32 CT3900 / Voodoo2 / ATI MACH64
-; MS-DOS 6.22
-;===========================================
-
-; Boot menu - displayed at startup with 10 second countdown
-[MENU]
-MENUITEM=NOSOFTMPU, No SoftMPU          - NOEMS 607KB (AWEUTIL /EM)
-MENUITEM=NOSOFTEMU, No SoftMPU EMS      - RAM   595KB (AWEUTIL /EM + extenders)
-MENUITEM=NORMAL,    SoftMPU             - NOEMS 607KB (SoftMPU, MT-32)
-MENUITEM=EMS,       SoftMPU EMS         - RAM   595KB (SoftMPU + extenders)
-MENUITEM=BARE,      Bare DOS            - no drivers
-; Default profile if no key is pressed within timeout
-MENUDEFAULT=NOSOFTMPU,10
-; Menu colors: text color 11 (bright cyan), background 1 (blue)
-;MENUCOLOR=11,1
-
-; -----------------------------------------------
-; Common settings loaded for ALL profiles
-; -----------------------------------------------
-[COMMON]
-
-; 1) HIMEM.SYS - XMS memory manager, must always be first
-;    /TESTMEM:OFF = skip memory test on boot (saves ~30 seconds on 256MB)
-DEVICE=C:\DOS\HIMEM.SYS /TESTMEM:OFF
-
-; 2) Load DOS into HMA (High Memory Area) and enable UMB
-;    Must come before EMM386
-DOS=HIGH,UMB
-
-; 3) Larger environment block - prevents DIGN9003 error from AWE32
-;    /E:1024 = 1024 bytes for SET variables
-SHELL=C:\COMMAND.COM C:\ /E:1024 /P
-
-; --- System settings ---
-; FILES=30  - max open file handles (NC + MSCDEX need ~25)
-FILES=30
-; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering)
-BUFFERS=4,0
-; LASTDRIVE=H - covers drives A,C,D,E,F,G + one spare
-LASTDRIVE=H
-; STACKS=9,256 - interrupt stack frames
-STACKS=9,256
-FCBS=1,0
-
-; -----------------------------------------------
-; Profile 1: NOSOFTMPU - NOEMS bez SoftMPU (607KB conventional)
-; Use for: AWEUTIL /EM:GM/GS/MT32 emulace (konflikt se SoftMPU)
-;          GM/GS hry pres AWEUTIL bez externiho MIDI
-; -----------------------------------------------
-[NOSOFTMPU]
-
-; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
-DEVICE=C:\DOS\EMM386.EXE NOEMS
-
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
-DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
-
-; -----------------------------------------------
-; Profile 2: NOSOFTEMU - RAM + EMS bez SoftMPU (595KB conventional)
-; Use for: AWEUTIL /EM + DOS extender hry
-;          (AWEUTIL /EM nefunguje s extendery - pouzij spise profil 1)
-; -----------------------------------------------
-[NOSOFTEMU]
-
-DEVICE=C:\DOS\EMM386.EXE RAM
-
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
-DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
-
-; -----------------------------------------------
-; Profile 3: NORMAL - NOEMS se SoftMPU (607KB conventional)
-; Use for: MT-32 hry (Sierra, LucasArts), GUS hry, kazodenne pouziti
-; -----------------------------------------------
-[NORMAL]
-
-; EMM386 NOEMS = no EMS page frame
-; Frees 64KB of UMB compared to RAM mode
-; UNISOUND, CTMOUSE, SoftMPU do not require EMS
-; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
-DEVICE=C:\DOS\EMM386.EXE NOEMS
-
-; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
-; /X = disable write cache (safer for power loss)
-; 2048KB read cache, 512KB write cache
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
-
-; Samsung CD-ROM driver into UMB
-DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
-
-; -----------------------------------------------
-; Profile 4: EMS/GAMES - RAM se SoftMPU (595KB conventional)
-; Use for: DOS extender games (Tyrian, etc.), programs requiring EMS memory
-; Note: 12KB less conventional memory than NORMAL due to EMS page frame
-; -----------------------------------------------
-[EMS]
-
-; EMM386 RAM = EMS + UMB both enabled
-; EMS page frame uses 64KB of UMB but allows DOS extenders to work
-DEVICE=C:\DOS\EMM386.EXE RAM
-
-; SmartDrive loaded first to claim largest free UMB block
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
-
-; Samsung CD-ROM driver into UMB
-DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
-
-; -----------------------------------------------
-; Profile 5: BARE DOS - minimal (diagnostics, installation)
-; No sound, no CD-ROM, no mouse - just basic DOS
-; -----------------------------------------------
-[BARE]
-
-; Minimal EMM386 for XMS access only
-DEVICE=C:\DOS\EMM386.EXE NOEMS
-```
-
----
-
-## AUTOEXEC.BAT
-
-```bat
-@ECHO OFF
-PROMPT $P$G
-PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS;C:\DRIVERS\SB16
-
-REM --- Environment variables ---
-SET SYMANTEC=C:\SYMANTEC
-SET NU=C:\TOOLS\NU
-SET TEMP=C:\DOS\TMP
-SET TMP=C:\DOS\TMP
-SET TELIX=C:\TOOLS\TELIX
-
-REM --- AWE32 CT3900 settings ---
-REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
-REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
-REM CT3900 semi-PnP: UNISOUND naprogramuje IRQ/DMA dle techto hodnot
-REM Mozne hodnoty: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
-SET SOUND=C:\DRIVERS\SB16
-SET BLASTER=A220 I5 D1 H5 P330 E620 T6
-SET MIDI=SYNTH:1 MAP:E MODE:0
-
-REM --- PicoGUS / Gravis UltraSound settings (uncomment after card is installed) ---
-REM SET ULTRASND=240,3,3,7,7
-REM SET ULTRADIR=C:\DRIVERS\PICOGUS
-
-REM --- Route to profile-specific section ---
-GOTO %CONFIG%
-
-REM -----------------------------------------------
-REM Profile 1: NOSOFTMPU - NOEMS bez SoftMPU
-REM Pouzij pro: AWEUTIL /EM:GM/GS/MT32 emulaci bez konfliktu
-REM -----------------------------------------------
-:NOSOFTMPU
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-REM SoftMPU NENI nacten - AWEUTIL /EM muze bezet bez konfliktu:
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32
-REM   C:\DRIVERS\SB16\AWEUTIL.COM /U
-REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile 2: NOSOFTEMU - EMS bez SoftMPU
-REM Pouzij pro: AWEUTIL /EM + EMS pamet
-REM Pozor: AWEUTIL /EM nefunguje s DOS extendery (DOS4GW)
-REM -----------------------------------------------
-:NOSOFTEMU
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-REM SoftMPU NENI nacten
-REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile 3: NORMAL - NOEMS se SoftMPU
-REM Pouzij pro: MT-32 hry (Sierra, LucasArts), GUS, AWE32, SC-55, X16GS
-REM POZOR: AWEUTIL /EM:* nelze kombinovat se SoftMPU!
-REM -----------------------------------------------
-:NORMAL
-REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
-REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90 (real OPL3 CT1747)
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-
-REM --- AWEUTIL - inicializace EMU8000 (pouze /S - 0KB pameti) ---
-REM Pozor: AWEUTIL /EM:* koliduje se SoftMPU - pouzij profil 1 (NOSOFTMPU)
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-
-REM --- SoftMPU - intelligent mode MPU-401 pro MT-32 hry ---
-REM /MPU:330 = MPU-401 port (musi odpovidat P330 v BLASTER)
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
-
-REM --- PicoGUS (uncomment after card is installed) ---
-REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
-
-REM --- CD-ROM ---
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
-
-REM --- Mouse ---
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile 4: EMS/GAMES - RAM se SoftMPU
-REM Pouzij pro: DOS extender hry (Tyrian, Magic Carpet), EMS pamet
-REM POZOR: AWEUTIL /EM:* nefunguje s DOS extendery ani se SoftMPU
-REM -----------------------------------------------
-:EMS
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
-REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile 5: BARE DOS
-REM -----------------------------------------------
-:BARE
-GOTO END
-
-:END
-REM --- Norton Commander ---
-NC
-```
-
----
-
-## Audio Routing
-
-```
-AWE32 line out   ──► Mixer CH1  (SB16 effects + real OPL3 FM music)
-PicoGUS line out ──► Mixer CH2  (GUS music + X16GS Roland GS synth)
-MT-32 line out   ──► Mixer CH3  (Roland MT-32 synth)
-SC-55 line out   ──► Mixer CH4  (Roland SC-55 GS synth)
-                          │
-                     Hardware mixer main out
-                          │
-                    Speakers / headphones
-```
-
-> X16GS audio is routed back through the waveblaster header into PicoGUS
-> and mixed with GUS audio — only one cable needed from PicoGUS line out.
-
-### MIDI Hardware Chain
-
-```
-AWE32 gameport MIDI OUT (port 330h)
-        │
-        ▼
-    MT-32 MIDI IN
-    MT-32 MIDI THRU
-        │
-        ▼
-    SC-55 MIDI IN
-```
-
-### Mixer Channel Labels
-
-| Channel | Source | Used for |
-|---|---|---|
-| CH1 | AWE32 | SB16 effects, real OPL3 FM music |
-| CH2 | PicoGUS | GUS music, X16GS MIDI synth |
-| CH3 | MT-32 | MT-32 music (Sierra, early LucasArts) |
-| CH4 | SC-55 | GM/GS music (best quality external) |
-
----
-
-## Sound Device Reference
-
-| Device | Port | IRQ | DMA | Type |
-|---|---|---|---|---|
-| AWE32 SB16 | 220h | 5 | 1 / 5 | Sound effects, real OPL3 |
-| AWE32 MPU-401 | 330h | 5 | — | MIDI out → MT-32 → SC-55 |
-| PicoGUS GUS | 240h | 7 | 3 | GUS music |
-| PicoGUS MPU-401 | 300h | 7 | — | MIDI → X16GS internal synth |
-
----
-
-## DreamBlaster X16GS — Soundbanks and Bank Switching
-
-### Preloaded Banks
-
-| Bank | Name | Best used for |
-|---|---|---|
-| 1 | Dream/Roland GS Bank (licensed ROM) | GM/GS games, SC-55 replacement |
-| 2 | Dream CleanWave Bank | General purpose GM |
-| 3 | Buran Bank | Variety, alternative character |
-| 4 | OPL3-FM General MIDI | Retro FM feel |
-| 5 | GXSCC Chiptune | 8-bit / NES/SNES style |
-
-### Bank switching commands
-
-```bat
-REM Switch to specific bank (DOSMID.CFG default: /mpu=300 /preset=GS /dontstop)
-DOSMID Slot1.mid   ← Bank 1: Roland GS (default, best for games)
-DOSMID Slot2.mid   ← Bank 2: CleanWave
-DOSMID Slot3.mid   ← Bank 3: Buran
-DOSMID Slot4.mid   ← Bank 4: OPL3-FM character
-DOSMID Slot5.mid   ← Bank 5: Chiptune
-DOSMID Next.mid    ← Next bank
-DOSMID Previous.mid ← Previous bank
-```
-
----
-
-## AWEUTIL — EMU8000 Wavetable Synthesizer
-
-### UNISOUND vs AWEUTIL — co dělá co
-
-| Funkce | UNISOUND | AWEUTIL |
-|---|---|---|
-| Inicializace hardware (IRQ, DMA, porty) | **Ano** | Ne |
-| OPL3 FM syntéza | **Ano** | Ne |
-| Mixer (volume, balance) | **Ano** | Ne |
-| EMU8000 wavetable init | Ne | **Ano** |
-| MIDI emulace GM/GS/MT-32 | Ne | **Ano** |
-| Načítání soundfontů (.SBK) | Ne | **Ano** |
-| Reverb a chorus efekty | Ne | **Ano** (přes CT1747) |
-
-**UNISOUND nestačí pro plné AWE32 funkce.** Pro wavetable syntézu a MIDI
-emulaci přes EMU8000 je nutný AWEUTIL.
-
-### Soubory potřebné pro AWEUTIL
-
-Všechny soubory patří do `C:\DRIVERS\SB16\` (nebo kam ukazuje `SET SOUND=`):
-
-| Soubor | Účel |
-|---|---|
-| `AWEUTIL.COM` | Hlavní utility — init, MIDI emulace, soundfonty |
-| `Synthgm.sbk` | GM soundfont (nutný pro `/EM:GM`) |
-| `Synthgs.sbk` | GS soundfont (nutný pro `/EM:GS`) |
-| `Synthmt.sbk` | MT-32 soundfont (nutný pro `/EM:MT32`) |
-
-**Stažení — přesný zdroj:**
-
-Balíček `AWEUTIL.COM` + všechny `.SBK` soundfonty je součástí **Creative AWE32/SB32 DOS driver v2.00**:
-
-```
-archive.org → hledej: "Creative Sound Blaster AWE32 Drivers"
-              soubor:  AWE32DRV.EXE  nebo  SB32V200.EXE
-vogons.org  → Files sekce → Sound Blaster AWE32
-```
-
-Po rozbalení zkopíruj do `C:\DRIVERS\SB16\`:
-- `AWEUTIL.COM`
-- `SYNTHGM.SBK`  (→ přejmenuj na `Synthgm.sbk`)
-- `SYNTHGS.SBK`  (→ přejmenuj na `Synthgs.sbk`)
-- `SYNTHMT.SBK`  (→ přejmenuj na `Synthmt.sbk`)
-
-> Soubory jsou velké ~1 MB každý — přenos přes FTP nebo CD-ROM.
-
-### AWEUTIL příkazy
-
-```bat
-AWEUTIL /S              ← inicializace EMU8000 (čte BLASTER proměnnou)
-                           spustit po UNISOUND při každém bootu
-
-AWEUTIL /EM:GM          ← General MIDI emulace (Synthgm.sbk)
-AWEUTIL /EM:GS          ← Roland GS emulace (Synthgs.sbk)
-AWEUTIL /EM:MT32        ← Roland MT-32 emulace (Synthmt.sbk)
-AWEUTIL /U              ← uvolnit z paměti (před přepnutím módu)
-
-AWEUTIL /SF:myfont.sbk  ← načíst vlastní soundfont
-AWEUTIL /R:0            ← Reverb off
-AWEUTIL /R:5            ← Reverb level 5 (0-7)
-AWEUTIL /C:0            ← Chorus off
-AWEUTIL /C:3            ← Chorus level 3 (0-7)
-```
-
-### Kdy použít AWEUTIL /EM vs. SC-55 nebo MT-32
-
-| Situace | Doporučení |
-|---|---|
-| Hra má nativní "AWE32" volbu v setupu | AWEUTIL /S, v setupu zvolit AWE32 |
-| Hra má GM, nemáš připojený SC-55 | AWEUTIL /EM:GM nebo X16GS |
-| Chceš MT-32 zvuk bez fyzického MT-32 | AWEUTIL /EM:MT32 (horší než real HW) |
-| Máš SC-55 připojený | SC-55 >> AWEUTIL /EM:GS (SC-55 je lepší) |
-| Máš MT-32 připojený | MT-32 >> AWEUTIL /EM:MT32 (real HW vždy lepší) |
-
-**Omezení AWEUTIL /EM:**
-- Nefunguje s DOS extendery (DOS4GW, DOS32A) — hry jako Doom, Quake, Duke3D
-- **Nefunguje současně se SoftMPU** — viz níže
-- Protected mode software nepodporuje MIDI emulaci
-
-### ⚠️ Kritický konflikt: AWEUTIL /EM + SoftMPU
-
-`AWEUTIL /EM:*` a `SoftMPU` **nemohou běžet současně** — oba se pokoušejí
-ovládat MIDI rozhraní a navzájem si překáží.
-
-| Kombinace | Výsledek |
-|---|---|
-| `AWEUTIL /S` + SoftMPU | ✓ OK — `/S` jen inicializuje hardware, MIDI neovládá |
-| `AWEUTIL /EM:GS` + SoftMPU | ✗ **Konflikt** — nepouštět! |
-| `AWEUTIL /EM:MT32` + SoftMPU | ✗ **Konflikt** — nepouštět! |
-
-Praktické pravidlo: `AWEUTIL /EM:*` spouštěj **jen pro GM/GS hry bez
-intelligent mode** (tedy hry kde SoftMPU nepotřebuješ).
-MT-32 hry a starší Sierra/LucasArts potřebují SoftMPU → AWEUTIL /EM nikdy.
-
-### FixMPU — hanging note bug
-
-FixMPU řeší hanging note bug (zaseknuté MIDI noty) na kartách s DSP 4.11–4.13.
-
-**CT3900 s CT1747 čipem tento bug nemá** — FixMPU nepotřebuješ.
-Uvedeno zde pro úplnost — kdyby nastal problém na jiné kartě.
-
-FixMPU **není TSR** — funguje jako **launcher** kolem hry:
-
-```bat
-REM Místo přímého spuštění:
-DOOM.EXE
-
-REM S FixMPU:
-FIXMPU.COM DOOM.EXE
-FIXMPU.COM DUKE3D.EXE /xargs
-```
-
-Požadavky: správná BLASTER proměnná (A, I, P hodnoty), IRQ musí být < 8.
-Stažení: vogons.org → Files → FixMPU
-
-### AWEUTIL a paměť — klíčový rozdíl
-
-| Příkaz | Chování | Paměť po skončení |
-|---|---|---|
-| `AWEUTIL /S` | inicializuje EMU8000, okamžitě skončí | **0 KB** |
-| `LH AWEUTIL /EM:GS` | nahraje TSR do UMB, zůstane rezidentní | **~26 KB UMB** |
-| `AWEUTIL /U` | uvolní TSR z paměti | 0 KB |
-
-**`AWEUTIL /S` patří do AUTOEXEC** — inicializuje hardware, nežere paměť.
-
-**`AWEUTIL /EM:*` NEPATŘÍ do AUTOEXEC** — spouštět ručně před hrou s `LH`:
-
-```bat
-LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    ← TSR do UMB (~26 KB z volných ~40 KB)
-hra.exe
-C:\DRIVERS\SB16\AWEUTIL.COM /U           ← uvolnit po hře (nutné!)
-```
-
-Bez `LH` by TSR zabral ~26 KB konvenční paměti místo UMB.
-
-**Proč nepouštět `/EM` při bootu:**
-- Různé hry potřebují různé módy (GM / GS / MT32) — musíš přepínat
-- GUS hry a hry s DOS extenderem AWEUTIL /EM ignorují
-- Konflikt se SoftMPU — viz výše
-- TSR by zbytečně seděl v paměti
-
-### AWEUTIL — workflow před hrou
-
-```bat
-REM MT-32 hra (Sierra, LucasArts floppy):
-REM SoftMPU aktivní z AUTOEXEC, AWEUTIL /EM NEPOUŠTĚT (konflikt se SoftMPU)
-KQ5.EXE
-
-REM GM/GS hra se SC-55 připojeným:
-REM AWEUTIL /EM vůbec nepouštěj — SC-55 >> EMU8000, SoftMPU zde nepřekáží
-MONKEY2.EXE
-
-REM GM/GS hra BEZ SC-55, BEZ DOS extenderu:
-REM SoftMPU stále v paměti ale /EM:GS s ním koliduje!
-REM → Použij raději X16GS (port 300h) — bez konfliktu
-REM → Nebo pokud NUTNĚ chceš AWEUTIL: restartovat bez SoftMPU (profil BARE + ruční load)
-LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS
-hra.exe
-C:\DRIVERS\SB16\AWEUTIL.COM /U
-
-REM AWE32 nativní hra:
-REM AWEUTIL /S běžel při bootu, stačí spustit hru, SoftMPU nevadí
-FIFA95.EXE
-
-REM GUS hra (Doom, Duke3D, Heretic):
-REM AWEUTIL vůbec nepouštěj, GUS je přes PicoGUS
-DOOM.EXE
-
-REM Přepnutí AWEUTIL módu mezi hrami:
-C:\DRIVERS\SB16\AWEUTIL.COM /U              ← nejdřív uvolnit starý mód
-LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32    ← pak nový mód
-```
-
-> **Praktické doporučení:** Máš-li SC-55 a MT-32 zapojené, AWEUTIL /EM
-> skoro nikdy nepotřebuješ. SC-55 > EMU8000, MT-32 > EMU8000.
-> AWEUTIL /EM:GS použij jen cestou (bez externích modulů) nebo jako
-> rychlý test — a vždy přes X16GS (port 300h) bez konfliktu se SoftMPU.
-
-### AWEUTIL v AUTOEXEC.BAT — přehled profilů
-
-| Profil | SoftMPU | AWEUTIL /EM | Použití |
-|---|---|---|---|
-| **1 NOSOFTMPU** | ✗ ne | ✓ **ano** | GM/GS hry přes AWEUTIL emulaci |
-| **2 NOSOFTEMU** | ✗ ne | ✓ ano (bez extenderu) | AWEUTIL /EM + EMS paměť |
-| **3 NORMAL** | ✓ ano | ✗ ne | MT-32 hry, GUS, AWE32 nativní, SC-55 |
-| **4 EMS** | ✓ ano | ✗ ne | DOS extender hry + SoftMPU |
-| **5 BARE** | ✗ ne | ✗ ne | diagnostika, instalace |
-
-```bat
-REM Profil 3 NORMAL — pořadí v AUTOEXEC:
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S             ← jen hardware init, 0 KB paměti
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
-
-REM Profil 1 NOSOFTMPU — pořadí v AUTOEXEC:
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S             ← jen hardware init, 0 KB paměti
-REM (SoftMPU není — AWEUTIL /EM lze pouštět ručně)
-```
-
-### Hry s nativní AWE32 podporou (AWEUTIL /S stačí)
-
-V setupu tyto hry nabízí volbu "Sound Blaster AWE32" nebo "AWE32":
-Civilization 2, Master of Orion 2, Warcraft 2, Starcraft (beta DOS verze),
-FIFA Soccer 95/96/97, NHL series, Need for Speed (DOS).
-Setup: zvolit AWE32, port 220, IRQ 5, DMA 1, DMA16 5.
-
----
-
-## Game Setup Guide
-
-### Priorita zvukových zařízení — obecné pravidlo
-
-```
-Real MT-32 hardware  >  Real SC-55 hardware  >  PicoGUS GUS  >  X16GS  >  AWEUTIL EMU8000  >  OPL3
-```
-
-Fyzický hardware vždy zní lépe než emulace. GUS má ve svých hrách
-výjimečnou kvalitu díky vzorkovým patchům. OPL3 je záměrný retro zvuk.
-
----
-
-### Kategorie 1 — MT-32 hry
-**Mixer: CH1 (AWE32 efekty) + CH3 (MT-32) | SoftMPU aktivní**
-
-Tyto hry byly komponovány přímo pro Roland MT-32. SC-55 ani GM emulace
-nezní správně — chybí specifické MT-32 timbre sady a SysEx nastavení.
-
-**Sierra On-Line:**
-
-| Hra | Rok | Setup |
-|---|---|---|
-| King's Quest 4 | 1988 | Music: Roland MT-32, port 330 |
-| King's Quest 5 | 1990 | Music: Roland MT-32 or MIDI, port 330 |
-| Space Quest 3 | 1989 | Music: Roland MT-32, port 330 |
-| Space Quest 4 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
-| Police Quest 2 | 1988 | Music: Roland MT-32, port 330 |
-| Police Quest 3 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
-| Quest for Glory 1 (EGA/VGA) | 1989/1992 | Music: Roland MT-32, port 330 |
-| Quest for Glory 2 | 1990 | Music: Roland MT-32, port 330 |
-| Leisure Suit Larry 3 | 1989 | Music: Roland MT-32, port 330 |
-| Leisure Suit Larry 5 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
-| Gabriel Knight 1 | 1993 | Music: Roland MT-32 or General MIDI |
-| Conquests of Camelot | 1990 | Music: Roland MT-32, port 330 |
-| Conquests of Longbow | 1991 | Music: Roland MT-32, port 330 |
-
-**LucasArts (floppy verze — CD verze mají GM):**
-
-| Hra | Rok | Poznámka |
-|---|---|---|
-| Maniac Mansion | 1987 | Music: Roland MT-32 |
-| Zak McKracken | 1988 | Music: Roland MT-32 |
-| Indiana Jones Last Crusade | 1989 | Music: Roland MT-32 — SoftMPU nutný (intelligent mode) |
-| Loom (floppy) | 1990 | Music: Roland MT-32 — SoftMPU nutný |
-| Monkey Island 1 (floppy) | 1990 | Music: Roland MT-32 — SoftMPU nutný |
-| Monkey Island 2 | 1991 | MT-32 nebo GM — GM na SC-55 zní skvěle |
-
-**Origin / Wing Commander:**
-
-| Hra | Rok | Setup |
-|---|---|---|
-| Wing Commander 1 | 1990 | Music: Roland MT-32, port 330, Sound: SB |
-| Wing Commander 2 | 1991 | Music: Roland MT-32, port 330, Sound: SB |
-| Ultima VI | 1990 | Music: Roland MT-32, port 330 |
-| Ultima Underworld 1 | 1992 | Music: General MIDI (SC-55) — SoftMPU nutný |
-
-**SSI / Westwood (dungeon/RPG):**
-
-| Hra | Rok | Setup |
-|---|---|---|
-| Eye of the Beholder 1 | 1991 | Music: Roland MT-32, port 330 |
-| Eye of the Beholder 2 | 1991 | Music: Roland MT-32, port 330 |
-| Pool of Radiance | 1988 | Music: Roland MT-32 |
-| Champions of Krynn | 1990 | Music: Roland MT-32 |
-
-```
-Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
-Music         : Roland MT-32
-MIDI port     : 330
-```
-
-> SoftMPU je načten v AUTOEXEC — intelligent mode funguje automaticky.
-> SC-55 je v MIDI chain za MT-32 (THRU) — pro MT-32 hry SC-55 nic nevydává.
-
----
-
-### Kategorie 2 — GM/GS hry — SC-55
-**Mixer: CH1 (AWE32 efekty) + CH4 (SC-55)**
-
-Tyto hry byly komponovány nebo optimalizovány pro Roland SC-55/SC-88.
-SC-55 zní autentičtěji než jakákoli emulace — hudba byla většinou mixována
-přímo na tomto hardware.
-
-**LucasArts iMUSE engine:**
-
-| Hra | Rok | Setup |
-|---|---|---|
-| Monkey Island 2 | 1991 | General MIDI, port 330 — iMUSE dynamická hudba |
-| Indiana Jones Fate of Atlantis | 1992 | General MIDI, port 330 |
-| Day of the Tentacle | 1993 | General MIDI, port 330 — iMUSE |
-| Sam & Max Hit the Road | 1993 | General MIDI, port 330 — iMUSE |
-| Dark Forces | 1995 | General MIDI, port 330 — iMUSE |
-| Full Throttle | 1995 | General MIDI, port 330 — iMUSE |
-| The Dig | 1995 | General MIDI, port 330 — iMUSE |
-| Grim Fandango (DOS beta) | 1998 | General MIDI, port 330 |
-
-**Westwood Studios:**
-
-| Hra | Rok | Setup |
-|---|---|---|
-| Legend of Kyrandia 1 | 1992 | General MIDI, port 330 |
-| Legend of Kyrandia 2 | 1993 | General MIDI, port 330 |
-| Legend of Kyrandia 3 | 1994 | General MIDI, port 330 |
-| Command & Conquer | 1995 | General MIDI, port 330 — SC-55 zní skvěle |
-| Red Alert | 1996 | General MIDI, port 330 |
-
-**Origin Systems:**
-
-| Hra | Rok | Setup |
-|---|---|---|
-| Wing Commander 3 | 1994 | General MIDI, port 330, Sound: SB16 |
-| Wing Commander 4 | 1996 | General MIDI, port 330, Sound: SB16 |
-| Privateer | 1993 | General MIDI, port 330, Sound: SB |
-| Ultima Underworld 1 | 1992 | General MIDI, port 330, Sound: SB16 |
-| Ultima Underworld 2 | 1993 | General MIDI, port 330, Sound: SB16 |
-| Ultima 7 Part 1+2 | 1992/1993 | General MIDI, port 330 |
-| Ultima 8 | 1994 | General MIDI, port 330 |
-
-**Microprose / Strategy:**
-
-| Hra | Rok | Setup |
-|---|---|---|
-| X-COM UFO Defense | 1994 | General MIDI, port 330, Sound: SB16 |
-| X-COM Terror from the Deep | 1995 | General MIDI, port 330 |
-| Civilization 2 | 1996 | AWE32 nativně nebo GM, port 330 |
-| Master of Orion 2 | 1996 | General MIDI, port 330 |
-
-**Ostatní:**
-
-| Hra | Rok | Setup |
-|---|---|---|
-| Crusader No Remorse | 1995 | General MIDI, port 330, Sound: SB16 |
-| Crusader No Regret | 1996 | General MIDI, port 330, Sound: SB16 |
-| Descent 1 | 1994 | GM nebo GUS — GUS pro hudbu doporučeno |
-| Descent 2 | 1996 | GM nebo GUS — GUS pro hudbu doporučeno |
-| TIE Fighter | 1994 | General MIDI, port 330 — iMUSE |
-| X-Wing | 1993 | General MIDI, port 330 — iMUSE |
-| Warcraft 2 | 1995 | General MIDI nebo AWE32 |
-
-```
-Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
-Music         : General MIDI
-MIDI port     : 330
-```
-
-> SC-55 musí být v GS módu (výchozí). Přepnutí: DOSMID /mpu=330 /preset=GS.
-> MT-32 je v MIDI chain před SC-55 (THRU) — MIDI data projdou přes MT-32
-> transparentně a přijdou na SC-55.
->
-> **Warcraft 2 a Civilization 2** nabízejí také nativní AWE32 volbu —
-> ta zní lépe než GM přes SC-55. Viz Kategorie 4.
-
----
-
-### Kategorie 3 — GUS hry
-**Mixer: CH1 (AWE32 efekty) + CH2 (PicoGUS GUS)**
-
-Tyto hry mají nativní Gravis UltraSound podporu s vlastními vzorkovými
-patchemi (patch sety). GUS zní v těchto hrách lépe než SB16 díky
-wavetable syntéze přímo v hardware — žádná MIDI emulace.
-
-**id Software:**
-
-| Hra | Rok | Sound Effects | Music | GUS nastavení |
-|---|---|---|---|---|
-| Doom | 1993 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect nebo ruční |
-| Doom 2 | 1994 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
-| Heretic | 1994 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
-| Hexen | 1995 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
-| Quake | 1996 | SB16 port 220 IRQ 5 DMA 1 | CD audio nebo GUS | viz níže |
-
-**Apogee / 3D Realms:**
-
-| Hra | Rok | Sound Effects | Music |
-|---|---|---|---|
-| Duke Nukem 3D | 1996 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
-| Shadow Warrior | 1997 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
-| Blood | 1997 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
-| Rise of the Triad | 1994 | SB port 220 IRQ 5 DMA 1 | GUS port 240 IRQ 7 DMA 3 |
-| Terminal Velocity | 1995 | SB16 port 220 IRQ 5 DMA 1 | GUS port 240 IRQ 7 DMA 3 |
-
-**Ostatní:**
-
-| Hra | Rok | Poznámka |
-|---|---|---|
-| Strife | 1996 | GUS hudba, SB efekty |
-| Descent 1 | 1994 | GUS doporučeno před GM |
-| Descent 2 | 1996 | GUS doporučeno před GM |
-| Raptor Call of Shadows | 1994 | GUS hudba |
-| Blake Stone | 1993 | GUS hudba |
-
-```bat
-REM Doom / Doom 2 / Heretic / Hexen:
-  Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
-  Music         : Gravis UltraSound
-  (GUS je detekován automaticky přes ULTRASND proměnnou)
-
-REM Duke Nukem 3D / Shadow Warrior / Blood (SETUP.EXE):
-  Sound Card    : Sound Blaster 16
-  Port          : 220   IRQ: 5   DMA: 1   DMA16: 5
-  Music Card    : Gravis UltraSound
-  Port          : 240   IRQ: 7   DMA: 3
-
-REM Quake (GLQuake s Voodoo2):
-  spustit: GLQUAKE.EXE -width 640 -height 480
-  nebo:    GLQUAKE.EXE (výchozí 320x240 Glide)
-  Sound: auto-detect SB16
-```
-
----
-
-### Kategorie 4 — AWE32 nativní hry (EMU8000 wavetable)
-**Mixer: CH1 (AWE32 vše) | AWEUTIL /S v AUTOEXEC — žádný extra krok**
-
-Tyto hry přistupují k EMU8000 syntezátoru přímo. `AWEUTIL /S` již běží
-z AUTOEXEC — před hrou nemusíš dělat nic navíc. Pokud hra nabízí GM i AWE32,
-vždy zvol AWE32 (native wavetable, lepší kvalita).
-
-| Hra | Rok | V setupu zvol | Poznámka |
-|---|---|---|---|
-| FIFA Soccer 95 | 1994 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| FIFA Soccer 96 | 1995 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| FIFA Soccer 97 | 1996 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| NHL 96 | 1995 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| NHL 97 | 1996 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| Need for Speed (DOS) | 1994 | AWE32 nebo SB16 | AWE32 preferuj |
-| Warcraft 2 | 1995 | AWE32 nebo GM | AWE32 → Mixer CH1; GM → Mixer CH1+CH4 (SC-55) |
-| Civilization 2 | 1996 | Sound Blaster AWE32 | nebo GM přes SC-55 |
-| Master of Orion 2 | 1996 | AWE32 nebo GM | AWE32 preferuj |
-
-```
-Sound Card    : Sound Blaster AWE32
-Port          : 220   IRQ: 5   DMA: 1   DMA16: 5
-EMU8000 Port  : 620
-
-Před hrou: nic — AWEUTIL /S běží z AUTOEXEC automaticky
-```
-
----
-
-### Kategorie 5 — GM/GS hry bez externích modulů
-**Mixer: CH1 (AWE32 efekty) + CH2 (PicoGUS/X16GS) nebo jen CH1 (AWEUTIL)**
-
-Použij když SC-55 není připojený nebo nechceš přepínat MIDI chain.
-Dvě možnosti — X16GS nebo AWEUTIL /EM:GS:
-
-| | X16GS (port 300h) | AWEUTIL /EM:GS (port 330h) |
-|---|---|---|
-| Kvalita zvuku | ✓✓ velmi dobrá | ✓ dobrá |
-| Paměť navíc | 0 KB | ~26 KB UMB |
-| Funguje s DOS extendery | ✓ ano | ✗ ne |
-| Potřeba PicoGUS | ✓ ano | ne |
-| Příprava | `DOSMID Slot1.mid` | `LH AWEUTIL /EM:GS` |
-
-**Varianta A — X16GS (doporučeno, lepší zvuk):**
-
-```bat
-REM Přepni X16GS na Bank 1 (Roland GS):
-DOSMID Slot1.mid
-
-REM V setupu hry:
-Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
-Music         : General MIDI
-MIDI port     : 300
-
-REM Mixer: CH1 + CH2
-```
-
-**Varianta B — AWEUTIL /EM:GS (bez PicoGUS nebo pro jednoduchost):**
-
-> ⚠️ **AWEUTIL /EM:GS koliduje se SoftMPU** který je načten z AUTOEXEC.
-> Preferuj Variantu A (X16GS) — bez konfliktu, lepší zvuk.
-
-```bat
-LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS   ← TSR do UMB (~26 KB)
-
-REM V setupu hry:
-Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
-Music         : General MIDI
-MIDI port     : 330
-
-REM Mixer: pouze CH1 (AWEUTIL posílá audio přes AWE32 line out)
-REM Po hře:
-C:\DRIVERS\SB16\AWEUTIL.COM /U
-```
-
-> AWEUTIL /EM:GS nefunguje s hrami co používají DOS extender (DOS4GW) —
-> Descent, Magic Carpet, TIE Fighter atd. Pro tyto hry použij X16GS.
-
----
-
-### Kategorie 6 — OPL3 / AdLib / FM hry
-**Mixer: CH1 (AWE32 real OPL3)**
-
-CT3900 má **reálný Yamaha OPL3** čip (CT1747) — na rozdíl od AWE64
-který používal CQM emulaci. Tyto hry zní na CT3900 autenticky správně.
-
-| Hra | Rok | Nejlepší setup |
-|---|---|---|
-| Wolfenstein 3D | 1992 | AdLib nebo SB, port 220 |
-| Commander Keen 4/5/6 | 1991/92 | AdLib port 388 |
-| Jazz Jackrabbit | 1994 | SB nebo AdLib, port 220 |
-| Raptor Call of Shadows | 1994 | SB nebo AdLib (alternativa ke GUS) |
-| Tyrian | 1995 | SB16 port 220 IRQ 5 DMA 1 — EMS profil! |
-| Dune 2 | 1992 | AdLib nebo SB |
-| Theme Park | 1994 | SB16, port 220 |
-| Transport Tycoon | 1994 | SB16, port 220 |
-| SimCity 2000 | 1993 | SB16, port 220 |
-| Syndicate | 1993 | SB16, port 220 |
-| Magic Carpet | 1994 | SB16, port 220, DMA 1 |
-| Populous | 1989 | AdLib |
-| Lemmings | 1991 | AdLib nebo SB |
-
-```
-Sound Card : Sound Blaster  nebo  Ad Lib
-Port       : 220   IRQ: 5   DMA: 1
-FM Music   : OPL3 / AdLib   port 388 (automaticky)
-```
-
-> Tyrian vyžaduje EMS paměť — boot do profilu 2 (EMS/Games)
-
----
-
-### Kategorie 7 — 3dfx Voodoo2 hry
-**Mixer: dle kategorie zvuku výše**
-
-Voodoo2 používá Glide 2.x API. Vždy spouštěj Glide/3dfx verzi spustitelného
-souboru, ne softwarový renderer.
-
-| Hra | Rok | Spustitelný soubor | Zvuk |
-|---|---|---|---|
-| Quake | 1996 | GLQUAKE.EXE | SB16 |
-| Quake 2 | 1997 | QUAKE2.EXE (GL verze) | SB16 |
-| Tomb Raider 2 | 1997 | TOMBRAID.EXE (Glide) | SB16 |
-| Unreal | 1998 | UNREAL.EXE /glide | SB16 |
-| Turok Dinosaur Hunter | 1997 | TUROK.EXE (Glide) | SB16 |
-| Forsaken | 1998 | Glide verze | SB16 |
-| Incoming | 1998 | Glide verze | SB16 |
-| Carmageddon | 1997 | Glide verze | SB16 |
-| Need for Speed 2 SE | 1997 | Glide verze | SB16 |
-| Need for Speed 3 | 1998 | Glide verze | SB16 |
-| Interstate '76 | 1997 | Glide verze | SB16 GM |
-| Motorhead | 1998 | Glide verze | SB16 |
-| GLQuake / WinQuake | 1997 | GLQUAKE.EXE | SB16 |
-
-```bat
-REM Glide 2.x musí být v adresáři hry nebo v PATH
-REM (glide2x.ovl verze 2.53 nebo 2.54)
-
-REM Quake - GLQuake Voodoo2:
-GLQUAKE.EXE -width 640 -height 480 -bpp 16
-
-REM Quake 2:
-QUAKE2.EXE +set vid_ref gl
-
-REM Tomb Raider 2 — Glide verze se spouští přímo
-TOMBRAID.EXE
-```
-
----
-
-### Quick reference — co zapnout na mixeru
-
-| Hra / kategorie | CH1 AWE32 | CH2 PicoGUS | CH3 MT-32 | CH4 SC-55 | AWEUTIL před hrou |
-|---|---|---|---|---|---|
-| MT-32 hry | on (efekty) | off | **ON** | off | — |
-| GM/GS hry — SC-55 | on (efekty) | off | off | **ON** | — |
-| GUS hry (Doom, Duke3D) | on (efekty) | **ON** | off | off | — |
-| AWE32 nativní hry | **ON** (vše) | off | off | off | `/S` již v AUTOEXEC |
-| GM/GS — X16GS | on (efekty) | **ON** | off | off | — |
-| GM/GS — AWEUTIL /EM:GS | **ON** (vše) | off | off | off | `LH AWEUTIL /EM:GS` |
-| OPL3/AdLib only | **ON** (vše) | off | off | off | — |
-
-### Quick reference — MIDI port
-
-| Cílové zařízení | Port | Kdy použít |
-|---|---|---|
-| MT-32 (+ SC-55 za ním) | **330h** | MT-32 hry, GM hry se SC-55 |
-| X16GS přes PicoGUS | **300h** | GM/GS hry bez ext. modulů |
-| EMU8000 AWEUTIL emulace | **330h** | AWEUTIL /EM:GM, hry s AWE32 podporou |
-
-### Přepnutí SC-55 módu
-
-```bat
-REM GM mód (pro General MIDI hry):
-DOSMID /mpu=330 /preset=GM /nosound /dontstop
-
-REM GS mód (výchozí, pro GS hry — C&C, LucasArts):
-DOSMID /mpu=330 /preset=GS /nosound /dontstop
-```
-
-> MT-32 mód SC-55 se přepíná pouze fyzickým tlačítkem na přední straně.
-> MT-32 musí být první v MIDI chain — SC-55 přijímá data přes MT-32 THRU.
-
----
-
-## Environment Variables Reference
-
-```bat
-SET BLASTER=A220 I5 D1 H5 P330 E620 T6
-  A220  = SB16 base port 220h
-  I5    = IRQ 5
-  D1    = DMA 1 (8-bit)
-  H5    = DMA 5 (16-bit)
-  P330  = MPU-401 port 330h (MT-32 / SC-55 chain)
-  E620  = AWE32 EMU8000 port 620h
-  T6    = card type SB16/AWE
-
-SET ULTRASND=240,3,3,7,7
-  240   = GUS base port 240h
-  3,3   = DMA 3 (play and record - value repeated)
-  7,7   = IRQ 7 (play and record - value repeated)
-
-SET ULTRADIR=C:\DRIVERS\PICOGUS
-  root directory of GUS software and MIDI patches
-  must NOT point to the MIDI subfolder
-```
+| Mixer | Behringer XENYX QX1222USB | USB |
+| Headphones | Audio-Technica ATH-M50x | QX1222USB Phones jack |
+| Audio Interface | Focusrite Scarlett 16i16 4th Gen | USB (modern PC) |
 
 ---
 
@@ -1215,53 +105,1717 @@ SET ULTRADIR=C:\DRIVERS\PICOGUS
 
 ---
 
-## PicoGUS v2.0 Setup
+## AWE64 CT4380 → AWE32 CT3900 Upgrade Guide
 
-### Jumper Settings
+**System:** Rhino 15 / Pentium MMX / MS-DOS 6.22
+**Card being replaced:** Creative AWE64 CT4380
+**Card being installed:** Creative AWE32 CT3900
 
-| Jumper | Setting |
+---
+
+### What you are replacing and why
+
+| Feature | AWE64 CT4380 | AWE32 CT3900 |
+|---|---|---|
+| OPL3 FM | CQM emulation (fake) | **Real OPL3** (CT1747 w/ Yamaha license) |
+| CSP/ASP chip | Not supported | CT1748A included |
+| Waveblaster header | Not present | Present |
+| RAM expansion | Proprietary only | Standard 30-pin SIMM slots |
+| PnP | Yes (needs CTCM) | **Semi-PnP — simpler for DOS** |
+| Hanging notes bug | Not present | Not present (CT1747) |
+| EMU8000 synth | Yes, 512KB | Yes, 512KB |
+| Polyphony | 64 voices | 32 voices |
+
+The real OPL3 chip is the main reason for the upgrade — AdLib/FM games sound
+exactly as intended, not through CQM emulation which has a harsher, more
+metallic character.
+
+### What this adds to the system
+
+| Before CT3900 | After CT3900 |
 |---|---|
-| IRQ | **7** (single jumper on position 7) |
-| DMA | **3** (both jumpers marked "3" must be closed) |
-| IO port | no jumper — set via PGUSINIT.EXE |
+| OPL3 FM via CQM emulation — metallic, incorrect timbre | **Real Yamaha OPL3** — authentic AdLib/FM sound |
+| No waveblaster header | PicoGUS X16GS can be connected later |
+| PnP — requires CTCM.EXE at boot | Semi-PnP — UNISOUND handles everything |
+| Proprietary RAM expansion | Standard 30-pin SIMM slots — up to 28.5 MB |
 
-Available IRQ positions on card: 2, 3, 4, 5, 7
-Available DMA positions on card: 1 and 3
+---
 
-### GUS Software Installation
+### Before you start
 
-Download GUS v4.11 software from: https://picog.us/ultrasnd.zip
-Extract contents to C:\DRIVERS\PICOGUS\
-MIDI patches will be in C:\DRIVERS\PICOGUS\MIDI\
-Place PGUSINIT.EXE in C:\DRIVERS\PICOGUS\
+- Back up CONFIG.SYS and AUTOEXEC.BAT to a floppy
+- Note current AWE64 jumper settings for reference
+- Prepare a grounded workspace (antistatic mat or wrist strap)
+- Have a Phillips screwdriver ready
+- No software downloads required — UNISOUND handles CT3900 automatically
 
-### PGUSINIT.EXE Parameters Used
+---
+
+### Step 1 — Set CT3900 jumpers
+
+Set all jumpers before inserting the card into the PC.
+
+**Audio I/O Address:**
+```
+JP17=Closed, JP18=Closed  →  port 220h
+```
+
+**MPU-401:**
+```
+JP15=Closed  →  MPU-401 enabled
+JP16=Closed  →  port 330h
+```
+
+**Joystick / Gameport:**
+```
+JP14=Closed  →  enabled  (gameport carries MIDI OUT to MT-32/SC-55 chain)
+```
+
+**IDE port — must be DISABLED (conflicts with motherboard IDE):**
+```
+JP2=Closed, JP3=Closed  →  IDE Disabled
+```
+
+**IDE IRQ — irrelevant when IDE is disabled, leave at default:**
+```
+JP6=Closed  →  IRQ 11  (harmless when IDE is disabled)
+```
+
+**CSP/ASP chip (CT1748A):**
+```
+If CT1748A chip is present:  APSD=Open,   IFSD=Open   →  Enabled
+If CT1748A chip is absent:   APSD=Closed, IFSD=Closed →  Disabled
+```
+
+**DRAM — SIMM slots:**
+```
+Without SIMMs:  JP2 Pins 2&3 closed  →  Memory upgrade disabled
+With SIMMs:     JP2 Pins 1&2 closed  →  Memory upgrade enabled
+```
+
+### CT3900 — Semi-PnP Configuration
+
+CT3900 is a **semi-PnP** card — I/O address and MPU-401 are set by jumpers,
+IRQ and DMA are set by software from the BLASTER environment variable:
+
+| Parameter | Method |
+|---|---|
+| I/O address (220/240/260/280h) | **Jumper** (IOS0, IOS1) |
+| MPU-401 address (300/330h) | **Jumper** (MSEL) |
+| **IRQ** | **Software** — UNISOUND reads BLASTER at boot |
+| **Low DMA (8-bit)** | **Software** — UNISOUND reads BLASTER at boot |
+| **High DMA (16-bit)** | **Software** — UNISOUND reads BLASTER at boot |
+
+Available software-configurable values:
+```
+IRQ:      2, 5, 7, 10
+Low DMA:  0, 1, 3
+High DMA: 5, 6, 7
+```
+
+If a conflict occurs later, update BLASTER in AUTOEXEC.BAT — UNISOUND
+reprograms the card on next boot. No jumper changes needed.
+
+---
+
+### Step 2 — Install SIMMs
+
+CT3900 has two 30-pin SIMM slots. Both slots must always be populated
+simultaneously — they form one bank. Always use identical modules in both slots.
+
+**Required spec:** 30-pin SIMM, FPM (Fast Page Mode), 80ns or faster, 5V
+
+**SoundFont format in DOS:** use .SBK (EMU8000 native). Modern .SF2 requires
+conversion. Maximum usable SoundFont size: 28 MB (EMU8000 bus limit,
+regardless of how much RAM is installed).
+
+#### Phase 1 — Initial bring-up (now, modules already owned)
+
+**Modules:** 2× Samsung KM41C1000CJ-6 (1MB, 60ns, 30-pin FPM)
+**Result:** 2.5 MB total — card functional, AWEUTIL /S works
+
+1. Power off PC, unplug power cable
+2. Insert 2× Samsung KM41C1000CJ-6 into both SIMM slots
+   (both slots must be populated — one slot alone will not work)
+3. Set jumper JP2 **pins 1&2 closed** — memory upgrade enabled
+4. Proceed to Step 3 (physical card installation)
+
+**Unlocks:** basic AWE32 hardware init, EMU8000 responds to AWEUTIL /S,
+reverb and chorus effects via CT1747 chip.
+AWEUTIL /EM:* emulation modes require more RAM — available in Phase 2.
+
+#### Phase 2 — eBay modules arriving
+
+**Modules:** 2× 4MB 30-pin FPM (60ns or 70ns, parity or non-parity both OK)
+**Result:** 8.5 MB total
+**When:** when eBay order arrives
+
+1. Power off PC, unplug power cable
+2. Remove both Phase 1 SIMMs simultaneously
+3. Insert 2× 4MB modules into both slots
+4. Jumper JP2 pins 1&2 stays closed — no change needed
+5. Boot and verify with `MEM /C` — Extended memory should show ~8 MB
+
+**Unlocks:**
+- `AWEUTIL /EM:GM` — General MIDI emulation (Synthgm.sbk)
+- `AWEUTIL /EM:GS` — Roland GS emulation (Synthgs.sbk)
+- `AWEUTIL /EM:MT32` — MT-32 software emulation (Synthmt.sbk)
+- Larger .SBK soundfonts loadable via `AWEUTIL /SF:`
+
+> Note: AWEUTIL /EM:* still conflicts with SoftMPU — use profile NOSOFTMPU.
+> X16GS (PicoGUS) remains the better option for GM/GS once PicoGUS arrives.
+
+#### Phase 3 — USA modules arriving (maximum)
+
+**Modules:** 2× 16MB 30-pin FPM, 70ns, Parity
+**Result:** 28.5 MB total
+**When:** when USA order arrives (several months)
+
+1. Power off PC, unplug power cable
+2. Remove both Phase 2 SIMMs simultaneously
+3. Insert 2× 16MB modules into both slots
+4. Jumper JP2 pins 1&2 stays closed — no change needed
+5. Boot and verify with `MEM /C` — Extended memory should show ~28 MB
+
+**Unlocks:** maximum SoundFont capacity — up to 28 MB .SBK files.
+No other behavioral difference vs Phase 2 for typical gaming.
+
+#### SIMM rules summary
+
+| Rule | Detail |
+|---|---|
+| Both slots always | One slot alone will not work — populate both simultaneously |
+| Identical modules | Both SIMMs in a pair must be identical — same chip, same speed |
+| JP2 pins 1&2 closed | Required for all three phases — do not change between phases |
+| JP2 pins 2&3 closed | Factory default without SIMMs — only if removing all SIMMs |
+| Speed | 80ns or faster (60ns or 70ns preferred) |
+| Type | 30-pin FPM — not EDO, not 72-pin |
+
+---
+
+### Step 3 — Physical installation
+
+1. Power off PC, unplug power cable
+2. Remove AWE64 CT4380 from ISA slot
+3. Insert CT3900 into the same ISA slot
+   (SIMMs already installed in Step 2 — check clearance to adjacent slot)
+4. Secure bracket screw
+5. Connect MT-32/SC-55 MIDI chain to CT3900 gameport
+   (same cable as before — gameport position is identical)
+6. Power on
+
+---
+
+### Step 4 — First boot verification
+
+No driver changes are needed. UNISOUND initializes CT3900 automatically
+using the existing BLASTER variable.
+
+At the DOS prompt after boot:
+
+```bat
+REM 1. Confirm BLASTER variable is set correctly:
+SET BLASTER
+
+REM Expected output:
+REM   BLASTER=A220 I5 D1 H5 P330 E620 T6
+
+REM 2. Check memory — UNISOUND should show no footprint:
+MEM /C | MORE
+
+REM 3. Quick OPL3 test — run any AdLib/FM game and listen
+REM    Real OPL3 sounds warmer and more accurate than CQM
+
+REM 4. Quick MIDI test — run a MT-32 game, check music plays
+REM    through MT-32 via gameport on port 330h
+```
+
+If boot shows `DIGN9003` error or UNISOUND fails:
+- Verify BLASTER variable is set in AUTOEXEC.BAT
+- Verify `/E:1024` is set on the SHELL= line in CONFIG.SYS
+- Verify jumpers JP17+JP18 are closed (port 220h must match A220 in BLASTER)
+
+---
+
+### Software changes after swap
+
+**None required.** The BLASTER variable and all drivers remain identical:
+
+```bat
+SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+```
+
+UNISOUND.COM replaces CTCM.EXE — CT3900 is initialized automatically at boot.
+IRQ 5, DMA 1/5 are the card defaults and match this system perfectly.
+
+---
+
+### Post-Installation Checklist
+
+#### Phase 1 — Initial installation (CT3900 + 2× 1MB Samsung)
+
+- [ ] Jumper JP17+JP18 closed — I/O port 220h
+- [ ] Jumper JP15+JP16 closed — MPU-401 enabled on 330h
+- [ ] Jumper JP14 closed — gameport/joystick enabled
+- [ ] Jumpers JP2+JP3 closed — IDE port disabled
+- [ ] 2× Samsung KM41C1000CJ-6 installed — both slots, identical modules
+- [ ] Jumper JP2 pins 1&2 closed — SIMM enabled
+- [ ] CT3900 in ISA slot, bracket screw secured
+- [ ] MT-32/SC-55 MIDI cable connected to CT3900 gameport
+- [ ] First boot: no error messages, UNISOUND output visible
+- [ ] `SET BLASTER` shows `A220 I5 D1 H5 P330 E620 T6`
+- [ ] `MEM /C` shows Extended ~2 MB
+- [ ] AdLib/FM game plays with correct OPL3 sound (warmer than AWE64 CQM)
+- [ ] MT-32 game plays music correctly on port 330h
+
+#### Phase 2 — SIMM swap to 2× 4MB (when eBay modules arrive)
+
+- [ ] Power off, unplug power cable
+- [ ] Remove both 1MB SIMMs simultaneously
+- [ ] Insert 2× 4MB 30-pin FPM modules — both slots, identical modules
+- [ ] JP2 pins 1&2 stays closed — no jumper change needed
+- [ ] Boot and verify: `MEM /C` shows Extended ~8 MB
+- [ ] Test: `LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS` loads without error
+  (profile NOSOFTMPU required — SoftMPU must not be active)
+- [ ] Unload: `C:\DRIVERS\SB16\AWEUTIL.COM /U`
+
+#### Phase 3 — SIMM swap to 2× 16MB (when USA modules arrive)
+
+- [ ] Power off, unplug power cable
+- [ ] Remove both 4MB SIMMs simultaneously
+- [ ] Insert 2× 16MB 30-pin FPM 70ns Parity modules — both slots, identical
+- [ ] JP2 pins 1&2 stays closed — no jumper change needed
+- [ ] Boot and verify: `MEM /C` shows Extended ~28 MB
+- [ ] Test: load a large .SBK soundfont via `AWEUTIL /SF:fontname.sbk`
+
+---
+
+## PicoGUS v2.0 + DreamBlaster X16GS — Installation Guide
+
+**System:** Rhino 15 / Pentium MMX / AWE32 CT3900 already installed / MS-DOS 6.22
+**Card being installed:** PicoGUS v2.0 + DreamBlaster X16GS daughterboard
+**Target slot:** free ISA slot (AWE32 in adjacent slot)
+
+---
+
+### What you are installing
+
+**PicoGUS v2.0** is an ISA card based on a Raspberry Pi Pico microcontroller
+that emulates a Gravis UltraSound (GUS) and provides a second MPU-401 MIDI
+interface independent of the AWE32.
+
+**DreamBlaster X16GS** is a wavetable daughterboard that plugs into the
+PicoGUS waveblaster header. It contains a Dream SAM5000 chip with preloaded
+Roland-licensed GS banks — effectively a standalone SC-55 replacement that
+requires no external power or MIDI cable.
+
+X16GS audio routes internally through PicoGUS and comes out via the PicoGUS
+line out — one stereo cable to QX1222USB CH 9+10 is all that is needed.
+
+### What this adds to the system
+
+| Before PicoGUS | After PicoGUS |
+|---|---|
+| GM/GS games require SC-55 or AWEUTIL /EM (conflicts with SoftMPU) | X16GS on port 300h — GM/GS with no SoftMPU conflict |
+| GUS games (Doom, Duke3D) use SB music only | Native Gravis UltraSound music, superior quality |
+| AWEUTIL /EM:GS wastes ~26 KB UMB | X16GS uses 0 KB extra memory |
+| AWEUTIL /EM:GS does not work with DOS extenders | X16GS works with all games regardless of memory model |
+
+---
+
+### Why these resource values
+
+| Resource | Value | Reason |
+|---|---|---|
+| IRQ 7 | PicoGUS | LPT1 disabled in BIOS — frees IRQ 7 |
+| DMA 3 | PicoGUS | DMA 1 taken by AWE32 8-bit, DMA 3 is free |
+| Port 240h | GUS base | 220h taken by AWE32 SB16 |
+| Port 300h | MPU-401 | 330h taken by AWE32 MPU-401 (MT-32/SC-55 chain) |
+
+---
+
+### Before you start
+
+- **AWE32 CT3900 must already be installed and working** — SoftMPU active,
+  UNISOUND running, games working. PicoGUS adds on top of AWE32, it does not
+  replace it.
+- **LPT1 must be disabled in BIOS** before inserting PicoGUS — if you have
+  not done this yet, do it before powering on with the card installed.
+  Without this, IRQ 7 is claimed by LPT1 and PicoGUS will not initialize.
+- **Prepare software in advance** — download the files below to the DOS PC
+  via FTP from your modern PC before installing the card. You will need them
+  immediately after first boot.
+- Grounded workspace (antistatic mat or wrist strap).
+- Phillips screwdriver.
+
+### Software to download before installing
+
+| File | Source | Destination on DOS PC |
+|---|---|---|
+| `ultrasnd.zip` — GUS v4.11 patch set | https://picog.us/ultrasnd.zip | `C:\DRIVERS\PICOGUS\` |
+| `PGUSINIT.EXE` — latest release | https://github.com/polpo/picogus/releases | `C:\DRIVERS\PICOGUS\` |
+| `DOSMID.EXE` + `DOSMID.CFG` | already in `C:\DRIVERS\PICOGUS\` | already present |
+| `Slot1.mid` … `Slot7.mid`, `Next.mid`, `Previous.mid` | already in `C:\DRIVERS\PICOGUS\` | already present |
+
+Transfer via FTP or copy to a floppy / CD-R before starting.
+
+---
+
+### Step 1 — BIOS settings
+
+Enter BIOS setup at boot (DEL key on this system).
+
+#### Integrated Peripherals
 
 ```
-PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+Parallel Port (LPT1) :  Disabled    ← CRITICAL
 ```
 
-| Parameter | Meaning |
-|---|---|
-| /mode gus | Gravis UltraSound emulation |
-| /mpuport 300 | MPU-401 on 300h (must differ from AWE32 on 330h) |
-| /v 95 | DreamBlaster X16GS wavetable volume (0-100) |
+Without this change IRQ 7 is still used by LPT1 and PGUSINIT will fail.
 
-> /save omitted — use only when you want to save settings to PicoGUS flash.
-> Run PGUSINIT /? for options of current mode.
-> Run PGUSINIT /?? for all modes.
+#### PnP/PCI Configuration
+
+Verify these are already set (they should be from AWE32 setup):
+
+```
+IRQ 7  :  Legacy ISA   ← must be Legacy ISA, not PnP
+DMA 3  :  Legacy ISA   ← must be Legacy ISA, not PnP
+```
+
+Save and exit BIOS. Power off completely before proceeding.
+
+---
+
+### Step 2 — Install DreamBlaster X16GS onto PicoGUS
+
+Do this before inserting PicoGUS into the PC.
+
+The X16GS plugs into the **waveblaster header** on PicoGUS — a double-row
+pin header typically labeled "WAVE" or "DB" near the top edge of the card.
+
+1. Locate pin 1 on the PicoGUS waveblaster header (marked with a dot,
+   triangle, or "1" printed on PCB)
+2. Orient X16GS so its pin 1 matches the header pin 1
+3. Press firmly and evenly — all pins must seat fully
+4. The X16GS should sit flat and parallel to the PicoGUS PCB
+
+The X16GS draws power directly from the header — no separate power cable.
+
+---
+
+### Step 3 — Set PicoGUS jumpers
+
+PicoGUS v2.0 has two jumper banks on the card edge.
+
+#### IRQ jumper bank
+
+Positions available: 2, 3, 4, 5, 7
+
+```
+Place single jumper on position:  7
+```
+
+#### DMA jumper bank
+
+Positions available: 1 and 3. DMA requires **two jumpers**, both must be set.
+
+```
+Close BOTH jumpers on position:  3
+```
+
+#### IO port
+
+No jumper needed — set via PGUSINIT.EXE at boot.
+
+---
+
+### Step 4 — Physical installation
+
+1. PC is powered off and unplugged
+2. Choose a free ISA slot — not the one occupied by AWE32
+3. Insert PicoGUS firmly and evenly into the ISA slot
+   (X16GS is already mounted, it sits above the card — check clearance
+   to adjacent slot bracket before pressing down)
+4. Secure the bracket screw
+5. Connect PicoGUS line out → QX1222USB **CH 9+10** (stereo 3.5mm or RCA,
+   depending on PicoGUS output connector)
+6. Do not power on yet
+
+---
+
+### Step 5 — Verify directory structure
+
+Before booting, confirm these files exist on the DOS drive:
+
+```
+C:\DRIVERS\PICOGUS\
+  PGUSINIT.EXE          ← from github.com/polpo/picogus/releases
+  DOSMID.EXE
+  DOSMID.CFG
+  Slot1.mid
+  Slot2.mid
+  Slot3.mid
+  Slot4.mid
+  Slot5.mid
+  Next.mid
+  Previous.mid
+  MIDI\                 ← extracted from ultrasnd.zip
+    MIDI.CFG
+    ACPIANO.PAT
+    ... (all .PAT patch files)
+```
+
+> ULTRADIR must point to `C:\DRIVERS\PICOGUS` root — NOT to the MIDI
+> subfolder. PGUSINIT reads MIDI.CFG from `MIDI\` automatically when
+> ULTRADIR is set to the parent directory.
+
+---
+
+### Step 6 — First boot test
+
+Power on. The PicoGUS lines in AUTOEXEC.BAT are still commented out — that
+is intentional. Test manually first.
+
+At the DOS prompt:
+
+```bat
+REM 1. Set environment variables temporarily for this session only:
+SET ULTRASND=240,3,3,7,7
+SET ULTRADIR=C:\DRIVERS\PICOGUS
+
+REM 2. Initialize PicoGUS:
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+
+REM Expected output:
+REM   PicoGUS v2.x -- GUS mode
+REM   GUS port: 240h  IRQ: 7  DMA: 3
+REM   MPU-401: 300h
+REM   Wavetable volume: 95
+
+REM 3. Check for conflicts (should show no overlap with AWE32):
+MEM /C | MORE
+
+REM 4. Quick X16GS test via DOSMID:
+C:\DRIVERS\PICOGUS\DOSMID.EXE /mpu=300 /preset=GS C:\DRIVERS\PICOGUS\Slot1.mid
+
+REM 5. Quick GUS test — run Doom and check music in setup:
+REM    SETUP.EXE -> Music: Gravis UltraSound (should auto-detect via ULTRASND)
+```
+
+**If PGUSINIT fails or hangs:**
+
+Check in order:
+
+1. Is IRQ 7 set to Legacy ISA in BIOS PnP/PCI Configuration?
+2. Is LPT1 disabled in BIOS Integrated Peripherals?
+3. Is DMA 3 set to Legacy ISA in BIOS?
+4. Are both DMA jumpers closed on position 3 (not position 1)?
+5. Is the IRQ jumper on position 7 (not another position)?
+6. Is the card fully seated in the ISA slot (no partial insertion)?
+7. Does any other device use IRQ 7 or DMA 3? Run `MSD.EXE` to check.
+
+---
+
+### Step 7 — Enable in AUTOEXEC.BAT
+
+Once the manual test passes, uncomment three lines in AUTOEXEC.BAT.
+The lines are already prepared in all profiles (NOSOFTMPU, NORMAL, EMS).
+
+Open AUTOEXEC.BAT and remove the `REM` from these three lines in each
+profile that you use:
+
+```bat
+REM Remove REM from these three lines (in NOSOFTMPU, NORMAL, and EMS sections):
+
+SET ULTRASND=240,3,3,7,7
+SET ULTRADIR=C:\DRIVERS\PICOGUS
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+```
+
+The ULTRASND and ULTRADIR lines are in the [COMMON] section at the top
+of AUTOEXEC — uncomment them once. The PGUSINIT line is in each profile
+section separately.
+
+Reboot and confirm PGUSINIT output appears during boot sequence.
+
+---
+
+### Step 8 — Save settings to PicoGUS flash (optional)
+
+After confirming everything works across a full reboot:
+
+```bat
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95 /save
+```
+
+This writes the settings to the Pico's flash memory so they survive power
+loss. After `/save` is used once, PGUSINIT at boot still reinitializes the
+card state — `/save` just makes the card remember its mode if PGUSINIT is
+not run.
+
+> Use `/save` only once during initial setup. Do not run it repeatedly —
+> flash has a finite write cycle count.
+
+---
+
+### PGUSINIT.EXE — Full Parameter Reference
+
+```
+PGUSINIT.EXE /mode gus /mpuport 300 /v 95 [/save]
+
+/mode gus      GUS emulation mode — use this for all DOS gaming
+               Other modes exist (sb, adlib, mpu, usb) but are not
+               needed here as AWE32 handles SB16/OPL3 on port 220h/330h
+
+/mpuport 300   MPU-401 on port 300h
+               MUST differ from AWE32 MPU-401 on 330h
+               X16GS bank switching and MIDI output use this port
+
+/v 95          DreamBlaster X16GS output volume (0–100)
+               95 is a good default balanced against AWE32 on QX1222USB
+               Adjust if X16GS is too loud or too quiet relative to AWE32
+
+/save          Save settings to PicoGUS flash — use only once at setup
+
+PGUSINIT /?    Help for current mode
+PGUSINIT /??   Help for all modes
+```
+
+---
 
 ### PicoGUS Emulation Modes
 
-| Mode | GUS | SB | OPL2 | MPU-401 | CD-ROM | Serial mouse |
-|---|---|---|---|---|---|---|
-| **gus** | Yes | No | No | Yes | No | No |
-| sb | No | Yes | Yes | Yes | Yes | No |
-| adlib | No | No | Yes | Yes | No | Yes |
-| mpu | No | No | No | Yes (IRQ) | No | No |
-| usb | No | No | No | Yes | Yes | Yes |
+| Mode | GUS | SB | OPL2 | MPU-401 | Notes |
+|---|---|---|---|---|---|
+| **gus** | Yes | No | No | Yes | **Use this** — AWE32 handles SB/OPL |
+| sb | No | Yes | Yes | Yes | SB replacement — not needed here |
+| adlib | No | No | Yes | Yes | AdLib replacement — not needed here |
+| mpu | No | No | No | Yes (IRQ) | MIDI-only mode |
+| usb | No | No | No | Yes | USB-MIDI bridge |
 
-Note: PicoGUS CD-ROM emulation is NOT used — physical Samsung drive is used.
+CD-ROM emulation in `sb` mode is not used — physical Samsung drive is used.
+
+---
+
+### DreamBlaster X16GS — Soundbanks and Bank Switching
+
+#### Preloaded Banks
+
+| Bank | Content | Best for |
+|---|---|---|
+| **1** | Dream/Roland GS (licensed ROM) | **Default** — GM/GS games, SC-55 substitute |
+| 2 | Dream CleanWave | General purpose GM |
+| 3 | Buran Bank | Alternative character |
+| 4 | OPL3-FM GM | Retro FM feel via wavetable |
+| 5 | GXSCC Chiptune | 8-bit / NES/SNES style |
+
+Bank 1 is active on power-up and is the best choice for DOS gaming.
+
+#### Bank switching commands
+
+Bank is selected by sending a MIDI file through the X16GS MPU-401 on port 300h.
+DOSMID.CFG defaults are already set: `/mpu=300 /preset=GS /dontstop`.
+
+```bat
+DOSMID Slot1.mid      Bank 1: Roland GS  (default — use for all GM/GS games)
+DOSMID Slot2.mid      Bank 2: CleanWave
+DOSMID Slot3.mid      Bank 3: Buran
+DOSMID Slot4.mid      Bank 4: OPL3-FM character
+DOSMID Slot5.mid      Bank 5: Chiptune
+DOSMID Next.mid       Step to next bank
+DOSMID Previous.mid   Step to previous bank
+```
+
+#### Switch X16GS response mode
+
+```bat
+REM GS mode (default — best for most GM/GS games, C&C, LucasArts):
+DOSMID /mpu=300 /preset=GS /nosound /dontstop
+
+REM GM mode (for older GM-only games):
+DOSMID /mpu=300 /preset=GM /nosound /dontstop
+```
+
+---
+
+### Game Setup — Key Configurations
+
+#### GUS games (Doom, Duke3D, Heretic, Hexen…)
+
+GUS is auto-detected via the ULTRASND environment variable in most games.
+
+```bat
+REM Doom / Doom 2 / Heretic / Hexen / Strife:
+Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
+Music         : Gravis UltraSound   (select in SETUP, auto-detected)
+
+REM Duke Nukem 3D / Shadow Warrior / Blood (SETUP.EXE):
+Sound Card    : Sound Blaster 16
+  Port 220  IRQ 5  DMA 1  DMA16 5
+Music Card    : Gravis UltraSound
+  Port 240  IRQ 7  DMA 3
+
+REM Rise of the Triad / Terminal Velocity:
+Sound Effects : SB  port 220  IRQ 5  DMA 1
+Music         : Gravis UltraSound  port 240  IRQ 7  DMA 3
+```
+
+QX1222USB: **CH 9+10 (PicoGUS) UP** + CH 11+12 (AWE32) up for effects.
+
+#### GM/GS games via X16GS (no SC-55 needed)
+
+```bat
+REM Switch to Bank 1 (Roland GS) first:
+DOSMID Slot1.mid
+
+REM In game setup:
+Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
+Music         : General MIDI
+MIDI port     : 300
+```
+
+QX1222USB: **CH 9+10 (PicoGUS/X16GS) UP** + CH 11+12 (AWE32) for effects.
+
+#### MT-32 games (unchanged — PicoGUS does not affect this)
+
+SoftMPU + AWE32 MPU-401 on 330h continues to handle MT-32 games exactly
+as before. PicoGUS on port 300h does not interfere.
+
+```bat
+Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
+Music         : Roland MT-32
+MIDI port     : 330
+```
+
+QX1222USB: **CH 3+4 (MT-32) UP** + CH 11+12 (AWE32) up for effects.
+
+---
+
+### X16GS vs AWEUTIL /EM:GS — Comparison
+
+Before PicoGUS arrives, AWEUTIL /EM:GS was the only GM/GS option without
+a physical SC-55. After PicoGUS is installed, X16GS is the preferred route.
+
+| | X16GS (port 300h) | AWEUTIL /EM:GS (port 330h) |
+|---|---|---|
+| Sound quality | Very good (licensed Roland GS ROM) | Good (EMU8000 + Synthgs.sbk) |
+| Extra memory | **0 KB** | ~26 KB UMB |
+| Works with DOS extenders | **Yes** (DOS4GW, Doom, Quake) | No |
+| SoftMPU conflict | **None** | Conflicts — need profile NOSOFTMPU |
+| Preparation | `DOSMID Slot1.mid` (once) | `LH AWEUTIL.COM /EM:GS` before game |
+| After game | Nothing | `AWEUTIL.COM /U` to unload |
+| Requires PicoGUS | Yes | No |
+
+**Practical rule after PicoGUS installation:**
+Use X16GS for all GM/GS games. AWEUTIL /EM:GS is now only useful when
+PicoGUS is not available or for testing.
+
+---
+
+### Coexistence with AWE32 CT3900 — Full Resource Summary
+
+| | AWE32 CT3900 | PicoGUS v2.0 |
+|---|---|---|
+| ISA slot | slot A | slot B |
+| Base port | 220h (SB16) | 240h (GUS) |
+| IRQ | 5 | 7 |
+| DMA | 1 (8-bit) / 5 (16-bit) | 3 |
+| MPU-401 | 330h → MT-32 → SC-55 | 300h → X16GS |
+| Audio output | QX1222USB CH 11+12 | QX1222USB CH 9+10 |
+| Role | SB16 sound effects, real OPL3 FM, EMU8000 wavetable, AWE32 native | GUS music, X16GS GM/GS synth |
+
+No IRQ, DMA, or port conflicts. Both cards operate fully independently.
+
+---
+
+### Firmware Update (if needed in the future)
+
+PicoGUS firmware is flashed via USB from the modern PC.
+
+1. Hold the **BOOTSEL** button on the Raspberry Pi Pico while connecting
+   USB to the modern PC
+2. The Pico appears as a USB mass storage drive (like a USB flash drive)
+3. Drag `picogus.uf2` onto the drive
+4. The Pico reboots automatically — eject drive first if OS prompts
+
+**Firmware download:** https://github.com/polpo/picogus/releases
+
+Use `picogus.uf2` — the unified all-modes firmware.
+Do not use `pg-ne2k.uf2` (WiFi variant, v1.x only — not for v2.0).
+
+After firmware update, run PGUSINIT again or use `/save` version to
+re-initialize the card on the DOS PC.
+
+---
+
+### Post-Installation Checklist
+
+- [ ] LPT1 disabled in BIOS Integrated Peripherals
+- [ ] IRQ 7 = Legacy ISA in BIOS PnP/PCI Configuration
+- [ ] DMA 3 = Legacy ISA in BIOS PnP/PCI Configuration
+- [ ] X16GS firmly seated on PicoGUS waveblaster header (pin 1 aligned)
+- [ ] PicoGUS in ISA slot, bracket screw secured
+- [ ] PicoGUS line out connected to QX1222USB CH 9+10
+- [ ] `C:\DRIVERS\PICOGUS\` contains PGUSINIT.EXE, DOSMID.EXE, MIDI\ subdirectory
+- [ ] Manual test: `PGUSINIT /mode gus /mpuport 300 /v 95` prints GUS port 240 IRQ 7 DMA 3
+- [ ] Manual test: `DOSMID Slot1.mid` plays through headphones on CH 9+10
+- [ ] Manual test: Doom plays GUS music (not SB music)
+- [ ] AUTOEXEC.BAT: ULTRASND, ULTRADIR, PGUSINIT lines uncommented in all profiles
+- [ ] Reboot test: PGUSINIT message visible in boot sequence
+- [ ] Optional: `/save` run once to persist settings to flash
+
+
+---
+
+## Audio Routing — Behringer QX1222USB
+
+### Channel Assignment
+
+| QX1222USB Channel | Source | Signal |
+|---|---|---|
+| CH 1 (MONO) | — | empty |
+| CH 2 (MONO) | — | empty |
+| CH 3 (MONO) | MT-32 Left | PAN fully left |
+| CH 4 (MONO) | MT-32 Right | PAN fully right |
+| CH 5+6 (STEREO) | Roland SC-55 | stereo |
+| CH 7+8 (STEREO) | — | reserved — second PC (Windows XP) |
+| CH 9+10 (STEREO) | PicoGUS | GUS music + X16GS synth |
+| CH 11+12 (STEREO) | AWE32 CT3900 | SB16 sound effects + real OPL3 FM |
+| PHONES | Audio-Technica ATH-M50x | headphone monitoring |
+| MAIN OUT (XLR) | → Focusrite Scarlett 16i16 | → modern PC + studio monitors |
+
+### Signal Flow
+
+```
+MT-32 L ──────────────────────► CH 3 (PAN left)  ─┐
+MT-32 R ──────────────────────► CH 4 (PAN right) ─┤
+SC-55 stereo ─────────────────► CH 5+6            ─┤
+PicoGUS stereo ───────────────► CH 9+10           ─┤──► MAIN MIX ──► MAIN OUT (XLR)
+AWE32 stereo ─────────────────► CH 11+12          ─┤         │
+(second PC) ──────────────────► CH 7+8            ─┘         │
+                                                              │
+                                               ATH-M50x ◄── PHONES
+                                                              │
+                                    Focusrite 16i16 ◄── MAIN OUT
+                                    (studio monitors + recording)
+```
+
+### MIDI Hardware Chain
+
+```
+AWE32 gameport MIDI OUT (port 330h)
+        │
+        ▼
+    MT-32 MIDI IN
+    MT-32 MIDI THRU
+        │
+        ▼
+    SC-55 MIDI IN
+```
+
+### Mixer Operation — which faders to raise
+
+The QX1222USB has no mute buttons on stereo channels — use the faders.
+AWE32 (CH11+12) is almost always up for sound effects.
+Adjust the music source channel depending on the game.
+
+| Game type | CH 3+4 MT-32 | CH 5+6 SC-55 | CH 9+10 PicoGUS | CH 11+12 AWE32 |
+|---|---|---|---|---|
+| MT-32 games | **UP** | down | down | up (effects) |
+| GM/GS games — SC-55 | down | **UP** | down | up (effects) |
+| GUS games | down | down | **UP** | up (effects) |
+| AWE32 native games | down | down | down | **UP** (all) |
+| GM/GS — X16GS (PicoGUS) | down | down | **UP** | up (effects) |
+| OPL3/AdLib only | down | down | down | **UP** (all) |
+
+---
+
+## Sound Device Reference
+
+| Device | Port | IRQ | DMA | Type |
+|---|---|---|---|---|
+| AWE32 SB16 | 220h | 5 | 1 / 5 | Sound effects, real OPL3 |
+| AWE32 MPU-401 | 330h | 5 | — | MIDI out → MT-32 → SC-55 |
+| PicoGUS GUS | 240h | 7 | 3 | GUS music |
+| PicoGUS MPU-401 | 300h | 7 | — | MIDI → X16GS internal synth |
+
+---
+
+## CONFIG.SYS
+
+```
+;===========================================
+; CONFIG.SYS - Boot menu
+; Rhino 15 / Pentium MMX / AWE32 CT3900 / Voodoo2 / ATI MACH64
+; MS-DOS 6.22
+;===========================================
+
+; Boot menu - displayed at startup with 10 second countdown
+[MENU]
+MENUITEM=NOSOFTMPU, No SoftMPU          - NOEMS 607KB (AWEUTIL /EM)
+MENUITEM=NOSOFTEMU, No SoftMPU EMS      - RAM   595KB (AWEUTIL /EM + extenders)
+MENUITEM=NORMAL,    SoftMPU             - NOEMS 607KB (SoftMPU, MT-32)
+MENUITEM=EMS,       SoftMPU EMS         - RAM   595KB (SoftMPU + extenders)
+MENUITEM=BARE,      Bare DOS            - no drivers
+; Default profile if no key is pressed within timeout
+MENUDEFAULT=NOSOFTMPU,10
+; Menu colors: text color 11 (bright cyan), background 1 (blue)
+;MENUCOLOR=11,1
+
+; -----------------------------------------------
+; Common settings loaded for ALL profiles
+; -----------------------------------------------
+[COMMON]
+
+; 1) HIMEM.SYS - XMS memory manager, must always be first
+;    /TESTMEM:OFF = skip memory test on boot (saves ~30 seconds on 256MB)
+DEVICE=C:\DOS\HIMEM.SYS /TESTMEM:OFF
+
+; 2) Load DOS into HMA (High Memory Area) and enable UMB
+;    Must come before EMM386
+DOS=HIGH,UMB
+
+; 3) Larger environment block - prevents DIGN9003 error from AWE32
+;    /E:1024 = 1024 bytes for SET variables
+SHELL=C:\COMMAND.COM C:\ /E:1024 /P
+
+; --- System settings ---
+; FILES=30  - max open file handles (NC + MSCDEX need ~25)
+FILES=30
+; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering)
+BUFFERS=4,0
+; LASTDRIVE=H - covers drives A,C,D,E,F,G + one spare
+LASTDRIVE=H
+; STACKS=9,256 - interrupt stack frames
+STACKS=9,256
+FCBS=1,0
+
+; -----------------------------------------------
+; Profile 1: NOSOFTMPU - NOEMS without SoftMPU (607KB conventional)
+; Use for: AWEUTIL /EM:GM/GS/MT32 emulation (conflicts with SoftMPU)
+;          GM/GS games via AWEUTIL without external MIDI modules
+; -----------------------------------------------
+[NOSOFTMPU]
+
+; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
+DEVICE=C:\DOS\EMM386.EXE NOEMS
+
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile 2: NOSOFTEMU - RAM + EMS without SoftMPU (595KB conventional)
+; Use for: AWEUTIL /EM + EMS memory
+;          Note: AWEUTIL /EM does not work with DOS extenders - prefer profile 1
+; -----------------------------------------------
+[NOSOFTEMU]
+
+DEVICE=C:\DOS\EMM386.EXE RAM
+
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile 3: NORMAL - NOEMS with SoftMPU (607KB conventional)
+; Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
+;          AWE32 native games, SC-55, X16GS
+; -----------------------------------------------
+[NORMAL]
+
+; EMM386 NOEMS = no EMS page frame
+; Frees 64KB of UMB compared to RAM mode
+; UNISOUND, CTMOUSE, SoftMPU do not require EMS
+; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
+DEVICE=C:\DOS\EMM386.EXE NOEMS
+
+; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
+; /X = disable write cache (safer for power loss)
+; 2048KB read cache, 512KB write cache
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile 4: EMS/GAMES - RAM with SoftMPU (595KB conventional)
+; Use for: DOS extender games (Tyrian, Magic Carpet), games requiring EMS
+; Note: 12KB less conventional memory than NORMAL due to EMS page frame
+; -----------------------------------------------
+[EMS]
+
+; EMM386 RAM = EMS + UMB both enabled
+; EMS page frame uses 64KB of UMB but allows DOS extenders to work
+DEVICE=C:\DOS\EMM386.EXE RAM
+
+; SmartDrive loaded first to claim largest free UMB block
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile 5: BARE DOS - minimal (diagnostics, installation)
+; No sound, no CD-ROM, no mouse - just basic DOS
+; -----------------------------------------------
+[BARE]
+
+; Minimal EMM386 for XMS access only
+DEVICE=C:\DOS\EMM386.EXE NOEMS
+```
+
+---
+
+## AUTOEXEC.BAT
+
+```bat
+@ECHO OFF
+PROMPT $P$G
+PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS;C:\DRIVERS\SB16
+
+REM --- Environment variables ---
+SET SYMANTEC=C:\SYMANTEC
+SET NU=C:\TOOLS\NU
+SET TEMP=C:\DOS\TMP
+SET TMP=C:\DOS\TMP
+SET TELIX=C:\TOOLS\TELIX
+
+REM --- AWE32 CT3900 settings ---
+REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
+REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
+REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
+REM Available values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
+SET SOUND=C:\DRIVERS\SB16
+SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+SET MIDI=SYNTH:1 MAP:E MODE:0
+
+REM --- PicoGUS / Gravis UltraSound settings (uncomment after card is installed) ---
+REM SET ULTRASND=240,3,3,7,7
+REM SET ULTRADIR=C:\DRIVERS\PICOGUS
+
+REM --- Route to profile-specific section ---
+GOTO %CONFIG%
+
+REM -----------------------------------------------
+REM Profile 1: NOSOFTMPU - NOEMS without SoftMPU
+REM Use for: AWEUTIL /EM:GM/GS/MT32 emulation without conflict
+REM -----------------------------------------------
+:NOSOFTMPU
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM SoftMPU NOT loaded - AWEUTIL /EM can run without conflict:
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32
+REM   C:\DRIVERS\SB16\AWEUTIL.COM /U
+REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile 2: NOSOFTEMU - EMS without SoftMPU
+REM Use for: AWEUTIL /EM + EMS memory
+REM Note: AWEUTIL /EM does not work with DOS extenders (DOS4GW)
+REM -----------------------------------------------
+:NOSOFTEMU
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM SoftMPU NOT loaded
+REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile 3: NORMAL - NOEMS with SoftMPU
+REM Use for: MT-32 games (Sierra, LucasArts), GUS, AWE32, SC-55, X16GS
+REM WARNING: AWEUTIL /EM:* cannot be combined with SoftMPU
+REM -----------------------------------------------
+:NORMAL
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
+REM Initializes: IRQ, DMA, I/O ports, OPL3, mixer
+REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90 (real OPL3 CT1747)
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+
+REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
+REM /S = hardware init only, 0KB memory
+REM WARNING: AWEUTIL /EM:* conflicts with SoftMPU - use profile 1 (NOSOFTMPU)
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+
+REM --- SoftMPU - intelligent mode MPU-401 emulation for MT-32 games ---
+REM Required for: Monkey Island 1, Sierra games, Ultima Underworld
+REM AWE32 supports UART mode only - SoftMPU adds intelligent mode
+REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+
+REM --- PicoGUS (uncomment after card is installed) ---
+REM /mode gus    = Gravis UltraSound emulation
+REM /mpuport 300 = MPU-401 on 300h (AWE32 uses 330h - must not conflict)
+REM /v 95        = DreamBlaster X16GS wavetable volume (0-100)
+REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+
+REM --- CD-ROM ---
+REM /M:10 = 10 sector lookahead cache in extended memory
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+REM /R2 = horizontal resolution 2 (movement sensitivity)
+REM COM port is auto-detected by CTMOUSE
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile 4: EMS/GAMES - RAM with SoftMPU
+REM Use for: DOS extender games (Tyrian, Magic Carpet), EMS memory
+REM WARNING: AWEUTIL /EM:* does not work with DOS extenders or SoftMPU
+REM -----------------------------------------------
+:EMS
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile 5: BARE DOS
+REM -----------------------------------------------
+:BARE
+GOTO END
+
+:END
+REM --- Norton Commander ---
+NC
+```
+
+---
+
+## Environment Variables Reference
+
+```bat
+SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+  A220  = SB16 base port 220h
+  I5    = IRQ 5
+  D1    = DMA 1 (8-bit)
+  H5    = DMA 5 (16-bit)
+  P330  = MPU-401 port 330h (MT-32 / SC-55 chain)
+  E620  = AWE32 EMU8000 port 620h
+  T6    = card type SB16/AWE
+
+SET ULTRASND=240,3,3,7,7
+  240   = GUS base port 240h
+  3,3   = DMA 3 (play and record - value repeated)
+  7,7   = IRQ 7 (play and record - value repeated)
+
+SET ULTRADIR=C:\DRIVERS\PICOGUS
+  root directory of GUS software and MIDI patches
+  must NOT point to the MIDI subfolder
+```
+
+---
+
+## AWEUTIL — EMU8000 Wavetable Synthesizer
+
+### UNISOUND vs AWEUTIL — what each does
+
+| Function | UNISOUND | AWEUTIL |
+|---|---|---|
+| Hardware init (IRQ, DMA, ports) | **Yes** | No |
+| OPL3 FM synthesis | **Yes** | No |
+| Mixer (volume, balance) | **Yes** | No |
+| EMU8000 wavetable init | No | **Yes** |
+| MIDI emulation GM/GS/MT-32 | No | **Yes** |
+| SoundFont loading (.SBK) | No | **Yes** |
+| Reverb and chorus effects | No | **Yes** (via CT1747) |
+
+**UNISOUND is not enough for full AWE32 features.** AWEUTIL is required
+for wavetable synthesis and MIDI emulation via EMU8000.
+
+### Files required for AWEUTIL
+
+All files belong in `C:\DRIVERS\SB16\` (or wherever `SET SOUND=` points):
+
+| File | Purpose |
+|---|---|
+| `AWEUTIL.COM` | Main utility — init, MIDI emulation, soundfonts |
+| `Synthgm.sbk` | GM soundfont (required for `/EM:GM`) |
+| `Synthgs.sbk` | GS soundfont (required for `/EM:GS`) |
+| `Synthmt.sbk` | MT-32 soundfont (required for `/EM:MT32`) |
+
+**Download — exact source:**
+
+`AWEUTIL.COM` + all `.SBK` soundfonts are part of **Creative AWE32/SB32 DOS driver v2.00**:
+
+```
+archive.org → search: "Creative Sound Blaster AWE32 Drivers"
+              file:    AWE32DRV.EXE  or  SB32V200.EXE
+vogons.org  → Files section → Sound Blaster AWE32
+```
+
+After extracting, copy to `C:\DRIVERS\SB16\`:
+- `AWEUTIL.COM`
+- `SYNTHGM.SBK`  (rename to `Synthgm.sbk`)
+- `SYNTHGS.SBK`  (rename to `Synthgs.sbk`)
+- `SYNTHMT.SBK`  (rename to `Synthmt.sbk`)
+
+> Each file is ~1 MB — transfer via FTP or CD-ROM.
+
+### AWEUTIL commands
+
+```bat
+C:\DRIVERS\SB16\AWEUTIL.COM /S       ← init EMU8000 (reads BLASTER variable)
+                                         run after UNISOUND at every boot
+
+C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM   ← General MIDI emulation (Synthgm.sbk)
+C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS   ← Roland GS emulation (Synthgs.sbk)
+C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32 ← Roland MT-32 emulation (Synthmt.sbk)
+C:\DRIVERS\SB16\AWEUTIL.COM /U       ← unload from memory (before switching mode)
+
+C:\DRIVERS\SB16\AWEUTIL.COM /SF:font.sbk  ← load custom soundfont
+C:\DRIVERS\SB16\AWEUTIL.COM /R:0          ← Reverb off
+C:\DRIVERS\SB16\AWEUTIL.COM /R:5          ← Reverb level 5 (0-7)
+C:\DRIVERS\SB16\AWEUTIL.COM /C:0          ← Chorus off
+C:\DRIVERS\SB16\AWEUTIL.COM /C:3          ← Chorus level 3 (0-7)
+```
+
+### When to use AWEUTIL /EM vs. SC-55 or MT-32
+
+| Situation | Recommendation |
+|---|---|
+| Game has native "AWE32" option in setup | AWEUTIL /S, select AWE32 in setup |
+| Game has GM, no SC-55 connected | AWEUTIL /EM:GM or X16GS |
+| Want MT-32 sound without physical MT-32 | AWEUTIL /EM:MT32 (worse than real HW) |
+| SC-55 is connected | SC-55 >> AWEUTIL /EM:GS (SC-55 is better) |
+| MT-32 is connected | MT-32 >> AWEUTIL /EM:MT32 (real HW always better) |
+
+**AWEUTIL /EM limitations:**
+- Does not work with DOS extenders (DOS4GW, DOS32A) — Doom, Quake, Duke3D
+- **Cannot run simultaneously with SoftMPU** — see below
+- Protected mode software does not support MIDI emulation
+
+### ⚠️ Critical conflict: AWEUTIL /EM + SoftMPU
+
+`AWEUTIL /EM:*` and `SoftMPU` **cannot run simultaneously** — both attempt
+to control the MIDI interface and interfere with each other.
+
+| Combination | Result |
+|---|---|
+| `AWEUTIL /S` + SoftMPU | ✓ OK — `/S` only initializes hardware, does not control MIDI |
+| `AWEUTIL /EM:GS` + SoftMPU | ✗ **Conflict** — do not use! |
+| `AWEUTIL /EM:MT32` + SoftMPU | ✗ **Conflict** — do not use! |
+
+Practical rule: run `AWEUTIL /EM:*` **only for GM/GS games that do not
+need intelligent mode** (i.e. games where SoftMPU is not needed).
+MT-32 games and older Sierra/LucasArts titles require SoftMPU → never use AWEUTIL /EM.
+
+### FixMPU — hanging note bug
+
+FixMPU solves the hanging note bug (stuck MIDI notes) on cards with DSP 4.11–4.13.
+
+**CT3900 with CT1747 chip does not have this bug** — FixMPU is not needed.
+Listed here for completeness — in case the problem occurs on another card.
+
+FixMPU is **not a TSR** — it works as a **launcher** around the game:
+
+```bat
+REM Instead of running directly:
+DOOM.EXE
+
+REM With FixMPU:
+FIXMPU.COM DOOM.EXE
+FIXMPU.COM DUKE3D.EXE /xargs
+```
+
+Requirements: correct BLASTER variable (A, I, P values), IRQ must be < 8.
+Download: vogons.org → Files → FixMPU
+
+### AWEUTIL and memory — key difference
+
+| Command | Behavior | Memory after completion |
+|---|---|---|
+| `AWEUTIL /S` | initializes EMU8000, exits immediately | **0 KB** |
+| `LH AWEUTIL /EM:GS` | loads TSR into UMB, stays resident | **~26 KB UMB** |
+| `AWEUTIL /U` | unloads TSR from memory | 0 KB |
+
+**`AWEUTIL /S` belongs in AUTOEXEC** — initializes hardware, uses no memory.
+
+**`AWEUTIL /EM:*` does NOT belong in AUTOEXEC** — run manually before game with `LH`:
+
+```bat
+LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    ← TSR into UMB (~26 KB of free ~40 KB)
+game.exe
+C:\DRIVERS\SB16\AWEUTIL.COM /U           ← unload after game (required!)
+```
+
+Without `LH` the TSR would use ~26 KB of conventional memory instead of UMB.
+
+**Why not load `/EM` at boot:**
+- Different games need different modes (GM / GS / MT32) — you need to switch
+- GUS games and DOS extender games ignore AWEUTIL /EM
+- Conflict with SoftMPU — see above
+- TSR would waste memory unnecessarily
+
+### AWEUTIL — pre-game workflow
+
+```bat
+REM MT-32 game (Sierra, LucasArts floppy):
+REM QX1222USB: CH 3+4 (MT-32) UP, CH 11+12 (AWE32) up for effects
+REM SoftMPU active from AUTOEXEC, DO NOT run AWEUTIL /EM (conflicts with SoftMPU)
+KQ5.EXE
+
+REM GM/GS game with SC-55 connected:
+REM QX1222USB: CH 5+6 (SC-55) UP, CH 11+12 (AWE32) up for effects
+REM Do not run AWEUTIL /EM — SC-55 >> EMU8000, SoftMPU does not interfere here
+MONKEY2.EXE
+
+REM GUS game (Doom, Duke3D, Heretic):
+REM QX1222USB: CH 9+10 (PicoGUS) UP, CH 11+12 (AWE32) up for effects
+REM Do not run AWEUTIL, GUS is via PicoGUS
+DOOM.EXE
+
+REM AWE32 native game:
+REM QX1222USB: CH 11+12 (AWE32) UP for everything
+REM AWEUTIL /S ran at boot, just launch the game
+FIFA95.EXE
+
+REM GM/GS game WITHOUT SC-55, WITHOUT DOS extender:
+REM QX1222USB: CH 9+10 (PicoGUS/X16GS) UP + CH 11+12 (AWE32) for effects
+REM Prefer X16GS (port 300h) — no SoftMPU conflict
+LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS
+game.exe
+C:\DRIVERS\SB16\AWEUTIL.COM /U
+
+REM Switching AWEUTIL mode between games:
+C:\DRIVERS\SB16\AWEUTIL.COM /U              ← unload current mode first
+LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32    ← then load new mode
+```
+
+> **Practical recommendation:** With SC-55 and MT-32 connected, AWEUTIL /EM
+> is almost never needed. SC-55 > EMU8000, MT-32 > EMU8000.
+> Use AWEUTIL /EM:GS only when travelling (no external modules) or for quick
+> testing — always prefer X16GS (port 300h) to avoid SoftMPU conflict.
+
+### AWEUTIL in AUTOEXEC.BAT — profile overview
+
+| Profile | SoftMPU | AWEUTIL /EM | QX1222USB | Use for |
+|---|---|---|---|---|
+| **1 NOSOFTMPU** | No | **Yes** | CH 11+12 only | GM/GS games via AWEUTIL emulation |
+| **2 NOSOFTEMU** | No | Yes (no extender) | CH 11+12 only | AWEUTIL /EM + EMS memory |
+| **3 NORMAL** | Yes | No | per game table | MT-32 games, GUS, AWE32 native, SC-55 |
+| **4 EMS** | Yes | No | per game table | DOS extender games + SoftMPU |
+| **5 BARE** | No | No | — | diagnostics, installation |
+
+```bat
+REM Profile 3 NORMAL — order in AUTOEXEC:
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S             ← hardware init only, 0 KB memory
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+
+REM Profile 1 NOSOFTMPU — order in AUTOEXEC:
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S             ← hardware init only, 0 KB memory
+REM (SoftMPU not loaded — AWEUTIL /EM can be run manually)
+```
+
+### Games with native AWE32 support (AWEUTIL /S only needed)
+
+These games offer "Sound Blaster AWE32" or "AWE32" in their setup:
+Civilization 2, Master of Orion 2, Warcraft 2, FIFA Soccer 95/96/97, NHL 96/97,
+Need for Speed (DOS).
+Setup: select AWE32, port 220, IRQ 5, DMA 1, DMA16 5.
+
+---
+
+## Game Setup Guide
+
+### Sound device priority — general rule
+
+```
+Real MT-32 hardware  >  Real SC-55 hardware  >  PicoGUS GUS  >  X16GS  >  AWEUTIL EMU8000  >  OPL3
+```
+
+Physical hardware always sounds better than emulation. GUS has exceptional
+quality in its supported games thanks to sampled patches. OPL3 is an
+intentional retro sound.
+
+---
+
+### Category 1 — MT-32 games
+**QX1222USB: CH 3+4 (MT-32) UP, CH 11+12 (AWE32) up for effects | SoftMPU active**
+
+These games were composed specifically for the Roland MT-32. SC-55 and GM
+emulation do not sound correct — specific MT-32 timbre sets and SysEx
+initialization are missing.
+
+**Sierra On-Line:**
+
+| Game | Year | Setup |
+|---|---|---|
+| King's Quest 4 | 1988 | Music: Roland MT-32, port 330 |
+| King's Quest 5 | 1990 | Music: Roland MT-32 or MIDI, port 330 |
+| Space Quest 3 | 1989 | Music: Roland MT-32, port 330 |
+| Space Quest 4 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
+| Police Quest 2 | 1988 | Music: Roland MT-32, port 330 |
+| Police Quest 3 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
+| Quest for Glory 1 (EGA/VGA) | 1989/1992 | Music: Roland MT-32, port 330 |
+| Quest for Glory 2 | 1990 | Music: Roland MT-32, port 330 |
+| Leisure Suit Larry 3 | 1989 | Music: Roland MT-32, port 330 |
+| Leisure Suit Larry 5 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
+| Gabriel Knight 1 | 1993 | Music: Roland MT-32 or General MIDI |
+| Conquests of Camelot | 1990 | Music: Roland MT-32, port 330 |
+| Conquests of Longbow | 1991 | Music: Roland MT-32, port 330 |
+
+**LucasArts (floppy versions — CD versions have GM):**
+
+| Game | Year | Notes |
+|---|---|---|
+| Maniac Mansion | 1987 | Music: Roland MT-32 |
+| Zak McKracken | 1988 | Music: Roland MT-32 |
+| Indiana Jones Last Crusade | 1989 | Music: Roland MT-32 — SoftMPU required (intelligent mode) |
+| Loom (floppy) | 1990 | Music: Roland MT-32 — SoftMPU required |
+| Monkey Island 1 (floppy) | 1990 | Music: Roland MT-32 — SoftMPU required |
+| Monkey Island 2 | 1991 | MT-32 or GM — GM on SC-55 sounds great |
+
+**Origin / Wing Commander:**
+
+| Game | Year | Setup |
+|---|---|---|
+| Wing Commander 1 | 1990 | Music: Roland MT-32, port 330, Sound: SB |
+| Wing Commander 2 | 1991 | Music: Roland MT-32, port 330, Sound: SB |
+| Ultima VI | 1990 | Music: Roland MT-32, port 330 |
+| Ultima Underworld 1 | 1992 | Music: General MIDI (SC-55) — SoftMPU required |
+
+**SSI / Westwood (dungeon/RPG):**
+
+| Game | Year | Setup |
+|---|---|---|
+| Eye of the Beholder 1 | 1991 | Music: Roland MT-32, port 330 |
+| Eye of the Beholder 2 | 1991 | Music: Roland MT-32, port 330 |
+| Pool of Radiance | 1988 | Music: Roland MT-32 |
+| Champions of Krynn | 1990 | Music: Roland MT-32 |
+
+```
+Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
+Music         : Roland MT-32
+MIDI port     : 330
+```
+
+> SoftMPU is loaded from AUTOEXEC — intelligent mode works automatically.
+> SC-55 is in the MIDI chain after MT-32 (THRU) — it outputs nothing for MT-32 games.
+
+---
+
+### Category 2 — GM/GS games — SC-55
+**QX1222USB: CH 5+6 (SC-55) UP, CH 11+12 (AWE32) up for effects**
+
+These games were composed or optimized for the Roland SC-55/SC-88.
+SC-55 sounds more authentic than any emulation — the music was typically
+mixed directly on this hardware.
+
+**LucasArts iMUSE engine:**
+
+| Game | Year | Setup |
+|---|---|---|
+| Monkey Island 2 | 1991 | General MIDI, port 330 — iMUSE dynamic music |
+| Indiana Jones Fate of Atlantis | 1992 | General MIDI, port 330 |
+| Day of the Tentacle | 1993 | General MIDI, port 330 — iMUSE |
+| Sam & Max Hit the Road | 1993 | General MIDI, port 330 — iMUSE |
+| Dark Forces | 1995 | General MIDI, port 330 — iMUSE |
+| Full Throttle | 1995 | General MIDI, port 330 — iMUSE |
+| The Dig | 1995 | General MIDI, port 330 — iMUSE |
+| TIE Fighter | 1994 | General MIDI, port 330 — iMUSE |
+| X-Wing | 1993 | General MIDI, port 330 — iMUSE |
+
+**Westwood Studios:**
+
+| Game | Year | Setup |
+|---|---|---|
+| Legend of Kyrandia 1 | 1992 | General MIDI, port 330 |
+| Legend of Kyrandia 2 | 1993 | General MIDI, port 330 |
+| Legend of Kyrandia 3 | 1994 | General MIDI, port 330 |
+| Command & Conquer | 1995 | General MIDI, port 330 — SC-55 sounds excellent |
+| Red Alert | 1996 | General MIDI, port 330 |
+
+**Origin Systems:**
+
+| Game | Year | Setup |
+|---|---|---|
+| Wing Commander 3 | 1994 | General MIDI, port 330, Sound: SB16 |
+| Wing Commander 4 | 1996 | General MIDI, port 330, Sound: SB16 |
+| Privateer | 1993 | General MIDI, port 330, Sound: SB |
+| Ultima Underworld 1 | 1992 | General MIDI, port 330, Sound: SB16 |
+| Ultima Underworld 2 | 1993 | General MIDI, port 330, Sound: SB16 |
+| Ultima 7 Part 1+2 | 1992/1993 | General MIDI, port 330 |
+| Ultima 8 | 1994 | General MIDI, port 330 |
+
+**Microprose / Strategy:**
+
+| Game | Year | Setup |
+|---|---|---|
+| X-COM UFO Defense | 1994 | General MIDI, port 330, Sound: SB16 |
+| X-COM Terror from the Deep | 1995 | General MIDI, port 330 |
+| Civilization 2 | 1996 | AWE32 native or GM, port 330 — see Category 4 |
+| Master of Orion 2 | 1996 | AWE32 native or GM — see Category 4 |
+
+**Other:**
+
+| Game | Year | Setup |
+|---|---|---|
+| Crusader No Remorse | 1995 | General MIDI, port 330, Sound: SB16 |
+| Crusader No Regret | 1996 | General MIDI, port 330, Sound: SB16 |
+| Descent 1 | 1994 | GM or GUS — GUS recommended for music |
+| Descent 2 | 1996 | GM or GUS — GUS recommended for music |
+| Warcraft 2 | 1995 | AWE32 native or GM — see Category 4 |
+
+```
+Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
+Music         : General MIDI
+MIDI port     : 330
+```
+
+> SC-55 must be in GS mode (default). Switch with: DOSMID /mpu=330 /preset=GS.
+> MT-32 is in MIDI chain before SC-55 (THRU) — MIDI data pass through MT-32
+> transparently and arrive at SC-55.
+>
+> **Warcraft 2 and Civilization 2** also offer a native AWE32 option —
+> it sounds better than GM via SC-55. See Category 4.
+
+---
+
+### Category 3 — GUS games
+**QX1222USB: CH 9+10 (PicoGUS) UP, CH 11+12 (AWE32) up for effects**
+
+These games have native Gravis UltraSound support with their own sampled
+patch sets. GUS sounds better in these games than SB16 due to wavetable
+synthesis directly in hardware — no MIDI emulation needed.
+
+**id Software:**
+
+| Game | Year | Sound Effects | Music | GUS setup |
+|---|---|---|---|---|
+| Doom | 1993 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect via ULTRASND |
+| Doom 2 | 1994 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
+| Heretic | 1994 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
+| Hexen | 1995 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
+| Quake | 1996 | SB16 port 220 IRQ 5 DMA 1 | CD audio or GUS | see below |
+
+**Apogee / 3D Realms:**
+
+| Game | Year | Sound Effects | Music |
+|---|---|---|---|
+| Duke Nukem 3D | 1996 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
+| Shadow Warrior | 1997 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
+| Blood | 1997 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
+| Rise of the Triad | 1994 | SB port 220 IRQ 5 DMA 1 | GUS port 240 IRQ 7 DMA 3 |
+| Terminal Velocity | 1995 | SB16 port 220 IRQ 5 DMA 1 | GUS port 240 IRQ 7 DMA 3 |
+
+**Other:**
+
+| Game | Year | Notes |
+|---|---|---|
+| Strife | 1996 | GUS music, SB effects |
+| Descent 1 | 1994 | GUS preferred over GM |
+| Descent 2 | 1996 | GUS preferred over GM |
+| Raptor Call of Shadows | 1994 | GUS music |
+| Blake Stone | 1993 | GUS music |
+
+```bat
+REM Doom / Doom 2 / Heretic / Hexen:
+  Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
+  Music         : Gravis UltraSound
+  (GUS is auto-detected via ULTRASND environment variable)
+
+REM Duke Nukem 3D / Shadow Warrior / Blood (SETUP.EXE):
+  Sound Card    : Sound Blaster 16
+  Port          : 220   IRQ: 5   DMA: 1   DMA16: 5
+  Music Card    : Gravis UltraSound
+  Port          : 240   IRQ: 7   DMA: 3
+
+REM Quake (GLQuake with Voodoo2):
+  GLQUAKE.EXE -width 640 -height 480
+  Sound: auto-detect SB16
+```
+
+---
+
+### Category 4 — AWE32 native games (EMU8000 wavetable)
+**QX1222USB: CH 11+12 (AWE32) UP for all | AWEUTIL /S runs from AUTOEXEC — no extra step**
+
+These games access the EMU8000 synthesizer directly. AWEUTIL /S runs from
+AUTOEXEC — no additional steps before launching. If the game offers both GM
+and AWE32, always choose AWE32 (native wavetable, better quality).
+
+| Game | Year | Select in setup | Notes |
+|---|---|---|---|
+| FIFA Soccer 95 | 1994 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| FIFA Soccer 96 | 1995 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| FIFA Soccer 97 | 1996 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| NHL 96 | 1995 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| NHL 97 | 1996 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
+| Need for Speed (DOS) | 1994 | AWE32 or SB16 | prefer AWE32 |
+| Warcraft 2 | 1995 | AWE32 or GM | AWE32: CH 11+12 up only; GM: CH 5+6 (SC-55) + CH 11+12 |
+| Civilization 2 | 1996 | Sound Blaster AWE32 | or GM via SC-55 |
+| Master of Orion 2 | 1996 | AWE32 or GM | prefer AWE32 |
+
+```
+Sound Card    : Sound Blaster AWE32
+Port          : 220   IRQ: 5   DMA: 1   DMA16: 5
+EMU8000 Port  : 620
+
+Before game: nothing — AWEUTIL /S runs from AUTOEXEC automatically
+```
+
+---
+
+### Category 5 — GM/GS games without external modules
+**QX1222USB: CH 9+10 (PicoGUS/X16GS) UP + CH 11+12 (AWE32) for effects, or CH 11+12 only (AWEUTIL)**
+
+Use when SC-55 is not connected or you do not want to switch MIDI chain.
+Two options — X16GS or AWEUTIL /EM:GS:
+
+| | X16GS (port 300h) | AWEUTIL /EM:GS (port 330h) |
+|---|---|---|
+| Sound quality | Very good | Good |
+| Extra memory | 0 KB | ~26 KB UMB |
+| Works with DOS extenders | Yes | No |
+| Requires PicoGUS | Yes | No |
+| Preparation | `DOSMID Slot1.mid` | `LH AWEUTIL.COM /EM:GS` |
+
+**Option A — X16GS (recommended, better sound):**
+
+```bat
+REM Switch X16GS to Bank 1 (Roland GS):
+DOSMID Slot1.mid
+
+REM In game setup:
+Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
+Music         : General MIDI
+MIDI port     : 300
+
+REM QX1222USB: CH 9+10 (PicoGUS/X16GS) + CH 11+12 (AWE32 effects)
+```
+
+**Option B — AWEUTIL /EM:GS (without PicoGUS or for simplicity):**
+
+> ⚠️ **AWEUTIL /EM:GS conflicts with SoftMPU** loaded from AUTOEXEC.
+> Prefer Option A (X16GS) — no conflict, better sound.
+
+```bat
+LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS   ← TSR into UMB (~26 KB)
+
+REM In game setup:
+Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
+Music         : General MIDI
+MIDI port     : 330
+
+REM QX1222USB: CH 11+12 (AWE32) only — AWEUTIL routes audio through AWE32 line out
+REM After game:
+C:\DRIVERS\SB16\AWEUTIL.COM /U
+```
+
+> AWEUTIL /EM:GS does not work with DOS extender games (DOS4GW) —
+> Descent, Magic Carpet, TIE Fighter etc. Use X16GS for those.
+
+---
+
+### Category 6 — OPL3 / AdLib / FM games
+**QX1222USB: CH 11+12 (AWE32) UP — real OPL3 CT1747**
+
+CT3900 has a **real Yamaha OPL3** chip (CT1747) — unlike AWE64 which used
+CQM emulation. These games sound authentically correct on CT3900.
+
+| Game | Year | Best setup |
+|---|---|---|
+| Wolfenstein 3D | 1992 | AdLib or SB, port 220 |
+| Commander Keen 4/5/6 | 1991/92 | AdLib port 388 |
+| Jazz Jackrabbit | 1994 | SB or AdLib, port 220 |
+| Raptor Call of Shadows | 1994 | SB or AdLib (alternative to GUS) |
+| Tyrian | 1995 | SB16 port 220 IRQ 5 DMA 1 — EMS profile required! |
+| Dune 2 | 1992 | AdLib or SB |
+| Theme Park | 1994 | SB16, port 220 |
+| Transport Tycoon | 1994 | SB16, port 220 |
+| SimCity 2000 | 1993 | SB16, port 220 |
+| Syndicate | 1993 | SB16, port 220 |
+| Magic Carpet | 1994 | SB16, port 220, DMA 1 |
+| Populous | 1989 | AdLib |
+| Lemmings | 1991 | AdLib or SB |
+
+```
+Sound Card : Sound Blaster  or  Ad Lib
+Port       : 220   IRQ: 5   DMA: 1
+FM Music   : OPL3 / AdLib   port 388 (automatic)
+```
+
+> Tyrian requires EMS memory — boot into profile 4 (SoftMPU EMS)
+
+---
+
+### Category 7 — 3dfx Voodoo2 games
+**Mixer: per sound category above**
+
+Voodoo2 uses the Glide 2.x API. Always run the Glide/3dfx executable,
+not the software renderer.
+
+| Game | Year | Executable | Sound |
+|---|---|---|---|
+| Quake | 1996 | GLQUAKE.EXE | SB16 |
+| Quake 2 | 1997 | QUAKE2.EXE (GL version) | SB16 |
+| Tomb Raider 2 | 1997 | TOMBRAID.EXE (Glide) | SB16 |
+| Unreal | 1998 | UNREAL.EXE /glide | SB16 |
+| Turok Dinosaur Hunter | 1997 | TUROK.EXE (Glide) | SB16 |
+| Forsaken | 1998 | Glide version | SB16 |
+| Carmageddon | 1997 | Glide version | SB16 |
+| Need for Speed 2 SE | 1997 | Glide version | SB16 |
+| Need for Speed 3 | 1998 | Glide version | SB16 |
+| Interstate '76 | 1997 | Glide version | SB16 GM |
+| Motorhead | 1998 | Glide version | SB16 |
+
+```bat
+REM Glide 2.x must be in game directory or PATH
+REM (glide2x.ovl version 2.53 or 2.54)
+
+REM Quake - GLQuake Voodoo2:
+GLQUAKE.EXE -width 640 -height 480 -bpp 16
+
+REM Quake 2:
+QUAKE2.EXE +set vid_ref gl
+```
+
+---
+
+### Quick reference — QX1222USB fader positions
+
+| Game / category | CH 3+4 MT-32 | CH 5+6 SC-55 | CH 9+10 PicoGUS | CH 11+12 AWE32 | AWEUTIL before game |
+|---|---|---|---|---|---|
+| MT-32 games | **UP** | down | down | up (effects) | — |
+| GM/GS games — SC-55 | down | **UP** | down | up (effects) | — |
+| GUS games (Doom, Duke3D) | down | down | **UP** | up (effects) | — |
+| AWE32 native games | down | down | down | **UP** (all) | `/S` already in AUTOEXEC |
+| GM/GS — X16GS | down | down | **UP** | up (effects) | — |
+| GM/GS — AWEUTIL /EM:GS | down | down | down | **UP** (all) | `LH AWEUTIL.COM /EM:GS` |
+| OPL3/AdLib only | down | down | down | **UP** (all) | — |
+
+### Quick reference — MIDI port
+
+| Target device | Port | When to use |
+|---|---|---|
+| MT-32 (+ SC-55 after it) | **330h** | MT-32 games, GM games with SC-55 |
+| X16GS via PicoGUS | **300h** | GM/GS games without external modules |
+| EMU8000 AWEUTIL emulation | **330h** | AWEUTIL /EM:GM, AWE32 native games |
+
+### Switching SC-55 mode
+
+```bat
+REM GM mode (for General MIDI games):
+DOSMID /mpu=330 /preset=GM /nosound /dontstop
+
+REM GS mode (default, for GS games — C&C, LucasArts):
+DOSMID /mpu=330 /preset=GS /nosound /dontstop
+```
+
+> SC-55 MT-32 mode is switched via the physical button on the front panel only.
+> MT-32 must be first in MIDI chain — SC-55 receives data via MT-32 THRU.
 
 ---
 
@@ -1295,6 +1849,10 @@ Note: PicoGUS CD-ROM emulation is NOT used — physical Samsung drive is used.
 | MSCDEX.EXE | C:\DOS\MSCDEX.EXE |
 | SSCDROM.SYS | C:\DRIVERS\SAMSUNG\SSCDROM.SYS |
 | UNISOUND.COM | C:\DRIVERS\UNISOUND\UNISOUND.COM |
+| AWEUTIL.COM | C:\DRIVERS\SB16\AWEUTIL.COM |
+| Synthgm.sbk | C:\DRIVERS\SB16\Synthgm.sbk |
+| Synthgs.sbk | C:\DRIVERS\SB16\Synthgs.sbk |
+| Synthmt.sbk | C:\DRIVERS\SB16\Synthmt.sbk |
 | SOFTMPU.EXE | C:\DRIVERS\SOFTMPU\SOFTMPU.EXE |
 | PGUSINIT.EXE | C:\DRIVERS\PICOGUS\PGUSINIT.EXE |
 | DOSMID.EXE | C:\DRIVERS\PICOGUS\DOSMID.EXE |
@@ -1321,12 +1879,14 @@ Note: PicoGUS CD-ROM emulation is NOT used — physical Samsung drive is used.
 ## Key Notes
 
 - **HIGHSCAN** must NOT be used — Award BIOS 4.51PG freezes at boot
-- **NOEMS** = more UMB space (profile 1), **RAM** = EMS for DOS extender games (profile 2)
-- **UNISOUND** replaces all Creative drivers (CTCM, DIAGNOSE, AWEUTIL, MIXERSET)
+- **NOEMS** = more UMB space (profiles 1+3), **RAM** = EMS for DOS extender games (profiles 2+4)
+- **UNISOUND** replaces all Creative drivers (CTCM, DIAGNOSE, MIXERSET)
+- **AWEUTIL /S** initializes EMU8000 — required in addition to UNISOUND for full AWE32 features
 - **MEMMAKER** must NOT be run — corrupts manual config
 - **CT3900 has real OPL3** (CT1747 chip) — AWE64 used CQM emulation
-- **CT3900 je semi-PnP**: I/O adresa a MPU-401 = jumper; IRQ a DMA = software (DIAGNOSE /S nebo UNISOUND)
-- IRQ/DMA změna: upravit BLASTER v AUTOEXEC.BAT, UNISOUND naprogramuje kartu při bootu (IRQ: 2/5/7/10, Low DMA: 0/1/3, High DMA: 5/6/7)
+- **CT3900 is semi-PnP**: I/O address and MPU-401 = jumpers; IRQ and DMA = software (UNISOUND)
+- IRQ/DMA change: update BLASTER in AUTOEXEC.BAT, UNISOUND programs card at boot (IRQ: 2/5/7/10, Low DMA: 0/1/3, High DMA: 5/6/7)
+- **AWEUTIL /EM:* conflicts with SoftMPU** — use profile 1 (NOSOFTMPU) for AWEUTIL emulation
 - AWE32 MPU-401 → port 330h → MT-32 → SC-55 chain
 - PicoGUS MPU-401 → port 300h → X16GS only
 - LPT1 disabled in BIOS to free IRQ 7 for PicoGUS
