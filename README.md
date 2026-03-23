@@ -887,12 +887,12 @@ re-initialize the card on the DOS PC.
 ### Signal Flow
 
 ```
-MT-32 L ──────────────────────► CH 3 (PAN left)  ─┐
-MT-32 R ──────────────────────► CH 4 (PAN right) ─┤
+MT-32 L ──────────────────────► CH 3 (PAN left)   ─┐
+MT-32 R ──────────────────────► CH 4 (PAN right)  ─┤
 SC-55 stereo ─────────────────► CH 5+6            ─┤
 PicoGUS stereo ───────────────► CH 9+10           ─┤──► MAIN MIX ──► MAIN OUT (XLR)
-AWE32 stereo ─────────────────► CH 11+12          ─┤         │
-(second PC) ──────────────────► CH 7+8            ─┘         │
+AWE32 stereo ─────────────────► CH 11+12          ─┤          │
+(second PC) ──────────────────► CH 7+8            ─┘          │
                                                               │
                                                ATH-M50x ◄── PHONES
                                                               │
