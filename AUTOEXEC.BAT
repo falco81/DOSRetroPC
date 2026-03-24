@@ -49,9 +49,11 @@ C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- SoftMPU NENI nacten - AWEUTIL /EM muze bezet bez konfliktu ---
 
 REM --- PicoGUS initialization ---
-REM /gusvol 100  = GUS vystup 100%, /wtvol 100 = X16GS wavetable 100%
-REM /mpudelay 1  = zpomalit SysEx pro Roland kompatibilni syntetizatory
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 100 /gusvol 100 /wtvol 100 /mpudelay 1
+REM /mainvol 85 = celkovy vystup 85% (headroom proti clippingu v mixeru)
+REM /gusvol 85  = GUS vystup 85%
+REM /wtvol 85   = X16GS wavetable 85% (snizeno kvuli clippingu pri mixovani)
+REM /mpudelay 1 = zpomalit SysEx pro Roland kompatibilni syntetizatory
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
@@ -76,7 +78,11 @@ C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- SoftMPU NENI nacten ---
 
 REM --- PicoGUS initialization ---
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 100 /gusvol 100 /wtvol 100 /mpudelay 1
+REM /mainvol 85 = celkovy vystup 85% (headroom proti clippingu v mixeru)
+REM /gusvol 85  = GUS vystup 85%
+REM /wtvol 85   = X16GS wavetable 85% (snizeno kvuli clippingu pri mixovani)
+REM /mpudelay 1 = zpomalit SysEx pro Roland kompatibilni syntetizatory
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
@@ -116,9 +122,11 @@ LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
 REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
 REM /mpuport 300 = MPU-401 na portu 300h (AWE32 pouziva 330h)
-REM /gusvol 100  = GUS vystup 100%, /wtvol 100 = X16GS wavetable 100%
+REM /mainvol 70  = celkovy vystup 70% (headroom proti clippingu v mixeru)
+REM /gusvol 85   = GUS vystup 85%
+REM /wtvol 85    = X16GS wavetable 85% (snizeno kvuli clippingu pri mixovani)
 REM /mpudelay 1  = zpomalit SysEx pro Roland kompatibilni syntetizatory
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 100 /gusvol 100 /wtvol 100 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
@@ -149,7 +157,11 @@ REM /MPU:330 = MPU-401 port (musi odpovidat P330 v BLASTER)
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
 
 REM --- PicoGUS initialization ---
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 100 /gusvol 100 /wtvol 100 /mpudelay 1
+REM /mainvol 85 = celkovy vystup 85% (headroom proti clippingu v mixeru)
+REM /gusvol 85  = GUS vystup 85%
+REM /wtvol 85   = X16GS wavetable 85% (snizeno kvuli clippingu pri mixovani)
+REM /mpudelay 1 = zpomalit SysEx pro Roland kompatibilni syntetizatory
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
