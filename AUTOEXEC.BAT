@@ -18,18 +18,77 @@ SET SOUND=C:\DRIVERS\SB16
 SET BLASTER=A220 I5 D1 H5 P330 E620 T6
 SET MIDI=SYNTH:1 MAP:E MODE:0
 
-REM --- PicoGUS / Gravis UltraSound settings (uncomment after card is installed) ---
+REM --- PicoGUS / Gravis UltraSound settings ---
 REM Format: port,DMA play,DMA rec,IRQ play,IRQ rec (DMA and IRQ are repeated)
 REM IRQ 7 = LPT1 must be disabled in BIOS to free this IRQ
-REM SET ULTRASND=240,3,3,7,7
+SET ULTRASND=240,3,3,7,7
 REM ULTRADIR must point to the GUS software root (not the MIDI subfolder)
-REM SET ULTRADIR=C:\DRIVERS\PICOGUS
+SET ULTRADIR=C:\DRIVERS\PICOGUS
 
 REM --- Route to profile-specific section ---
 GOTO %CONFIG%
 
 REM -----------------------------------------------
-REM Profile 1: NORMAL
+REM Profile 1: NOSOFTMPU - NOEMS bez SoftMPU
+REM Pouzij pro: AWEUTIL /EM:GM/GS/MT32 emulaci
+REM             GM/GS hry pres AWEUTIL bez MT-32/SC-55
+REM -----------------------------------------------
+:NOSOFTMPU
+REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+
+REM --- AWEUTIL - inicializace EMU8000 ---
+REM /S = pouze hardware init, 0KB pameti
+REM Tento profil je bez SoftMPU - AWEUTIL /EM:* lze pouzit bez konfliktu
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM    General MIDI emulace
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    Roland GS emulace
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32  Roland MT-32 emulace
+REM   C:\DRIVERS\SB16\AWEUTIL.COM /U           uvolnit z pameti
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+
+REM --- SoftMPU NENI nacten - AWEUTIL /EM muze bezet bez konfliktu ---
+
+REM --- PicoGUS initialization ---
+REM /gusvol 100  = GUS vystup 100%, /wtvol 100 = X16GS wavetable 100%
+REM /mpudelay 1  = zpomalit SysEx pro Roland kompatibilni syntetizatory
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 100 /gusvol 100 /wtvol 100 /mpudelay 1
+
+REM --- CD-ROM ---
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile 2: NOSOFTEMU - EMS bez SoftMPU
+REM Pouzij pro: AWEUTIL /EM + DOS extender hry
+REM Pozor: AWEUTIL /EM nefunguje s DOS extendery (DOS4GW)
+REM        Pro extender hry pouzij profil 4 (EMS se SoftMPU)
+REM -----------------------------------------------
+:NOSOFTEMU
+REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+
+REM --- AWEUTIL - inicializace EMU8000 ---
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+
+REM --- SoftMPU NENI nacten ---
+
+REM --- PicoGUS initialization ---
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 100 /gusvol 100 /wtvol 100 /mpudelay 1
+
+REM --- CD-ROM ---
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile 3: NORMAL - NOEMS se SoftMPU
+REM Pouzij pro: MT-32 hry (Sierra, LucasArts), GUS hry, kazodenne pouziti
+REM             AWE32 nativni hry, SC-55, X16GS
 REM -----------------------------------------------
 :NORMAL
 REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
@@ -44,25 +103,22 @@ REM UNISOUND NERESI EMU8000 - AWEUTIL je nutny pro AWE32 wavetable funkce
 REM /S = inicializace EMU8000 dle BLASTER promenne (E620 = port EMU8000)
 REM Nutny pro: hry s AWE32 podporou, MIDI emulaci GM/GS/MT-32
 REM Soubory: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
-REM Rucni prepinani modu pred hrou:
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM    <- General MIDI emulace
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    <- Roland GS emulace
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32  <- Roland MT-32 emulace
-REM   C:\DRIVERS\SB16\AWEUTIL.COM /U           <- uvolnit z pameti (pred prepnutim modu)
-REM Pozor: AWEUTIL /EM nepracuje s DOS extendery (DOS4GW, DOS32A)
+REM Pozor: AWEUTIL /EM:* koliduje se SoftMPU - pouzij profil 1 (NOSOFTMPU)
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 
 REM --- SoftMPU - intelligent mode MPU-401 emulace pro MT-32 hry ---
 REM Nutny pro: Monkey Island 1, Sierra hry, Ultima Underworld
 REM AWE32 podporuje pouze UART mode - SoftMPU prida intelligent mode
 REM /MPU:330 = MPU-401 port (musi odpovidat P330 v BLASTER)
+REM POZOR: AWEUTIL /EM:* nelze kombinovat se SoftMPU!
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
 
-REM --- PicoGUS initialization (uncomment after card is installed) ---
+REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /v 95        = DreamBlaster X16GS wavetable volume (0-100)
-REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+REM /mpuport 300 = MPU-401 na portu 300h (AWE32 pouziva 330h)
+REM /gusvol 100  = GUS vystup 100%, /wtvol 100 = X16GS wavetable 100%
+REM /mpudelay 1  = zpomalit SysEx pro Roland kompatibilni syntetizatory
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 100 /gusvol 100 /wtvol 100 /mpudelay 1
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
@@ -75,7 +131,9 @@ LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile 2: EMS/GAMES
+REM Profile 4: EMS/GAMES - RAM se SoftMPU
+REM Pouzij pro: DOS extender hry (Tyrian, Magic Carpet)
+REM             hry vyzadujici EMS pamet
 REM -----------------------------------------------
 :EMS
 REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
@@ -90,24 +148,18 @@ REM --- SoftMPU - intelligent mode MPU-401 emulace ---
 REM /MPU:330 = MPU-401 port (musi odpovidat P330 v BLASTER)
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
 
-REM --- PicoGUS initialization (uncomment after card is installed) ---
-REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /v 95        = DreamBlaster X16GS wavetable volume (0-100)
-REM C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /v 95
+REM --- PicoGUS initialization ---
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 100 /gusvol 100 /wtvol 100 /mpudelay 1
 
 REM --- CD-ROM ---
-REM /M:10 = 10 sector lookahead cache in extended memory
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
 
 REM --- Mouse ---
-REM /R2 = horizontal resolution 2 (movement sensitivity)
-REM COM port is auto-detected by CTMOUSE
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile 3: BARE DOS
+REM Profile 5: BARE DOS
 REM -----------------------------------------------
 :BARE
 REM --- No drivers loaded in bare mode ---
