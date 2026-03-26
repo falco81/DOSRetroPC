@@ -25,17 +25,45 @@ SET ULTRASND=240,3,3,7,7
 REM ULTRADIR must point to the GUS software root (not the MIDI subfolder)
 SET ULTRADIR=C:\DRIVERS\PICOGUS
 
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+
 REM --- Route to profile-specific section ---
 GOTO %CONFIG%
 
 REM -----------------------------------------------
 REM Profile: WINDOWS - launch Windows 98SE
-REM Windows handles all hardware via its own 32-bit drivers
-REM Sound, GUS, mouse are managed by Windows drivers - not loaded here
+REM Use for: Windows 98SE gaming, modern software, Win32 applications
+REM Note: AWE32 and mouse are initialized by Windows 32-bit PnP drivers
+REM       UNISOUND and AWEUTIL are NOT loaded - Windows handles AWE32 itself
+REM       SoftMPU is NOT loaded - Windows MIDI uses its own MPU-401 driver
 REM -----------------------------------------------
 :WINDOWS
+REM --- PicoGUS initialization ---
+REM Required: Windows has no PicoGUS driver - hardware must be init before WIN.COM
+REM /mode gus    = Gravis UltraSound emulation (GUS not usable in Windows)
+REM /mpuport 300 = MPU-401 on port 300h - needed for McCake under Windows
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
+REM /gusvol 85   = GUS output 85%
+REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+
+REM --- CD-ROM ---
+REM /M:10 = 10 sector lookahead cache in extended memory
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+REM /R2 = horizontal resolution 2 (movement sensitivity)
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+
+REM --- Launch Windows 98SE ---
 WIN.COM
 GOTO END
 
@@ -162,4 +190,9 @@ GOTO END
 :END
 REM --- Norton Commander ---
 NC
+
+
+
+
+
 
