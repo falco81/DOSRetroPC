@@ -12,8 +12,8 @@ SET TELIX=C:\TOOLS\TELIX
 REM --- AWE32 CT3900 settings ---
 REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
 REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
-REM CT3900 semi-PnP: UNISOUND naprogramuje IRQ/DMA dle techto hodnot
-REM Mozne hodnoty: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
+REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
+REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
 SET BLASTER=A220 I5 D1 H5 P330 E620 T6
 SET MIDI=SYNTH:1 MAP:E MODE:0
@@ -29,30 +29,30 @@ REM --- Route to profile-specific section ---
 GOTO %CONFIG%
 
 REM -----------------------------------------------
-REM Profile 1: NOSOFTMPU - NOEMS bez SoftMPU
-REM Pouzij pro: AWEUTIL /EM:GM/GS/MT32 emulaci
-REM             GM/GS hry pres AWEUTIL bez MT-32/SC-55
+REM Profile 1: NOSOFTMPU - NOEMS without SoftMPU
+REM Use for: AWEUTIL /EM:GM/GS/MT32 emulation
+REM           GM/GS games via AWEUTIL without MT-32/SC-55
 REM -----------------------------------------------
 :NOSOFTMPU
-REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 
-REM --- AWEUTIL - inicializace EMU8000 ---
-REM /S = pouze hardware init, 0KB pameti
-REM Tento profil je bez SoftMPU - AWEUTIL /EM:* lze pouzit bez konfliktu
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM    General MIDI emulace
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    Roland GS emulace
-REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32  Roland MT-32 emulace
-REM   C:\DRIVERS\SB16\AWEUTIL.COM /U           uvolnit z pameti
+REM --- AWEUTIL - EMU8000 init ---
+REM /S = hardware init only, 0KB memory resident
+REM This profile has no SoftMPU - AWEUTIL /EM:* can run without conflict
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM    General MIDI emulation
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    Roland GS emulation
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32  Roland MT-32 emulation
+REM   C:\DRIVERS\SB16\AWEUTIL.COM /U           unload from memory
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 
-REM --- SoftMPU NENI nacten - AWEUTIL /EM muze bezet bez konfliktu ---
+REM --- SoftMPU NOT loaded - AWEUTIL /EM can run without conflict ---
 
 REM --- PicoGUS initialization ---
-REM /mainvol 85 = celkovy vystup 85% (headroom proti clippingu v mixeru)
-REM /gusvol 85  = GUS vystup 85%
-REM /wtvol 85   = X16GS wavetable 85% (snizeno kvuli clippingu pri mixovani)
-REM /mpudelay 1 = zpomalit SysEx pro Roland kompatibilni syntetizatory
+REM /mainvol 85 = master output 85% (headroom to prevent clipping)
+REM /gusvol 85  = GUS output 85%
+REM /wtvol 85   = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
@@ -63,25 +63,25 @@ LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile 2: NOSOFTEMU - EMS bez SoftMPU
-REM Pouzij pro: AWEUTIL /EM + DOS extender hry
-REM Pozor: AWEUTIL /EM nefunguje s DOS extendery (DOS4GW)
-REM        Pro extender hry pouzij profil 4 (EMS se SoftMPU)
+REM Profile 2: NOSOFTEMU - EMS without SoftMPU
+REM Use for: AWEUTIL /EM + DOS extender games
+REM Note: AWEUTIL /EM does not work with DOS extenders (DOS4GW)
+REM       For extender games use profile 4 (EMS with SoftMPU)
 REM -----------------------------------------------
 :NOSOFTEMU
-REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 
-REM --- AWEUTIL - inicializace EMU8000 ---
+REM --- AWEUTIL - EMU8000 init ---
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 
-REM --- SoftMPU NENI nacten ---
+REM --- SoftMPU NOT loaded ---
 
 REM --- PicoGUS initialization ---
-REM /mainvol 85 = celkovy vystup 85% (headroom proti clippingu v mixeru)
-REM /gusvol 85  = GUS vystup 85%
-REM /wtvol 85   = X16GS wavetable 85% (snizeno kvuli clippingu pri mixovani)
-REM /mpudelay 1 = zpomalit SysEx pro Roland kompatibilni syntetizatory
+REM /mainvol 85 = master output 85% (headroom to prevent clipping)
+REM /gusvol 85  = GUS output 85%
+REM /wtvol 85   = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
@@ -92,40 +92,42 @@ LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile 3: NORMAL - NOEMS se SoftMPU
-REM Pouzij pro: MT-32 hry (Sierra, LucasArts), GUS hry, kazodenne pouziti
-REM             AWE32 nativni hry, SC-55, X16GS
+REM Profile 3: NORMAL - NOEMS with SoftMPU
+REM Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
+REM           AWE32 native games, SC-55, McCake
 REM -----------------------------------------------
 :NORMAL
-REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
-REM Inicializuje: IRQ, DMA, I/O porty, OPL3, mixer
-REM CT3900 semi-PnP: UNISOUND naprogramuje IRQ/DMA dle BLASTER promenne
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
+REM Initializes: IRQ, DMA, I/O ports, OPL3, mixer
+REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from BLASTER variable
 REM /V70 = master volume 70 (range 0-100)
 REM /VF90 = FM/OPL3 volume 90 - real Yamaha OPL3 chip (CT1747) na CT3900
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 
-REM --- AWEUTIL - inicializace EMU8000 wavetable syntezatoru ---
-REM UNISOUND NERESI EMU8000 - AWEUTIL je nutny pro AWE32 wavetable funkce
-REM /S = inicializace EMU8000 dle BLASTER promenne (E620 = port EMU8000)
-REM Nutny pro: hry s AWE32 podporou, MIDI emulaci GM/GS/MT-32
-REM Soubory: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
-REM Pozor: AWEUTIL /EM:* koliduje se SoftMPU - pouzij profil 1 (NOSOFTMPU)
+REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
+REM UNISOUND does not init EMU8000 - AWEUTIL required for AWE32 wavetable features
+REM /S = init EMU8000 from BLASTER variable (E620 = EMU8000 port)
+REM Required for: AWE32 games, GM/GS/MT-32 MIDI emulation
+REM Files: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
+REM Note: AWEUTIL /EM:* conflicts with SoftMPU - use profile 1 (NOSOFTMPU)
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 
-REM --- SoftMPU - intelligent mode MPU-401 emulace pro MT-32 hry ---
-REM Nutny pro: Monkey Island 1, Sierra hry, Ultima Underworld
-REM AWE32 podporuje pouze UART mode - SoftMPU prida intelligent mode
-REM /MPU:330 = MPU-401 port (musi odpovidat P330 v BLASTER)
-REM POZOR: AWEUTIL /EM:* nelze kombinovat se SoftMPU!
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+REM --- SoftMPU - intelligent mode MPU-401 emulation for MT-32 games ---
+REM Required for: Monkey Island 1, Sierra games, Ultima Underworld
+REM AWE32 supports UART mode only - SoftMPU adds intelligent mode
+REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
+REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
+REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
+REM WARNING: AWEUTIL /EM:* cannot be combined with SoftMPU!
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 
 REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 na portu 300h (AWE32 pouziva 330h)
+REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
 REM /mainvol 70  = celkovy vystup 70% (headroom proti clippingu v mixeru)
-REM /gusvol 85   = GUS vystup 85%
-REM /wtvol 85    = X16GS wavetable 85% (snizeno kvuli clippingu pri mixovani)
-REM /mpudelay 1  = zpomalit SysEx pro Roland kompatibilni syntetizatory
+REM /gusvol 85   = GUS output 85%
+REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
@@ -139,28 +141,30 @@ LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile 4: EMS/GAMES - RAM se SoftMPU
-REM Pouzij pro: DOS extender hry (Tyrian, Magic Carpet)
-REM             hry vyzadujici EMS pamet
+REM Profile 4: EMS/GAMES - RAM with SoftMPU
+REM Use for: DOS extender games (Tyrian, Magic Carpet)
+REM           games requiring EMS memory
 REM -----------------------------------------------
 :EMS
-REM --- AWE32 CT3900 inicializace hardware (UNISOUND) ---
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
 REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 
-REM --- AWEUTIL - inicializace EMU8000 wavetable syntezatoru ---
-REM Pozor: AWEUTIL /EM:* NEFUNGUJE s DOS extendery (DOS4GW) - pouze /S init
+REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
+REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 
-REM --- SoftMPU - intelligent mode MPU-401 emulace ---
-REM /MPU:330 = MPU-401 port (musi odpovidat P330 v BLASTER)
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+REM --- SoftMPU - intelligent mode MPU-401 emulation ---
+REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
+REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
+REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 
 REM --- PicoGUS initialization ---
-REM /mainvol 85 = celkovy vystup 85% (headroom proti clippingu v mixeru)
-REM /gusvol 85  = GUS vystup 85%
-REM /wtvol 85   = X16GS wavetable 85% (snizeno kvuli clippingu pri mixovani)
-REM /mpudelay 1 = zpomalit SysEx pro Roland kompatibilni syntetizatory
+REM /mainvol 85 = master output 85% (headroom to prevent clipping)
+REM /gusvol 85  = GUS output 85%
+REM /wtvol 85   = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
