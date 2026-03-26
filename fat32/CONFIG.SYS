@@ -1,0 +1,113 @@
+;===========================================
+; CONFIG.SYS - Boot menu
+; Rhino 15 / Pentium MMX / AWE32 CT3900 / Voodoo2 / ATI MACH64
+; MS-DOS 7.10 + Windows 98SE
+;===========================================
+
+; Boot menu - displayed at startup with 10 second countdown
+[MENU]
+MENUITEM=WINDOWS,   Windows 98SE
+MENUITEM=NORMAL,    MS-DOS  SoftMPU         - NOEMS 607KB (MT-32, GUS, everyday)
+MENUITEM=EMS,       MS-DOS  SoftMPU EMS     - RAM   595KB (Tyrian, Magic Carpet, Unreal)
+MENUITEM=NOSOFTMPU, MS-DOS  No SoftMPU      - NOEMS 607KB (AWEUTIL /EM)
+MENUITEM=NOSOFTEMU, MS-DOS  No SoftMPU EMS  - RAM   595KB (AWEUTIL /EM + extenders)
+MENUITEM=BARE,      MS-DOS  Bare            - no drivers
+MENUDEFAULT=WINDOWS,10
+;MENUCOLOR=11,1
+
+; -----------------------------------------------
+; Common settings loaded for ALL profiles
+; -----------------------------------------------
+[COMMON]
+
+; HIMEM.SYS from Windows 98SE directory (updated version)
+; /TESTMEM:OFF = skip memory test on boot (saves ~30s on 256MB)
+DEVICE=C:\WINDOWS\HIMEM.SYS /TESTMEM:OFF
+
+; Load DOS into HMA and enable UMB
+DOS=HIGH,UMB
+
+; Larger environment block - prevents DIGN9003 error from AWE32
+; /E:1024 = 1024 bytes for SET variables
+SHELL=C:\COMMAND.COM C:\ /E:1024 /P
+
+; FILES=30 - max open file handles (NC + MSCDEX need ~25)
+FILES=30
+; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering)
+BUFFERS=4,0
+; LASTDRIVE=H - covers A,C,D,E,F,G + one spare
+LASTDRIVE=H
+; STACKS=9,256 - interrupt stack frames
+STACKS=9,256
+FCBS=1,0
+
+; -----------------------------------------------
+; WINDOWS - minimal DOS init, then launch Windows 98SE
+; Windows handles all hardware via its own 32-bit drivers
+; -----------------------------------------------
+[WINDOWS]
+
+; EMM386 from Windows 98SE directory
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile NORMAL - NOEMS with SoftMPU (607KB conventional)
+; Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
+;          AWE32 native games, SC-55, McCake SF2
+; -----------------------------------------------
+[NORMAL]
+
+; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+
+; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
+; /X = disable write cache (safer for power loss)
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile EMS - RAM with SoftMPU (595KB conventional)
+; Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
+;          Games requiring EMS memory
+; Note: 12KB less conventional memory than NORMAL due to EMS page frame
+; -----------------------------------------------
+[EMS]
+
+; EMM386 RAM = EMS + UMB both enabled
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile NOSOFTMPU - NOEMS without SoftMPU (607KB conventional)
+; Use for: AWEUTIL /EM:GM/GS/MT32 emulation (conflicts with SoftMPU)
+;          GM/GS games via AWEUTIL without external MIDI modules
+; -----------------------------------------------
+[NOSOFTMPU]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile NOSOFTEMU - RAM without SoftMPU (595KB conventional)
+; Use for: AWEUTIL /EM + DOS extender games
+;          Note: AWEUTIL /EM does not work with DOS extenders - prefer profile EMS
+; -----------------------------------------------
+[NOSOFTEMU]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile BARE - minimal (diagnostics, installation)
+; No sound, no CD-ROM, no mouse - just basic DOS
+; -----------------------------------------------
+[BARE]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+
