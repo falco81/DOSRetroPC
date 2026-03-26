@@ -618,7 +618,7 @@ Check in order:
 
 ---
 
-### Step 7 — AUTOEXEC.BAT — stav po instalaci
+### Step 7 — AUTOEXEC.BAT — state after installation
 
 PicoGUS is installed. These lines are active in AUTOEXEC.BAT:
 
@@ -1173,10 +1173,10 @@ LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
 REM --- PicoGUS ---
 REM /mode gus    = Gravis UltraSound emulation
 REM /mpuport 300 = MPU-401 on 300h (AWE32 uses 330h - must not conflict)
-REM /mainvol 85  = celkovy vystup 85% (headroom proti clippingu)
- REM /gusvol 85   = GUS vystup 85%
- REM /wtvol 85    = X16GS wavetable 85% (snizeno kvuli clippingu)
-REM /mpudelay 1  = zpomalit SysEx pro Roland kompatibilni syntetizatory
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
+ REM /gusvol 85   = GUS output 85%
+ REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 
 REM --- CD-ROM ---
@@ -1945,9 +1945,9 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 > playing 2 or more notes simultaneously). This section is preserved in case the module
 > is returned after repair or replacement.
 
-### Co to je
+### What it is
 
-DreamBlaster X16GS je waveblaster daughterboard od Serdaco s chipem Dream SAM5716B
+DreamBlaster X16GS is a waveblaster daughterboard by Serdaco with a Dream SAM5716B chip
 with a preloaded licensed Roland GS bank. Plugs into the PicoGUS waveblaster header
 just like McCake.
 
