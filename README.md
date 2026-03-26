@@ -1168,7 +1168,10 @@ REM --- SoftMPU - intelligent mode MPU-401 emulation for MT-32 games ---
 REM Required for: Monkey Island 1, Sierra games, Ultima Underworld
 REM AWE32 supports UART mode only - SoftMPU adds intelligent mode
 REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
+REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
+REM WARNING: AWEUTIL /EM:* cannot be combined with SoftMPU!
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 
 REM --- PicoGUS ---
 REM /mode gus    = Gravis UltraSound emulation
@@ -1197,7 +1200,7 @@ REM -----------------------------------------------
 :EMS
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -1435,7 +1438,7 @@ LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32    ← then load new mode
 REM Profile 3 NORMAL — order in AUTOEXEC:
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S             ← hardware init only, 0 KB memory
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 
 REM Profile 1 NOSOFTMPU — order in AUTOEXEC:
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
@@ -1467,7 +1470,7 @@ intentional retro sound.
 ---
 
 ### Category 1 — MT-32 games
-**QX1222USB: CH 3+4 (MT-32) UP, CH 11+12 (AWE32) up for effects | SoftMPU active**
+**QX1222USB: CH 3+4 (MT-32) UP, CH 11+12 (AWE32) up for effects | Profile: NORMAL**
 
 These games were composed specifically for the Roland MT-32. SC-55 and GM
 emulation do not sound correct — specific MT-32 timbre sets and SysEx
@@ -1475,50 +1478,50 @@ initialization are missing.
 
 **Sierra On-Line:**
 
-| Game | Year | Setup |
-|---|---|---|
-| King's Quest 4 | 1988 | Music: Roland MT-32, port 330 |
-| King's Quest 5 | 1990 | Music: Roland MT-32 or MIDI, port 330 |
-| Space Quest 3 | 1989 | Music: Roland MT-32, port 330 |
-| Space Quest 4 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
-| Police Quest 2 | 1988 | Music: Roland MT-32, port 330 |
-| Police Quest 3 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
-| Quest for Glory 1 (EGA/VGA) | 1989/1992 | Music: Roland MT-32, port 330 |
-| Quest for Glory 2 | 1990 | Music: Roland MT-32, port 330 |
-| Leisure Suit Larry 3 | 1989 | Music: Roland MT-32, port 330 |
-| Leisure Suit Larry 5 | 1991 | Music: Roland MT-32 or MIDI, port 330 |
-| Gabriel Knight 1 | 1993 | Music: Roland MT-32 or General MIDI |
-| Conquests of Camelot | 1990 | Music: Roland MT-32, port 330 |
-| Conquests of Longbow | 1991 | Music: Roland MT-32, port 330 |
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| King's Quest 4 | 1988 | Music: Roland MT-32, port 330 | Yes | No |
+| King's Quest 5 | 1990 | Music: Roland MT-32 or MIDI, port 330 | Yes | No |
+| Space Quest 3 | 1989 | Music: Roland MT-32, port 330 | Yes | No |
+| Space Quest 4 | 1991 | Music: Roland MT-32 or MIDI, port 330 | Yes | No |
+| Police Quest 2 | 1988 | Music: Roland MT-32, port 330 | Yes | No |
+| Police Quest 3 | 1991 | Music: Roland MT-32 or MIDI, port 330 | Yes | No |
+| Quest for Glory 1 (EGA/VGA) | 1989/1992 | Music: Roland MT-32, port 330 | Yes | No |
+| Quest for Glory 2 | 1990 | Music: Roland MT-32, port 330 | Yes | No |
+| Leisure Suit Larry 3 | 1989 | Music: Roland MT-32, port 330 | Yes | No |
+| Leisure Suit Larry 5 | 1991 | Music: Roland MT-32 or MIDI, port 330 | Yes | No |
+| Gabriel Knight 1 | 1993 | Music: Roland MT-32 or General MIDI | Yes | No |
+| Conquests of Camelot | 1990 | Music: Roland MT-32, port 330 | Yes | No |
+| Conquests of Longbow | 1991 | Music: Roland MT-32, port 330 | Yes | No |
 
 **LucasArts (floppy versions — CD versions have GM):**
 
-| Game | Year | Notes |
-|---|---|---|
-| Maniac Mansion | 1987 | Music: Roland MT-32 |
-| Zak McKracken | 1988 | Music: Roland MT-32 |
-| Indiana Jones Last Crusade | 1989 | Music: Roland MT-32 — SoftMPU required (intelligent mode) |
-| Loom (floppy) | 1990 | Music: Roland MT-32 — SoftMPU required |
-| Monkey Island 1 (floppy) | 1990 | Music: Roland MT-32 — SoftMPU required |
-| Monkey Island 2 | 1991 | MT-32 or GM — GM on SC-55 sounds great |
+| Game | Year | Notes | SoftMPU | EMS |
+|---|---|---|---|---|
+| Maniac Mansion | 1987 | Music: Roland MT-32 | Yes | No |
+| Zak McKracken | 1988 | Music: Roland MT-32 | Yes | No |
+| Indiana Jones Last Crusade | 1989 | Music: Roland MT-32 — intelligent mode | Yes | No |
+| Loom (floppy) | 1990 | Music: Roland MT-32 — intelligent mode | Yes | No |
+| Monkey Island 1 (floppy) | 1990 | Music: Roland MT-32 — intelligent mode | Yes | No |
+| Monkey Island 2 | 1991 | MT-32 or GM — GM on SC-55 sounds great | Yes | No |
 
 **Origin / Wing Commander:**
 
-| Game | Year | Setup |
-|---|---|---|
-| Wing Commander 1 | 1990 | Music: Roland MT-32, port 330, Sound: SB |
-| Wing Commander 2 | 1991 | Music: Roland MT-32, port 330, Sound: SB |
-| Ultima VI | 1990 | Music: Roland MT-32, port 330 |
-| Ultima Underworld 1 | 1992 | Music: General MIDI (SC-55) — SoftMPU required |
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| Wing Commander 1 | 1990 | Music: Roland MT-32, port 330, Sound: SB | Yes | No |
+| Wing Commander 2 | 1991 | Music: Roland MT-32, port 330, Sound: SB | Yes | No |
+| Ultima VI | 1990 | Music: Roland MT-32, port 330 | Yes | No |
+| Ultima Underworld 1 | 1992 | Music: General MIDI (SC-55) — intelligent mode | Yes | No |
 
 **SSI / Westwood (dungeon/RPG):**
 
-| Game | Year | Setup |
-|---|---|---|
-| Eye of the Beholder 1 | 1991 | Music: Roland MT-32, port 330 |
-| Eye of the Beholder 2 | 1991 | Music: Roland MT-32, port 330 |
-| Pool of Radiance | 1988 | Music: Roland MT-32 |
-| Champions of Krynn | 1990 | Music: Roland MT-32 |
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| Eye of the Beholder 1 | 1991 | Music: Roland MT-32, port 330 | Yes | No |
+| Eye of the Beholder 2 | 1991 | Music: Roland MT-32, port 330 | Yes | No |
+| Pool of Radiance | 1988 | Music: Roland MT-32 | Yes | No |
+| Champions of Krynn | 1990 | Music: Roland MT-32 | Yes | No |
 
 ```
 Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
@@ -1532,7 +1535,7 @@ MIDI port     : 330
 ---
 
 ### Category 2 — GM/GS games — SC-55
-**QX1222USB: CH 5+6 (SC-55) UP, CH 11+12 (AWE32) up for effects**
+**QX1222USB: CH 5+6 (SC-55) UP, CH 11+12 (AWE32) up for effects | Profile: NORMAL**
 
 These games were composed or optimized for the Roland SC-55/SC-88.
 SC-55 sounds more authentic than any emulation — the music was typically
@@ -1540,58 +1543,58 @@ mixed directly on this hardware.
 
 **LucasArts iMUSE engine:**
 
-| Game | Year | Setup |
-|---|---|---|
-| Monkey Island 2 | 1991 | General MIDI, port 330 — iMUSE dynamic music |
-| Indiana Jones Fate of Atlantis | 1992 | General MIDI, port 330 |
-| Day of the Tentacle | 1993 | General MIDI, port 330 — iMUSE |
-| Sam & Max Hit the Road | 1993 | General MIDI, port 330 — iMUSE |
-| Dark Forces | 1995 | General MIDI, port 330 — iMUSE |
-| Full Throttle | 1995 | General MIDI, port 330 — iMUSE |
-| The Dig | 1995 | General MIDI, port 330 — iMUSE |
-| TIE Fighter | 1994 | General MIDI, port 330 — iMUSE |
-| X-Wing | 1993 | General MIDI, port 330 — iMUSE |
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| Monkey Island 2 | 1991 | General MIDI, port 330 — iMUSE dynamic music | No | No |
+| Indiana Jones Fate of Atlantis | 1992 | General MIDI, port 330 | No | No |
+| Day of the Tentacle | 1993 | General MIDI, port 330 — iMUSE | No | No |
+| Sam & Max Hit the Road | 1993 | General MIDI, port 330 — iMUSE | No | No |
+| Dark Forces | 1995 | General MIDI, port 330 — iMUSE | No | No |
+| Full Throttle | 1995 | General MIDI, port 330 — iMUSE | No | No |
+| The Dig | 1995 | General MIDI, port 330 — iMUSE | No | No |
+| TIE Fighter | 1994 | General MIDI, port 330 — iMUSE | No | No |
+| X-Wing | 1993 | General MIDI, port 330 — iMUSE | No | No |
 
 **Westwood Studios:**
 
-| Game | Year | Setup |
-|---|---|---|
-| Legend of Kyrandia 1 | 1992 | General MIDI, port 330 |
-| Legend of Kyrandia 2 | 1993 | General MIDI, port 330 |
-| Legend of Kyrandia 3 | 1994 | General MIDI, port 330 |
-| Command & Conquer | 1995 | General MIDI, port 330 — SC-55 sounds excellent |
-| Red Alert | 1996 | General MIDI, port 330 |
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| Legend of Kyrandia 1 | 1992 | General MIDI, port 330 | No | No |
+| Legend of Kyrandia 2 | 1993 | General MIDI, port 330 | No | No |
+| Legend of Kyrandia 3 | 1994 | General MIDI, port 330 | No | No |
+| Command & Conquer | 1995 | General MIDI, port 330 — SC-55 sounds excellent | No | No |
+| Red Alert | 1996 | General MIDI, port 330 | No | No |
 
 **Origin Systems:**
 
-| Game | Year | Setup |
-|---|---|---|
-| Wing Commander 3 | 1994 | General MIDI, port 330, Sound: SB16 |
-| Wing Commander 4 | 1996 | General MIDI, port 330, Sound: SB16 |
-| Privateer | 1993 | General MIDI, port 330, Sound: SB |
-| Ultima Underworld 1 | 1992 | General MIDI, port 330, Sound: SB16 |
-| Ultima Underworld 2 | 1993 | General MIDI, port 330, Sound: SB16 |
-| Ultima 7 Part 1+2 | 1992/1993 | General MIDI, port 330 |
-| Ultima 8 | 1994 | General MIDI, port 330 |
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| Wing Commander 3 | 1994 | General MIDI, port 330, Sound: SB16 | No | No |
+| Wing Commander 4 | 1996 | General MIDI, port 330, Sound: SB16 | No | No |
+| Privateer | 1993 | General MIDI, port 330, Sound: SB | No | No |
+| Ultima Underworld 1 | 1992 | General MIDI, port 330, Sound: SB16 | No | No |
+| Ultima Underworld 2 | 1993 | General MIDI, port 330, Sound: SB16 | No | No |
+| Ultima 7 Part 1+2 | 1992/1993 | General MIDI, port 330 | No | No |
+| Ultima 8 | 1994 | General MIDI, port 330 | No | No |
 
 **Microprose / Strategy:**
 
-| Game | Year | Setup |
-|---|---|---|
-| X-COM UFO Defense | 1994 | General MIDI, port 330, Sound: SB16 |
-| X-COM Terror from the Deep | 1995 | General MIDI, port 330 |
-| Civilization 2 | 1996 | AWE32 native or GM, port 330 — see Category 4 |
-| Master of Orion 2 | 1996 | AWE32 native or GM — see Category 4 |
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| X-COM UFO Defense | 1994 | General MIDI, port 330, Sound: SB16 | No | No |
+| X-COM Terror from the Deep | 1995 | General MIDI, port 330 | No | No |
+| Civilization 2 | 1996 | AWE32 native or GM, port 330 — see Category 4 | No | No |
+| Master of Orion 2 | 1996 | AWE32 native or GM — see Category 4 | No | No |
 
 **Other:**
 
-| Game | Year | Setup |
-|---|---|---|
-| Crusader No Remorse | 1995 | General MIDI, port 330, Sound: SB16 |
-| Crusader No Regret | 1996 | General MIDI, port 330, Sound: SB16 |
-| Descent 1 | 1994 | GM or GUS — GUS recommended for music |
-| Descent 2 | 1996 | GM or GUS — GUS recommended for music |
-| Warcraft 2 | 1995 | AWE32 native or GM — see Category 4 |
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| Crusader No Remorse | 1995 | General MIDI, port 330, Sound: SB16 | No | No |
+| Crusader No Regret | 1996 | General MIDI, port 330, Sound: SB16 | No | No |
+| Descent 1 | 1994 | GM or GUS — GUS recommended for music | No | No |
+| Descent 2 | 1996 | GM or GUS — GUS recommended for music | No | No |
+| Warcraft 2 | 1995 | AWE32 native or GM — see Category 4 | No | No |
 
 ```
 Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
@@ -1609,7 +1612,7 @@ MIDI port     : 330
 ---
 
 ### Category 3 — GUS games
-**QX1222USB: CH 9+10 (PicoGUS) UP, CH 11+12 (AWE32) up for effects**
+**QX1222USB: CH 9+10 (PicoGUS) UP, CH 11+12 (AWE32) up for effects | Profile: NORMAL**
 
 These games have native Gravis UltraSound support with their own sampled
 patch sets. GUS sounds better in these games than SB16 due to wavetable
@@ -1617,33 +1620,33 @@ synthesis directly in hardware — no MIDI emulation needed.
 
 **id Software:**
 
-| Game | Year | Sound Effects | Music | GUS setup |
-|---|---|---|---|---|
-| Doom | 1993 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect via ULTRASND |
-| Doom 2 | 1994 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
-| Heretic | 1994 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
-| Hexen | 1995 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | auto-detect |
-| Quake | 1996 | SB16 port 220 IRQ 5 DMA 1 | CD audio or GUS | see below |
+| Game | Year | Sound Effects | Music | SoftMPU | EMS |
+|---|---|---|---|---|---|
+| Doom | 1993 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | No | No |
+| Doom 2 | 1994 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | No | No |
+| Heretic | 1994 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | No | No |
+| Hexen | 1995 | SB port 220 IRQ 5 DMA 1 | Gravis UltraSound | No | No |
+| Quake | 1996 | SB16 port 220 IRQ 5 DMA 1 | CD audio or GUS | No | No |
 
 **Apogee / 3D Realms:**
 
-| Game | Year | Sound Effects | Music |
-|---|---|---|---|
-| Duke Nukem 3D | 1996 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
-| Shadow Warrior | 1997 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
-| Blood | 1997 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 |
-| Rise of the Triad | 1994 | SB port 220 IRQ 5 DMA 1 | GUS port 240 IRQ 7 DMA 3 |
-| Terminal Velocity | 1995 | SB16 port 220 IRQ 5 DMA 1 | GUS port 240 IRQ 7 DMA 3 |
+| Game | Year | Sound Effects | Music | SoftMPU | EMS |
+|---|---|---|---|---|---|
+| Duke Nukem 3D | 1996 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 | No | No |
+| Shadow Warrior | 1997 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 | No | No |
+| Blood | 1997 | SB16 port 220 IRQ 5 DMA 1 DMA16 5 | GUS port 240 IRQ 7 DMA 3 | No | No |
+| Rise of the Triad | 1994 | SB port 220 IRQ 5 DMA 1 | GUS port 240 IRQ 7 DMA 3 | No | No |
+| Terminal Velocity | 1995 | SB16 port 220 IRQ 5 DMA 1 | GUS port 240 IRQ 7 DMA 3 | No | No |
 
 **Other:**
 
-| Game | Year | Notes |
-|---|---|---|
-| Strife | 1996 | GUS music, SB effects |
-| Descent 1 | 1994 | GUS preferred over GM |
-| Descent 2 | 1996 | GUS preferred over GM |
-| Raptor Call of Shadows | 1994 | GUS music |
-| Blake Stone | 1993 | GUS music |
+| Game | Year | Notes | SoftMPU | EMS |
+|---|---|---|---|---|
+| Strife | 1996 | GUS music, SB effects | No | No |
+| Descent 1 | 1994 | GUS preferred over GM | No | No |
+| Descent 2 | 1996 | GUS preferred over GM | No | No |
+| Raptor Call of Shadows | 1994 | GUS music | No | No |
+| Blake Stone | 1993 | GUS music | No | No |
 
 ```bat
 REM Doom / Doom 2 / Heretic / Hexen:
@@ -1679,23 +1682,23 @@ REM Quake (GLQuake with Voodoo2):
 ---
 
 ### Category 4 — AWE32 native games (EMU8000 wavetable)
-**QX1222USB: CH 11+12 (AWE32) UP for all | AWEUTIL /S runs from AUTOEXEC — no extra step**
+**QX1222USB: CH 11+12 (AWE32) UP for all | Profile: NORMAL | AWEUTIL /S runs from AUTOEXEC**
 
 These games access the EMU8000 synthesizer directly. AWEUTIL /S runs from
 AUTOEXEC — no additional steps before launching. If the game offers both GM
 and AWE32, always choose AWE32 (native wavetable, better quality).
 
-| Game | Year | Select in setup | Notes |
-|---|---|---|---|
-| FIFA Soccer 95 | 1994 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| FIFA Soccer 96 | 1995 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| FIFA Soccer 97 | 1996 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| NHL 96 | 1995 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| NHL 97 | 1996 | Sound Blaster AWE32 | port 220, IRQ 5, DMA 1 |
-| Need for Speed (DOS) | 1994 | AWE32 or SB16 | prefer AWE32 |
-| Warcraft 2 | 1995 | AWE32 or GM | AWE32: CH 11+12 up only; GM: CH 5+6 (SC-55) + CH 11+12 |
-| Civilization 2 | 1996 | Sound Blaster AWE32 | or GM via SC-55 |
-| Master of Orion 2 | 1996 | AWE32 or GM | prefer AWE32 |
+| Game | Year | Select in setup | SoftMPU | EMS | Notes |
+|---|---|---|---|---|---|
+| FIFA Soccer 95 | 1994 | Sound Blaster AWE32 | No | No | port 220, IRQ 5, DMA 1 |
+| FIFA Soccer 96 | 1995 | Sound Blaster AWE32 | No | No | port 220, IRQ 5, DMA 1 |
+| FIFA Soccer 97 | 1996 | Sound Blaster AWE32 | No | No | port 220, IRQ 5, DMA 1 |
+| NHL 96 | 1995 | Sound Blaster AWE32 | No | No | port 220, IRQ 5, DMA 1 |
+| NHL 97 | 1996 | Sound Blaster AWE32 | No | No | port 220, IRQ 5, DMA 1 |
+| Need for Speed (DOS) | 1994 | AWE32 or SB16 | No | No | prefer AWE32 |
+| Warcraft 2 | 1995 | AWE32 or GM | No | No | AWE32: CH 11+12 only; GM: CH 5+6 + CH 11+12 |
+| Civilization 2 | 1996 | Sound Blaster AWE32 | No | No | or GM via SC-55 |
+| Master of Orion 2 | 1996 | AWE32 or GM | No | No | prefer AWE32 |
 
 ```
 Sound Card    : Sound Blaster AWE32
@@ -1708,77 +1711,52 @@ Before game: nothing — AWEUTIL /S runs from AUTOEXEC automatically
 ---
 
 ### Category 5 — GM/GS games without external modules
-**QX1222USB: CH 9+10 (PicoGUS/X16GS) UP + CH 11+12 (AWE32) for effects, or CH 11+12 only (AWEUTIL)**
+**QX1222USB: CH 9+10 (PicoGUS/McCake) UP + CH 11+12 (AWE32) for effects | Profile: NORMAL**
 
 Use when SC-55 is not connected or you do not want to switch MIDI chain.
-Two options — X16GS or AWEUTIL /EM:GS:
+McCake on port 300h via PicoGUS — no preparation needed, always active.
 
-| | X16GS (port 300h) | AWEUTIL /EM:GS (port 330h) |
-|---|---|---|
-| Sound quality | Very good | Good |
-| Extra memory | 0 KB | ~26 KB UMB |
-| Works with DOS extenders | Yes | No |
-| Requires PicoGUS | Yes | No |
-| Preparation | `DOSMID Slot1.mid` | `LH AWEUTIL.COM /EM:GS` |
-
-**Option A — X16GS (recommended, better sound):**
+| Game | Year | Setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| Doom / Doom 2 | 1993/94 | GM port 300, SB port 220 | No | No |
+| Duke Nukem 3D | 1996 | GM port 300, SB port 220 | No | No |
+| Quake | 1996 | SB16 port 220 | No | No |
+| Tyrian | 1995 | GM port 300 | No | **Yes** (EMS profile) |
+| Magic Carpet | 1994 | SB16 port 220 | No | **Yes** (EMS profile) |
+| Descent 1/2 | 1994/96 | GM port 300 or GUS | No | No |
 
 ```bat
-REM Switch X16GS to Bank 1 (Roland GS):
-DOSMID Slot1.mid
-
-REM In game setup:
 Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
 Music         : General MIDI
 MIDI port     : 300
-
-REM QX1222USB: CH 9+10 (PicoGUS/X16GS) + CH 11+12 (AWE32 effects)
 ```
 
-**Option B — AWEUTIL /EM:GS (without PicoGUS or for simplicity):**
-
-> ⚠️ **AWEUTIL /EM:GS conflicts with SoftMPU** loaded from AUTOEXEC.
-> Prefer Option A (X16GS) — no conflict, better sound.
-
-```bat
-LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS   ← TSR into UMB (~26 KB)
-
-REM In game setup:
-Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
-Music         : General MIDI
-MIDI port     : 330
-
-REM QX1222USB: CH 11+12 (AWE32) only — AWEUTIL routes audio through AWE32 line out
-REM After game:
-C:\DRIVERS\SB16\AWEUTIL.COM /U
-```
-
-> AWEUTIL /EM:GS does not work with DOS extender games (DOS4GW) —
-> Descent, Magic Carpet, TIE Fighter etc. Use X16GS for those.
+> AWEUTIL /EM:GS remains available as fallback via profile NOSOFTMPU (port 330h),
+> but McCake is preferred — no preparation, no memory cost, no SoftMPU conflict.
 
 ---
 
 ### Category 6 — OPL3 / AdLib / FM games
-**QX1222USB: CH 11+12 (AWE32) UP — real OPL3 CT1747**
+**QX1222USB: CH 11+12 (AWE32) UP — real OPL3 CT1747 | Profile: NORMAL**
 
 CT3900 has a **real Yamaha OPL3** chip (CT1747) — unlike AWE64 which used
 CQM emulation. These games sound authentically correct on CT3900.
 
-| Game | Year | Best setup |
-|---|---|---|
-| Wolfenstein 3D | 1992 | AdLib or SB, port 220 |
-| Commander Keen 4/5/6 | 1991/92 | AdLib port 388 |
-| Jazz Jackrabbit | 1994 | SB or AdLib, port 220 |
-| Raptor Call of Shadows | 1994 | SB or AdLib (alternative to GUS) |
-| Tyrian | 1995 | SB16 port 220 IRQ 5 DMA 1 — EMS profile required! |
-| Dune 2 | 1992 | AdLib or SB |
-| Theme Park | 1994 | SB16, port 220 |
-| Transport Tycoon | 1994 | SB16, port 220 |
-| SimCity 2000 | 1993 | SB16, port 220 |
-| Syndicate | 1993 | SB16, port 220 |
-| Magic Carpet | 1994 | SB16, port 220, DMA 1 |
-| Populous | 1989 | AdLib |
-| Lemmings | 1991 | AdLib or SB |
+| Game | Year | Best setup | SoftMPU | EMS |
+|---|---|---|---|---|
+| Wolfenstein 3D | 1992 | AdLib or SB, port 220 | No | No |
+| Commander Keen 4/5/6 | 1991/92 | AdLib port 388 | No | No |
+| Jazz Jackrabbit | 1994 | SB or AdLib, port 220 | No | No |
+| Raptor Call of Shadows | 1994 | SB or AdLib (alternative to GUS) | No | No |
+| Tyrian | 1995 | SB16 port 220 IRQ 5 DMA 1 | No | **Yes** (EMS profile) |
+| Dune 2 | 1992 | AdLib or SB | No | No |
+| Theme Park | 1994 | SB16, port 220 | No | No |
+| Transport Tycoon | 1994 | SB16, port 220 | No | No |
+| SimCity 2000 | 1993 | SB16, port 220 | No | No |
+| Syndicate | 1993 | SB16, port 220 | No | No |
+| Magic Carpet | 1994 | SB16, port 220, DMA 1 | No | **Yes** (EMS profile) |
+| Populous | 1989 | AdLib | No | No |
+| Lemmings | 1991 | AdLib or SB | No | No |
 
 ```
 Sound Card : Sound Blaster  or  Ad Lib
@@ -1791,24 +1769,24 @@ FM Music   : OPL3 / AdLib   port 388 (automatic)
 ---
 
 ### Category 7 — 3dfx Voodoo2 games
-**Mixer: per sound category above**
+**Mixer: per sound category above | Profile: NORMAL (or EMS for DOS4GW titles)**
 
 Voodoo2 uses the Glide 2.x API. Always run the Glide/3dfx executable,
 not the software renderer.
 
-| Game | Year | Executable | Sound |
-|---|---|---|---|
-| Quake | 1996 | GLQUAKE.EXE | SB16 |
-| Quake 2 | 1997 | QUAKE2.EXE (GL version) | SB16 |
-| Tomb Raider 2 | 1997 | TOMBRAID.EXE (Glide) | SB16 |
-| Unreal | 1998 | UNREAL.EXE /glide | SB16 |
-| Turok Dinosaur Hunter | 1997 | TUROK.EXE (Glide) | SB16 |
-| Forsaken | 1998 | Glide version | SB16 |
-| Carmageddon | 1997 | Glide version | SB16 |
-| Need for Speed 2 SE | 1997 | Glide version | SB16 |
-| Need for Speed 3 | 1998 | Glide version | SB16 |
-| Interstate '76 | 1997 | Glide version | SB16 GM |
-| Motorhead | 1998 | Glide version | SB16 |
+| Game | Year | Executable | Sound | SoftMPU | EMS |
+|---|---|---|---|---|---|
+| Quake | 1996 | GLQUAKE.EXE | SB16 | No | No |
+| Quake 2 | 1997 | QUAKE2.EXE (GL version) | SB16 | No | No |
+| Tomb Raider 2 | 1997 | TOMBRAID.EXE (Glide) | SB16 | No | No |
+| Unreal | 1998 | UNREAL.EXE /glide | SB16 | No | **Yes** |
+| Turok Dinosaur Hunter | 1997 | TUROK.EXE (Glide) | SB16 | No | No |
+| Forsaken | 1998 | Glide version | SB16 | No | No |
+| Carmageddon | 1997 | Glide version | SB16 | No | No |
+| Need for Speed 2 SE | 1997 | Glide version | SB16 | No | No |
+| Need for Speed 3 | 1998 | Glide version | SB16 | No | No |
+| Interstate '76 | 1997 | Glide version | SB16 GM | No | No |
+| Motorhead | 1998 | Glide version | SB16 | No | No |
 
 ```bat
 REM Glide 2.x must be in game directory or PATH
