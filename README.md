@@ -16,7 +16,9 @@
 | Video | ATI MACH64 (Rage Pro Turbo) | PCI |
 | 3D Accelerator | 3dfx Voodoo2 | PCI |
 | Sound Card | Creative Sound Blaster AWE32 CT3900 | ISA |
-| GUS / MIDI Card | PicoGUS v2.0 + DreamBlaster X16GS | ISA |
+| GUS / MIDI Card | PicoGUS v2.0 | ISA |
+| SF2 / GM Synth | Serdaco WP32 McCake (mt32-pi, CM4) | Waveblaster header |
+| McCake Panel | Serdaco MT32Pi Drive Bay Panel 5.25 + OLED | 5.25" bay |
 | CD-ROM | Samsung (SSCDROM.SYS) | IDE |
 | Mouse | Serial mouse, auto-detected by CTMOUSE | COM2 |
 | BIOS | Award Modular BIOS v4.51PG (09/18/97) | — |
@@ -390,10 +392,11 @@ IRQ 5, DMA 1/5 are the card defaults and match this system perfectly.
 
 ---
 
-## PicoGUS v2.0 + DreamBlaster X16GS — Installation Guide
+## PicoGUS v2.0 + WP32 McCake — Installation Guide
 
 **System:** Rhino 15 / Pentium MMX / AWE32 CT3900 already installed / MS-DOS 6.22
-**Card being installed:** PicoGUS v2.0 + DreamBlaster X16GS daughterboard
+**Card being installed:** PicoGUS v2.0 + Serdaco WP32 McCake (mt32-pi, CM4)
+**Panel:** Serdaco MT32Pi Drive Bay Panel 5.25" with OLED display and buttons
 **Target slot:** free ISA slot (AWE32 in adjacent slot)
 
 ---
@@ -401,25 +404,24 @@ IRQ 5, DMA 1/5 are the card defaults and match this system perfectly.
 ### What you are installing
 
 **PicoGUS v2.0** is an ISA card based on a Raspberry Pi Pico microcontroller
-that emulates a Gravis UltraSound (GUS) and provides a second MPU-401 MIDI
-interface independent of the AWE32.
+that emulates a Gravis UltraSound (GUS) and provides a second MPU-401 MIDI interface independent of the AWE32.
 
-**DreamBlaster X16GS** is a wavetable daughterboard that plugs into the
-PicoGUS waveblaster header. It contains a Dream SAM5000 chip with preloaded
-Roland-licensed GS banks — effectively a standalone SC-55 replacement that
-requires no external power or MIDI cable.
+**WP32 McCake** is a waveblaster-compatible card with a Raspberry Pi Compute Module 4
+running mt32-pi software. Plays SF2 soundfonts via the FluidSynth engine.
+Plugs directly into the PicoGUS waveblaster header — no external cable or power
+required (powered from the header or optionally from a floppy connector).
 
-X16GS audio routes internally through PicoGUS and comes out via the PicoGUS
-line out — one stereo cable to QX1222USB CH 9+10 is all that is needed.
+McCake audio routes internally through PicoGUS and comes out via the PicoGUS line out —
+jeden stereo kabel do QX1222USB CH 9+10.
 
 ### What this adds to the system
 
-| Before PicoGUS | After PicoGUS |
+| Before | After |
 |---|---|
-| GM/GS games require SC-55 or AWEUTIL /EM (conflicts with SoftMPU) | X16GS on port 300h — GM/GS with no SoftMPU conflict |
+| GM games require SC-55 or AWEUTIL /EM (conflicts with SoftMPU) | McCake on port 300h — GM via SF2, no conflict |
 | GUS games (Doom, Duke3D) use SB music only | Native Gravis UltraSound music, superior quality |
-| AWEUTIL /EM:GS wastes ~26 KB UMB | X16GS uses 0 KB extra memory |
-| AWEUTIL /EM:GS does not work with DOS extenders | X16GS works with all games regardless of memory model |
+| AWEUTIL /EM:GS wastes ~26 KB UMB | McCake uses 0 KB extra memory |
+| AWEUTIL /EM:GS does not work with DOS extenders | McCake works with all games regardless of memory model |
 
 ---
 
@@ -618,7 +620,7 @@ Check in order:
 
 ### Step 7 — AUTOEXEC.BAT — stav po instalaci
 
-PicoGUS je nainstalován. Tyto řádky jsou aktivní v AUTOEXEC.BAT:
+PicoGUS is installed. These lines are active in AUTOEXEC.BAT:
 
 ```bat
 SET ULTRASND=240,3,3,7,7
@@ -626,10 +628,10 @@ SET ULTRADIR=C:\DRIVERS\PICOGUS
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
 ```
 
-ULTRASND a ULTRADIR jsou v sekci [COMMON] — načtou se při každém profilu.
-PGUSINIT je v každém profilu samostatně (NOSOFTMPU, NOSOFTEMU, NORMAL, EMS).
+ULTRASND and ULTRADIR are in the [COMMON] section — loaded in every profile.
+PGUSINIT is in each profile separately (NOSOFTMPU, NOSOFTEMU, NORMAL, EMS).
 
-Rebootuj a ověř že PGUSINIT výpis je vidět během boot sekvence.
+Reboot and verify that the PGUSINIT output is visible during the boot sequence.
 
 ---
 
@@ -670,7 +672,7 @@ PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
                Hlasitost upravuj na QX1222USB CH 9+10, ne zde
 
 /mpudelay 1    Zpomalit odeslani SysEx zprav
-               Zabraní preteeni bufferu Roland kompatibilnich syntetizatoru
+               Prevents SysEx buffer overflow on Roland-compatible synthesizers
                Pouzivat vzdy s X16GS
 
 /save          Save settings to PicoGUS flash — use only once at setup
@@ -695,43 +697,68 @@ CD-ROM emulation in `sb` mode is not used — physical Samsung drive is used.
 
 ---
 
-### DreamBlaster X16GS — Soundbanks and Bank Switching
+### WP32 McCake — SF2 Soundfonty
 
-#### Preloaded Banks
+McCake runs mt32-pi (FluidSynth engine). SF2 files are copied to the micro SD card
+into the `/soundfonts/` folder. Switching soundfonts is done via buttons on the drive bay panel
+or through the mt32-pi command line utility.
 
-| Bank | Content | Best for |
-|---|---|---|
-| **1** | Dream/Roland GS (licensed ROM) | **Default** — GM/GS games, SC-55 substitute |
-| 2 | Dream CleanWave | General purpose GM |
-| 3 | Buran Bank | Alternative character |
-| 4 | OPL3-FM GM | Retro FM feel via wavetable |
-| 5 | GXSCC Chiptune | 8-bit / NES/SNES style |
+#### Recommended SF2 soundfonts for DOS gaming
 
-Bank 1 is active on power-up and is the best choice for DOS gaming.
+| Soundfont | Size | Style | Download | Notes |
+|---|---|---|---|---|
+| **GeneralUser GS** | ~30 MB | GM/GS | [schristiancollins.com](http://schristiancollins.com/generaluser.php) | **Default** — included with mt32-pi, good all-rounder |
+| **Patch93 Roland SC-55 v1.9** | ~130 MB | SC-55 | [archive.org](https://archive.org/details/500-soundfonts-full-gm-sets) | Best SC-55 approximation for DOS games |
+| **Timbres of Heaven** | ~300 MB | GM/GS/XG | [midkar.com](http://midkar.com/soundfonts/) | High quality, GM/GS/XG support |
+| **Arachno SoundFont** | ~150 MB | GM | [arachnosoft.com](http://www.arachnosoft.com/main/soundfont.php) | Distinctive, modern sound |
+| **SGM-V2.01** | ~260 MB | GM/GS | [archive.org](https://archive.org/details/SGM-V2.01) | Good all-rounder, balanced sound |
+| **8mbgm_enhanced18** | ~8 MB | GM | [archive.org](https://archive.org/download/soundfonts_201910/8mbgm_enhanced18.sf2) | Small, retro style, fast loading |
 
-#### Bank switching commands
+> ⚠️ CM4 with 1 GB RAM can handle soundfonts up to ~500 MB. For soundfonts over 1 GB
+> a CM4 with 2 GB or more RAM is required.
 
-Bank is selected by sending a MIDI file through the X16GS MPU-401 on port 300h.
-DOSMID.CFG defaults are already set: `/mpu=300 /preset=GS /dontstop`.
+#### Recommended combination for your setup
 
-```bat
-DOSMID Slot1.mid      Bank 1: Roland GS  (default — use for all GM/GS games)
-DOSMID Slot2.mid      Bank 2: CleanWave
-DOSMID Slot3.mid      Bank 3: Buran
-DOSMID Slot4.mid      Bank 4: OPL3-FM character
-DOSMID Slot5.mid      Bank 5: Chiptune
-DOSMID Next.mid       Step to next bank
-DOSMID Previous.mid   Step to previous bank
+Since you have a physical SC-55 and MT-32, McCake is only used for games where you
+do not want to switch external modules:
+
+- **Slot 0 (default):** GeneralUser GS — fast boot, good for most GM games
+- **Slot 1:** Patch93 SC-55 v1.9 — best SC-55 approximation, for GS games
+- **Slot 2:** Timbres of Heaven — backup option, XG support
+
+#### SD card file layout
+
+```
+/soundfonts/
+    GeneralUser_GS.sf2       ← slot 0 (default)
+    SC-55_Patch93_v1.9.sf2   ← slot 1
+    Timbres_of_Heaven.sf2    ← slot 2
+/roms/                        ← MT-32 ROM files (for MT-32 mode — not needed,
+                                 you have a physical MT-32)
+mt32-pi.cfg                   ← konfigurace
 ```
 
-#### Switch X16GS response mode
+#### mt32-pi.cfg — recommended settings for SF2 mode
 
-```bat
-REM GS mode (default — best for most GM/GS games, C&C, LucasArts):
-DOSMID /mpu=300 /preset=GS /nosound /dontstop
+```ini
+[midi]
+gpio_baud_rate = 31250
 
-REM GM mode (for older GM-only games):
-DOSMID /mpu=300 /preset=GM /nosound /dontstop
+[audio]
+output_device = i2s          # McCake has I2S DAC — better quality than PWM
+i2s_dac_init = adafruit-i2s-stemma
+
+[synth]
+default_synth = soundfont    # Default mode: SF2 (not MT-32 — you have physical hardware)
+
+[fluidsynth]
+soundfont = GeneralUser_GS.sf2
+gain = 0.8
+
+[lcd]
+type = ssd1306i2c            # OLED displej na drive bay panelu
+width = 128
+height = 32
 ```
 
 ---
@@ -760,19 +787,16 @@ Music         : Gravis UltraSound  port 240  IRQ 7  DMA 3
 
 QX1222USB: **CH 9+10 (PicoGUS) UP** + CH 11+12 (AWE32) up for effects.
 
-#### GM/GS games via X16GS (no SC-55 needed)
+#### GM games via McCake SF2 (without SC-55)
 
 ```bat
-REM Switch to Bank 1 (Roland GS) first:
-DOSMID Slot1.mid
-
-REM In game setup:
+REM V game setupu:
 Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
 Music         : General MIDI
 MIDI port     : 300
 ```
 
-QX1222USB: **CH 9+10 (PicoGUS/X16GS) UP** + CH 11+12 (AWE32) for effects.
+QX1222USB: **CH 9+10 (PicoGUS/McCake) UP** + CH 11+12 (AWE32) for effects.
 
 #### MT-32 games (unchanged — PicoGUS does not affect this)
 
@@ -789,28 +813,28 @@ QX1222USB: **CH 3+4 (MT-32) UP** + CH 11+12 (AWE32) up for effects.
 
 ---
 
-### X16GS vs AWEUTIL /EM:GS — Comparison
+### McCake vs AWEUTIL /EM:GS — Comparison
 
-Before PicoGUS arrives, AWEUTIL /EM:GS was the only GM/GS option without
-a physical SC-55. After PicoGUS is installed, X16GS is the preferred route.
+Before PicoGUS, AWEUTIL /EM:GS was the only GM/GS option without a physical SC-55.
+After installation, McCake is the preferred route.
 
-| | X16GS (port 300h) | AWEUTIL /EM:GS (port 330h) |
+| | McCake SF2 (port 300h) | AWEUTIL /EM:GS (port 330h) |
 |---|---|---|
-| Sound quality | Very good (licensed Roland GS ROM) | Good (EMU8000 + Synthgs.sbk) |
+| Sound quality | Very good (depends on SF2) | Good (EMU8000 + Synthgs.sbk) |
 | Extra memory | **0 KB** | ~26 KB UMB |
-| Works with DOS extenders | **Yes** (DOS4GW, Doom, Quake) | No |
-| SoftMPU conflict | **None** | Conflicts — need profile NOSOFTMPU |
-| Preparation | `DOSMID Slot1.mid` (once) | `LH AWEUTIL.COM /EM:GS` before game |
+| Funguje s DOS extendery | **Ano** (DOS4GW, Doom, Quake) | Ne |
+| SoftMPU conflict | **None** | Conflicts — use profile NOSOFTMPU |
+| Preparation | Nothing (McCake always active) | `LH AWEUTIL.COM /EM:GS` before game |
 | After game | Nothing | `AWEUTIL.COM /U` to unload |
 | Requires PicoGUS | Yes | No |
 
-**Practical rule after PicoGUS installation:**
-Use X16GS for all GM/GS games. AWEUTIL /EM:GS is now only useful when
-PicoGUS is not available or for testing.
+**Practical rule:**
+Use McCake for all GM games. AWEUTIL /EM:GS is now only a fallback
+for cases when PicoGUS is not available.
 
 ---
 
-### Coexistence with AWE32 CT3900 — Full Resource Summary
+### AWE32 CT3900 + PicoGUS v2.0 Coexistence — Full Resource Summary
 
 | | AWE32 CT3900 | PicoGUS v2.0 |
 |---|---|---|
@@ -818,9 +842,9 @@ PicoGUS is not available or for testing.
 | Base port | 220h (SB16) | 240h (GUS) |
 | IRQ | 5 | 7 |
 | DMA | 1 (8-bit) / 5 (16-bit) | 3 |
-| MPU-401 | 330h → MT-32 → SC-55 | 300h → X16GS |
+| MPU-401 | 330h → MT-32 → SC-55 | 300h → McCake SF2 |
 | Audio output | QX1222USB CH 11+12 | QX1222USB CH 9+10 |
-| Role | SB16 sound effects, real OPL3 FM, EMU8000 wavetable, AWE32 native | GUS music, X16GS GM/GS synth |
+| Role | SB16 efekty, real OPL3 FM, EMU8000 wavetable, AWE32 native | GUS hudba, McCake GM/SF2 synth |
 
 No IRQ, DMA, or port conflicts. Both cards operate fully independently.
 
@@ -858,7 +882,7 @@ re-initialize the card on the DOS PC.
 - [ ] Manual test: `PGUSINIT /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1` prints GUS port 240 IRQ 7 DMA 3
 - [ ] Manual test: `DOSMID Slot1.mid` plays through headphones on CH 9+10
 - [ ] Manual test: Doom plays GUS music (not SB music)
-- [x] AUTOEXEC.BAT: ULTRASND, ULTRADIR, PGUSINIT aktivní ve všech profilech
+- [x] AUTOEXEC.BAT: ULTRASND, ULTRADIR, PGUSINIT active in all profiles
 - [ ] Reboot test: PGUSINIT message visible in boot sequence
 - [ ] Optional: `/save` run once to persist settings to flash
 
@@ -1807,7 +1831,7 @@ QUAKE2.EXE +set vid_ref gl
 | GM/GS games — SC-55 | down | **UP** | down | up (effects) | — |
 | GUS games (Doom, Duke3D) | down | down | **UP** | up (effects) | — |
 | AWE32 native games | down | down | down | **UP** (all) | `/S` already in AUTOEXEC |
-| GM/GS — X16GS | down | down | **UP** | up (effects) | — |
+| GM/GS — McCake SF2 | down | down | **UP** | up (effects) | — |
 | GM/GS — AWEUTIL /EM:GS | down | down | down | **UP** (all) | `LH AWEUTIL.COM /EM:GS` |
 | OPL3/AdLib only | down | down | down | **UP** (all) | — |
 
@@ -1816,7 +1840,7 @@ QUAKE2.EXE +set vid_ref gl
 | Target device | Port | When to use |
 |---|---|---|
 | MT-32 (+ SC-55 after it) | **330h** | MT-32 games, GM games with SC-55 |
-| X16GS via PicoGUS | **300h** | GM/GS games without external modules |
+| McCake (WP32) via PicoGUS | **300h** | GM games via SF2 soundfont (without SC-55) |
 | EMU8000 AWEUTIL emulation | **330h** | AWEUTIL /EM:GM, AWE32 native games |
 
 ### Switching SC-55 mode
@@ -1903,10 +1927,63 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 - IRQ/DMA change: update BLASTER in AUTOEXEC.BAT, UNISOUND programs card at boot (IRQ: 2/5/7/10, Low DMA: 0/1/3, High DMA: 5/6/7)
 - **AWEUTIL /EM:* conflicts with SoftMPU** — use profile 1 (NOSOFTMPU) for AWEUTIL emulation
 - AWE32 MPU-401 → port 330h → MT-32 → SC-55 chain
-- PicoGUS MPU-401 → port 300h → X16GS only
+- PicoGUS MPU-401 → port 300h → McCake (WP32) — SF2 soundfonty, GM hry
 - LPT1 disabled in BIOS to free IRQ 7 for PicoGUS
 - MT-32 must be first in MIDI chain, SC-55 on MT-32 MIDI THRU
 - CTMOUSE /R2 = horizontal resolution 2, COM port auto-detected
 - ULTRADIR must point to C:\DRIVERS\PICOGUS root (not MIDI subfolder)
 - CT3900 IDE port must be DISABLED (JP2+JP3 closed) — conflicts with motherboard IDE
 - CT3900 SIMM slots: both must be populated simultaneously with identical modules
+- **McCake SD card** — SF2 files in `/soundfonts/`, configuration in `mt32-pi.cfg`
+- **McCake power** — from waveblaster header (PicoGUS) or floppy connector
+
+---
+
+## DreamBlaster X16GS — Alternative (module currently under repair)
+
+> ⚠️ X16GS was replaced by McCake due to a hardware defect (digital crackling when
+> playing 2 or more notes simultaneously). This section is preserved in case the module
+> is returned after repair or replacement.
+
+### Co to je
+
+DreamBlaster X16GS je waveblaster daughterboard od Serdaco s chipem Dream SAM5716B
+with a preloaded licensed Roland GS bank. Plugs into the PicoGUS waveblaster header
+just like McCake.
+
+### Preloaded X16GS Banks
+
+| Bank | Content | DIP switch |
+|---|---|---|
+| **1** | Dream/Roland GS (licensed ROM) | 0001 — default |
+| 2 | Dream CleanWave | 0010 |
+| 3 | Buran Bank | 0011 |
+| 4 | OPL3-FM GM | 0100 |
+| 5 | GXSCC Chiptune | 0101 |
+
+### Bank switching (BAT files in C:\DRIVERS\PICOGUS\X16\)
+
+```bat
+BANK1.BAT   Bank 1: Roland GS (default)
+BANK2.BAT   Bank 2: CleanWave
+BANK3.BAT   Bank 3: Buran
+BANK4.BAT   Bank 4: OPL3-FM
+BANK5.BAT   Bank 5: Chiptune
+BANKNEXT.BAT  Next bank
+BANKPREV.BAT  Previous bank
+```
+
+### pgusinit settings for X16GS
+
+```bat
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+```
+
+### Reporting the defect to Serdaco
+
+Description for support (serdashop.com/Contact or VOGONS user `dreamblaster`):
+
+> X16GS digital noise/crackling when playing 2 or more notes simultaneously.
+> Single notes play perfectly clean. Tested via USB-MIDI from modern PC,
+> direct 3.5mm jack output, all soundbank slots, all presets.
+> Problem is consistent and reproducible.
