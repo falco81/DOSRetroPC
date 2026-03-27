@@ -586,7 +586,7 @@ SET ULTRASND=240,3,3,7,7
 SET ULTRADIR=C:\DRIVERS\PICOGUS
 
 REM 2. Initialize PicoGUS:
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 
 REM Expected output:
 REM   PicoGUS v2.x -- GUS mode
@@ -625,7 +625,7 @@ PicoGUS is installed. These lines are active in AUTOEXEC.BAT:
 ```bat
 SET ULTRASND=240,3,3,7,7
 SET ULTRADIR=C:\DRIVERS\PICOGUS
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ```
 
 ULTRASND and ULTRADIR are in the [COMMON] section — loaded in every profile.
@@ -640,7 +640,7 @@ Reboot and verify that the PGUSINIT output is visible during the boot sequence.
 After confirming everything works across a full reboot:
 
 ```bat
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1 /save
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1 /save
 ```
 
 This writes the settings to the Pico's flash memory so they survive power
@@ -656,7 +656,7 @@ not run.
 ### PGUSINIT.EXE — Full Parameter Reference
 
 ```
-PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1 [/save]
+PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1 [/save]
 
 /mode gus      GUS emulation mode — use this for all DOS gaming
                Other modes exist (sb, adlib, mpu, usb) but are not
@@ -879,7 +879,7 @@ re-initialize the card on the DOS PC.
 - [ ] PicoGUS in ISA slot, bracket screw secured
 - [ ] PicoGUS line out connected to QX1222USB CH 9+10
 - [ ] `C:\DRIVERS\PICOGUS\` contains PGUSINIT.EXE, DOSMID.EXE, MIDI\ subdirectory
-- [ ] Manual test: `PGUSINIT /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1` prints GUS port 240 IRQ 7 DMA 3
+- [ ] Manual test: `PGUSINIT /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1` prints GUS port 240 IRQ 7 DMA 3
 - [ ] Manual test: `DOSMID Slot1.mid` plays through headphones on CH 9+10
 - [ ] Manual test: Doom plays GUS music (not SB music)
 - [x] AUTOEXEC.BAT: ULTRASND, ULTRADIR, PGUSINIT active in all profiles
@@ -1129,7 +1129,7 @@ REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM
 REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS
 REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32
 REM   C:\DRIVERS\SB16\AWEUTIL.COM /U
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
@@ -1143,7 +1143,7 @@ REM -----------------------------------------------
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM SoftMPU NOT loaded
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
@@ -1176,11 +1176,11 @@ LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 REM --- PicoGUS ---
 REM /mode gus    = Gravis UltraSound emulation
 REM /mpuport 300 = MPU-401 on 300h (AWE32 uses 330h - must not conflict)
-REM /mainvol 85  = master output 85% (headroom to prevent clipping)
- REM /gusvol 85   = GUS output 85%
- REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mainvol 95  = master output 95% (headroom to prevent clipping)
+ REM /gusvol 95   = GUS output 95%
+ REM /wtvol 95    = wavetable header output 95% (lowered to prevent clipping)
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
@@ -1201,7 +1201,7 @@ REM -----------------------------------------------
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
@@ -1996,7 +1996,7 @@ BANKPREV.BAT  Previous bank
 ### pgusinit settings for X16GS
 
 ```bat
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ```
 
 ### Reporting the defect to Serdaco
