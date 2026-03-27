@@ -20,17 +20,16 @@ Verbatim Vi560 256GB M.2 SATA III
 
 | Drive | Size | Type | Filesystem | Contents |
 |---|---|---|---|---|
-| C: | 4 GB | Primary | FAT32 | MS-DOS 7.1 system, Windows 98SE, all drivers, tools |
-| D: | 100 GB | Logical | FAT32 | Games |
-| E: | ~120 GB | Logical | FAT32 | Data, ISOs, backups |
+| C: | 8 GB | Primary | FAT32 | MS-DOS 7.1 system, Windows 98SE, all drivers, tools |
+| D: | ~230 GB | Logical | FAT32 | Games + Data |
 
-**Why 4 GB for C:**
+**Why 8 GB for C:**
 The Rhino 15 Award BIOS (09/18/97) detects the disk as 8 GB due to BIOS LBA limits.
-C: must lie entirely within that 8 GB window — 4 GB is safe, fits DOS + Win98SE +
-all drivers with room to spare.
+C: must lie entirely within that 8 GB window — using the full 8 GB is safe and
+gives comfortable space for DOS + Win98SE + all drivers and tools.
 
-D: and E: are inside an Extended partition — Win98SE and DOS 7.1 access them via
-their own 32-bit drivers that bypass the BIOS limit entirely. Full capacity is
+D: is inside an Extended partition — Win98SE and DOS 7.1 access it via their own
+32-bit drivers that bypass the BIOS limit entirely. Full ~230 GB capacity is
 available regardless of what BIOS reports.
 
 ---
@@ -38,15 +37,13 @@ available regardless of what BIOS reports.
 ## Disk layout diagram
 
 ```
-Verbatim Vi560 256 GB
+Verbatim Vi560 238 GB (256 GB nominal)
 ┌─────────────────────────────────────────────────────┐
-│ C: Primary FAT32  4 GB [Active]  ← DOS + Win98SE   │
+│ C: Primary FAT32  8 GB [Active]  ← DOS + Win98SE   │
 ├─────────────────────────────────────────────────────┤
-│ Extended partition (~220 GB)                        │
+│ Extended partition (~230 GB)                        │
 │  ┌────────────────────────────────────────────────┐ │
-│  │ D: Logical FAT32  100 GB  ← Games             │ │
-│  ├────────────────────────────────────────────────┤ │
-│  │ E: Logical FAT32  ~120 GB ← Data / ISOs       │ │
+│  │ D: Logical FAT32  ~230 GB ← Games + Data      │ │
 │  └────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────┘
 ```
@@ -93,7 +90,7 @@ In the disk map, right-click each partition → Delete. Apply.
 
 The disk should show as entirely unallocated.
 
-### Step 4 — Create C: partition (4 GB, Primary, FAT32, aligned)
+### Step 4 — Create C: partition (8 GB, Primary, FAT32, aligned)
 
 Right-click the unallocated space → Create:
 
@@ -101,7 +98,7 @@ Right-click the unallocated space → Create:
 |---|---|
 | Partition Label | SYSTEM |
 | File System | FAT32 |
-| Size | **4096 MB** |
+| Size | **8192 MB** |
 | Align to | **2048 sectors** (= 1 MB boundary — correct for SSD) |
 | Partition Type | **Primary** |
 
@@ -120,7 +117,7 @@ Right-click the remaining unallocated space → Create:
 
 Click OK.
 
-### Step 6 — Create D: partition (100 GB, Logical, FAT32, aligned)
+### Step 6 — Create D: partition (all logical space, FAT32, aligned)
 
 Right-click the free space inside the Extended partition → Create:
 
@@ -128,35 +125,21 @@ Right-click the free space inside the Extended partition → Create:
 |---|---|
 | Partition Label | GAMES |
 | File System | FAT32 |
-| Size | **102400 MB** |
+| Size | all remaining (leave default) |
 | Align to | **2048 sectors** |
 | Partition Type | Logical (automatic — inside Extended) |
 
 Click OK.
 
-### Step 7 — Create E: partition (remaining space, Logical, FAT32, aligned)
+### Step 7 — Set C: as Active
 
-Right-click the remaining free space inside the Extended partition → Create:
+Right-click the C: (SYSTEM, 8 GB Primary) partition → Set Active.
 
-| Setting | Value |
-|---|---|
-| Partition Label | DATA |
-| File System | FAT32 |
-| Size | all remaining (leave default) |
-| Align to | **2048 sectors** |
-| Partition Type | Logical (automatic) |
-
-Click OK.
-
-### Step 8 — Set C: as Active
-
-Right-click the C: (SYSTEM, 4 GB Primary) partition → Set Active.
-
-### Step 9 — Apply
+### Step 8 — Apply
 
 Click Apply → Yes. MiniTool writes the partition table with correct alignment.
 
-### Step 10 — Disconnect and move to retro PC
+### Step 9 — Disconnect and move to retro PC
 
 Safely eject the disk. Reconnect the full adapter chain to the retro PC
 via the 80-conductor IDE cable.
@@ -167,12 +150,12 @@ via the 80-conductor IDE cable.
 
 ## Phase 2 — Format and install MS-DOS 7.1
 
-### Step 11 — Boot from MS-DOS 7.1 CDU ISO
+### Step 10 — Boot from MS-DOS 7.1 CDU ISO
 
 Set BIOS boot order to boot from your CDU media (USB or CD).
 Boot to DOS prompt (e.g. `A:\>` or `X:\>`).
 
-### Step 12 — Format all three partitions
+### Step 11 — Format both partitions
 
 > Partitions already exist from MiniTool — only FORMAT is needed, not FDISK.
 
@@ -187,12 +170,11 @@ When done:
 
 ```bat
 FORMAT D: /V:GAMES
-FORMAT E: /V:DATA
 ```
 
-D: and E: do not need `/S` — data drives only.
+D: does not need `/S` — data drive only.
 
-### Step 13 — Verify
+### Step 12 — Verify
 
 ```bat
 C:
@@ -206,7 +188,7 @@ Confirm DOS boots from the new drive.
 
 ## Phase 3 — Install MS-DOS 7.1 base system
 
-### Step 14 — Create directory structure on C:
+### Step 13 — Create directory structure on C:
 
 ```bat
 C:
@@ -217,7 +199,7 @@ MD NC
 MD DOS\TMP
 ```
 
-### Step 15 — Copy DOS 7.1 files from CDU media
+### Step 14 — Copy DOS 7.1 files from CDU media
 
 The CDU disc typically has a `\DOS` folder with all utilities.
 
@@ -227,7 +209,7 @@ XCOPY X:\DOS\*.* C:\DOS\ /S
 
 (Replace `X:` with your CDU drive letter — check with `DIR X:` first.)
 
-### Step 16 — Write CONFIG.SYS (temporary — for DOS-only boot)
+### Step 15 — Write CONFIG.SYS (temporary — for DOS-only boot)
 
 ```bat
 EDIT C:\CONFIG.SYS
@@ -262,7 +244,7 @@ DEVICE=C:\DOS\EMM386.EXE NOEMS
 
 Save (Alt+F → S), exit (Alt+F → X).
 
-### Step 17 — Write AUTOEXEC.BAT (temporary)
+### Step 16 — Write AUTOEXEC.BAT (temporary)
 
 ```bat
 EDIT C:\AUTOEXEC.BAT
@@ -288,7 +270,7 @@ GOTO END
 
 Save and exit.
 
-### Step 18 — Copy Samsung CD-ROM driver
+### Step 17 — Copy Samsung CD-ROM driver
 
 If your old disk is accessible (secondary IDE), copy the driver:
 
@@ -300,7 +282,7 @@ COPY E:\DRIVERS\SAMSUNG\SSCDROM.SYS C:\DRIVERS\SAMSUNG\SSCDROM.SYS
 
 Otherwise copy from old disk later or proceed without CD-ROM until Win98SE install.
 
-### Step 19 — Reboot and test DOS
+### Step 18 — Reboot and test DOS
 
 Remove CDU media. System should boot from C:, show boot menu, load DOS 7.1.
 
@@ -320,7 +302,7 @@ Should show empty D: drive.
 
 ## Phase 4 — Install Windows 98SE
 
-### Step 20 — Boot to DOS, insert Win98SE CD
+### Step 19 — Boot to DOS, insert Win98SE CD
 
 With CD-ROM driver active (profile NORMAL), insert Windows 98SE CD.
 
@@ -337,7 +319,7 @@ DIR F:
 
 Find the drive with `WIN98\SETUP.EXE`.
 
-### Step 21 — Run Setup
+### Step 20 — Run Setup
 
 ```bat
 E:\WIN98\SETUP.EXE
@@ -354,7 +336,7 @@ Proceed through Setup normally. The system will reboot several times.
 > ⚠️ During Setup, Windows may modify CONFIG.SYS and AUTOEXEC.BAT.
 > This is expected — we will replace them with the full multi-boot config afterwards.
 
-### Step 22 — Complete Windows 98SE installation
+### Step 21 — Complete Windows 98SE installation
 
 Let Windows finish first-boot setup (hardware detection, driver installation).
 Install all Windows 98SE drivers as needed (video, etc.) before proceeding.
@@ -363,7 +345,7 @@ Install all Windows 98SE drivers as needed (video, etc.) before proceeding.
 
 ## Phase 5 — Configure multi-boot menu
 
-### Step 23 — Edit MSDOS.SYS to disable auto-GUI
+### Step 22 — Edit MSDOS.SYS to disable auto-GUI
 
 Windows 98SE normally boots directly to Windows. We need it to show the
 boot menu first.
@@ -394,7 +376,7 @@ Save and restore attributes:
 ATTRIB +S +H +R C:\MSDOS.SYS
 ```
 
-### Step 24 — Replace CONFIG.SYS with full multi-boot version
+### Step 23 — Replace CONFIG.SYS with full multi-boot version
 
 ```bat
 EDIT C:\CONFIG.SYS
@@ -489,7 +471,7 @@ DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 
 Save and exit.
 
-### Step 25 — Replace AUTOEXEC.BAT with full multi-boot version
+### Step 24 — Replace AUTOEXEC.BAT with full multi-boot version
 
 ```bat
 EDIT C:\AUTOEXEC.BAT
@@ -618,7 +600,7 @@ Save and exit.
 
 ## Phase 6 — Copy drivers from old disk
 
-### Step 26 — Connect old disk and copy C: drivers
+### Step 25 — Connect old disk and copy C: drivers
 
 Connect old disk as secondary IDE (or use it before swapping).
 Old disk C: will appear as a different drive letter on the new system
@@ -634,13 +616,12 @@ XCOPY E:\DOS C:\DOS /S /E /H /Y
 > Do NOT copy CONFIG.SYS, AUTOEXEC.BAT, IO.SYS, MSDOS.SYS, COMMAND.COM
 > from the old disk — the new versions are already correct.
 
-### Step 27 — Copy games to D: and data to E:
+### Step 26 — Copy files to D:
 
 ```bat
 XCOPY E:\D\*.* D:\ /S /E /H /Y
 ```
 
-For anything to go on E: (ISOs, backups, extra data):
 
 ```bat
 XCOPY E:\DATA\*.* E:\ /S /E /H /Y
@@ -652,7 +633,7 @@ XCOPY E:\DATA\*.* E:\ /S /E /H /Y
 
 ## Phase 7 — First boot test
 
-### Step 28 — Reboot and test boot menu
+### Step 27 — Reboot and test boot menu
 
 Reboot with no media in drives. You should see:
 
@@ -669,7 +650,7 @@ Microsoft Windows 98 Startup Menu
 
 Default: Windows 98SE (10 second countdown)
 
-### Step 29 — Test each option
+### Step 28 — Test each option
 
 | Test | Expected result |
 |---|---|
@@ -679,27 +660,25 @@ Default: Windows 98SE (10 second countdown)
 | Option 4 (NOSOFTMPU) | DOS prompt, no SoftMPU, AWEUTIL /EM available |
 | Option 6 (BARE) | Minimal DOS prompt, no drivers |
 
-### Step 30 — Verify drive letters in DOS
+### Step 29 — Verify drive letters in DOS
 
 ```bat
-DIR C:    (system, 4 GB)
-DIR D:    (games, 100 GB)
-DIR E:    (data, ~120 GB)
+DIR C:    (system, 8 GB)
+DIR D:    (games, ~230 GB)
 ```
 
-### Step 31 — Verify drive letters in Windows 98SE
+### Step 30 — Verify drive letters in Windows 98SE
 
 Open My Computer. You should see:
-- C: (4 GB, system)
-- D: (100 GB, games)
-- E: (~120 GB, data)
-- CD-ROM on next available letter (F: or G:)
+- C: (8 GB, system)
+- D: (~230 GB, games + data)
+- CD-ROM on next available letter (E: or F:)
 
 ---
 
 ## Phase 8 — Windows 98SE driver installation
 
-### Step 32 — Install Intel PIIX4 IDE Bus Master driver
+### Step 31 — Install Intel PIIX4 IDE Bus Master driver
 
 This enables UDMA/33 in Windows 98SE. Without it Windows uses PIO mode.
 
@@ -707,12 +686,12 @@ Download: Intel INF Update Utility (inf8xxxx.exe) from Intel or VOGONS drivers.
 Run from Windows, reboot. Device Manager → IDE controllers should show
 "Intel 82371AB/EB PCI Bus Master IDE Controller" with DMA enabled.
 
-### Step 33 — Install AWE32 CT3900 drivers for Windows
+### Step 32 — Install AWE32 CT3900 drivers for Windows
 
 Install Creative Sound Blaster AWE32 drivers for Windows 98SE.
 Configure: port 220, IRQ 5, DMA 1/5, EMU8000 port 620.
 
-### Step 34 — Install PicoGUS Windows 98SE MPU-401
+### Step 33 — Install PicoGUS Windows 98SE MPU-401
 
 In Device Manager → Add hardware → manually add:
 - Sound, video and game controllers
@@ -727,13 +706,13 @@ In Device Manager → Add hardware → manually add:
 | Problem | Solution |
 |---|---|
 | BIOS sees only 8 GB | Expected — BIOS limit; DOS 7.1 and Win98SE see full disk via 32-bit driver |
-| D: or E: not visible in DOS | LASTDRIVE=Z in CONFIG.SYS — already set in the config below |
+| D: not visible in DOS | LASTDRIVE=Z in CONFIG.SYS — already set in the config below |
 | Windows boots directly without menu | MSDOS.SYS BootGUI=0 not saved correctly — redo Step 23 |
 | SoftMPU not loaded | Check AUTOEXEC.BAT — profile must route to :NORMAL or :EMS |
 | No sound in DOS | UNISOUND not found — verify C:\DRIVERS\UNISOUND\UNISOUND.COM |
 | CD-ROM not found | SSCDROM.SYS path — must be C:\DRIVERS\SAMSUNG\SSCDROM.SYS |
 | Games not on D: | Copy from old disk: XCOPY old_drive:\games D:\ /S /E |
-| Win98 slow disk access | Install Intel PIIX4 Bus Master driver (see Step 32) |
+| Win98 slow disk access | Install Intel PIIX4 Bus Master driver (see Step 31) |
 
 ---
 
