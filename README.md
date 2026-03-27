@@ -1665,6 +1665,46 @@ REM Quake (GLQuake with Voodoo2):
   Sound: auto-detect SB16
 ```
 
+#### ULTRAMID.EXE — required for some GUS games
+
+Some games (notably **Tyrian**, **Raptor**) use the ULTRAMID TSR driver for GUS music
+instead of direct hardware access. Without ULTRAMID loaded, the game reports
+"UltraMid driver not found" or "no GUS device" even when PGUSINIT is active.
+
+ULTRAMID.EXE is included in the GUS v4.11 software package (`picog.us/ultrasnd.zip`),
+located at `C:\DRIVERS\PICOGUS\ULTRAMID.EXE`.
+
+**Do NOT load ULTRAMID in AUTOEXEC** — it takes ~58 KB of UMB and is only needed
+for specific games. Use **GUS.BAT** instead (see below).
+
+#### GUS.BAT — universal launcher for ULTRAMID games
+
+Place `GUS.BAT` in `C:\TOOLS\` (already in PATH). Run from the game directory:
+
+```bat
+REM First-time sound setup:
+D:\GAMES\TYRIAN> GUS SETUP.EXE
+
+REM Launch game:
+D:\GAMES\TYRIAN> GUS TYRIAN.EXE
+D:\GAMES\DOOM>   GUS DOOM.EXE
+D:\GAMES\RAPTOR> GUS RAPTOR.EXE
+D:\GAMES\DUKE3D> GUS DUKE3D.EXE -level 1
+```
+
+GUS.BAT loads ULTRAMID before the game, then unloads it automatically when the
+game exits. Games that do NOT need ULTRAMID (Doom, Duke3D, Heretic, Hexen) work
+fine with GUS.BAT too — ULTRAMID is harmless for those games.
+
+| Game | Needs ULTRAMID | Notes |
+|---|---|---|
+| Doom / Doom 2 / Heretic / Hexen | No | Direct GUS hardware access |
+| Duke Nukem 3D / Shadow Warrior / Blood | No | Direct GUS hardware access |
+| **Tyrian** | **Yes** | GUS.BAT required |
+| **Raptor Call of Shadows** | **Yes** | GUS.BAT required |
+| Strife | No | Direct GUS hardware access |
+| Descent 1/2 | No | Direct GUS hardware access |
+
 > **Duke Nukem 3D / Shadow Warrior / Blood — MIDI lag on startup:**
 > When music is set to General MIDI or Sound Canvas (SC-55 on port 330h), the game
 > stutters for 1–2 seconds at map load. Cause: Creative SB16 ISA cards (AWE32/AWE64)
@@ -1721,7 +1761,7 @@ McCake on port 300h via PicoGUS — no preparation needed, always active.
 | Doom / Doom 2 | 1993/94 | GM port 300, SB port 220 | No | No |
 | Duke Nukem 3D | 1996 | GM port 300, SB port 220 | No | No |
 | Quake | 1996 | SB16 port 220 | No | No |
-| Tyrian | 1995 | GM port 300 | No | **Yes** (EMS profile) |
+| Tyrian | 1995 | GM port 300 or **GUS** (use GUS.BAT) | No | **Yes** (EMS profile) |
 | Magic Carpet | 1994 | SB16 port 220 | No | **Yes** (EMS profile) |
 | Descent 1/2 | 1994/96 | GM port 300 or GUS | No | No |
 
@@ -1878,6 +1918,8 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 | Next/Previous.mid | C:\DRIVERS\PICOGUS\Next.mid, Previous.mid |
 | GUS software | C:\DRIVERS\PICOGUS\ (from picog.us/ultrasnd.zip) |
 | GUS MIDI patches | C:\DRIVERS\PICOGUS\MIDI\ |
+| ULTRAMID.EXE | C:\DRIVERS\PICOGUS\ULTRAMID.EXE |
+| GUS.BAT | C:\TOOLS\GUS.BAT |
 | CTMOUSE.EXE | C:\DRIVERS\CTMOUSE\CTMOUSE.EXE |
 
 ---
@@ -1912,7 +1954,7 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 - ULTRADIR must point to C:\DRIVERS\PICOGUS root (not MIDI subfolder)
 - CT3900 IDE port must be DISABLED (JP2+JP3 closed) — conflicts with motherboard IDE
 - CT3900 SIMM slots: both must be populated simultaneously with identical modules
-- **McCake SD card** — SF2 files in `/soundfonts/`, configuration in `mt32-pi.cfg`
+- **ULTRAMID.EXE** required for Tyrian and Raptor GUS music — use `GUS.BAT` launcher, not AUTOEXEC
 - **McCake power** — from waveblaster header (PicoGUS) or floppy connector
 
 ---
