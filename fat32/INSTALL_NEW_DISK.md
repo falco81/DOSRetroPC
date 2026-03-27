@@ -39,12 +39,12 @@ available regardless of what BIOS reports.
 ```
 Verbatim Vi560 238 GB (256 GB nominal)
 ┌─────────────────────────────────────────────────────┐
-│ C: Primary FAT32  8 GB [Active]  ← DOS + Win98SE   │
+│ C: Primary  FAT32  8 GB  [Active]  <- DOS + Win98SE │
 ├─────────────────────────────────────────────────────┤
 │ Extended partition (~230 GB)                        │
-│  ┌────────────────────────────────────────────────┐ │
-│  │ D: Logical FAT32  ~230 GB ← Games + Data      │ │
-│  └────────────────────────────────────────────────┘ │
+│  ┌───────────────────────────────────────────────┐  │
+│  │  D:  Logical  FAT32  ~230 GB  <- Games + Data │  │
+│  └───────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -253,19 +253,227 @@ EDIT C:\AUTOEXEC.BAT
 ```bat
 @ECHO OFF
 PROMPT $P$G
-PATH C:\DOS;C:\NC;C:\TOOLS
+PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS;C:\DRIVERS\SB16
+
+REM --- Environment variables ---
+SET SYMANTEC=C:\SYMANTEC
+SET NU=C:\TOOLS\NU
 SET TEMP=C:\DOS\TMP
 SET TMP=C:\DOS\TMP
+SET TELIX=C:\TOOLS\TELIX
+
+REM --- AWE32 CT3900 settings ---
+REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
+REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
+REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
+REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
+SET SOUND=C:\DRIVERS\SB16
+SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+SET MIDI=SYNTH:1 MAP:E MODE:0
+
+REM --- PicoGUS / Gravis UltraSound settings ---
+REM Format: port,DMA play,DMA rec,IRQ play,IRQ rec (DMA and IRQ are repeated)
+REM IRQ 7 = LPT1 must be disabled in BIOS to free this IRQ
+SET ULTRASND=240,3,3,7,7
+REM ULTRADIR must point to the GUS software root (not the MIDI subfolder)
+SET ULTRADIR=C:\DRIVERS\PICOGUS
+
+REM --- Route to profile-specific section ---
 GOTO %CONFIG%
 
-:NORMAL
+REM -----------------------------------------------
+REM Profile: WINDOWS - launch Windows 98SE
+REM Use for: Windows 98SE gaming, modern software, Win32 applications
+REM Note: AWE32 and mouse are initialized by Windows 32-bit PnP drivers
+REM       UNISOUND and AWEUTIL are NOT loaded - Windows handles AWE32 itself
+REM       SoftMPU is NOT loaded - Windows MIDI uses its own MPU-401 driver
+REM -----------------------------------------------
+:WINDOWS
+REM --- PicoGUS initialization ---
+REM Required: Windows has no PicoGUS driver - hardware must be init before WIN.COM
+REM /mode gus    = Gravis UltraSound emulation (GUS not usable in Windows)
+REM /mpuport 300 = MPU-401 on port 300h - needed for McCake under Windows
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
+REM /gusvol 85   = GUS output 85%
+REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+
+REM --- CD-ROM ---
+REM /M:10 = 10 sector lookahead cache in extended memory
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+REM /R2 = horizontal resolution 2 (movement sensitivity)
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+
+REM --- Launch Windows 98SE ---
+WIN.COM
 GOTO END
 
+REM -----------------------------------------------
+REM Profile: NOSOFTMPU - NOEMS without SoftMPU
+REM Use for: AWEUTIL /EM:GM/GS/MT32 emulation
+REM -----------------------------------------------
+:NOSOFTMPU
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
+REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90 (real OPL3 CT1747)
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+
+REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
+REM /S = hardware init only, 0KB memory resident
+REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
+REM This profile has no SoftMPU - AWEUTIL /EM:* can run without conflict
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM    General MIDI emulation
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    Roland GS emulation
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32  Roland MT-32 emulation
+REM   C:\DRIVERS\SB16\AWEUTIL.COM /U           unload from memory
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+
+REM --- SoftMPU NOT loaded - AWEUTIL /EM:* can run without conflict ---
+
+REM --- PicoGUS initialization ---
+REM /mode gus    = Gravis UltraSound emulation
+REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
+REM /gusvol 85   = GUS output 85%
+REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+
+REM --- CD-ROM ---
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: NOSOFTEMU - EMS without SoftMPU
+REM Use for: AWEUTIL /EM + EMS memory
+REM -----------------------------------------------
+:NOSOFTEMU
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- SoftMPU NOT loaded ---
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: NORMAL - NOEMS with SoftMPU
+REM Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
+REM          AWE32 native games, SC-55, McCake SF2
+REM -----------------------------------------------
+:NORMAL
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
+REM Initializes: IRQ, DMA, I/O ports, OPL3, mixer
+REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from BLASTER variable
+REM /V70 = master volume 70 (range 0-100)
+REM /VF90 = FM/OPL3 volume 90 - real Yamaha OPL3 chip (CT1747) on CT3900
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+
+REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
+REM UNISOUND does not init EMU8000 - AWEUTIL required for AWE32 wavetable features
+REM /S = init EMU8000 from BLASTER variable (E620 = EMU8000 port)
+REM Required for: AWE32 games, GM/GS/MT-32 MIDI emulation
+REM Files: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
+REM Note: AWEUTIL /EM:* conflicts with SoftMPU - use profile NOSOFTMPU
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+
+REM --- SoftMPU - intelligent mode MPU-401 emulation for MT-32 games ---
+REM Required for: Monkey Island 1, Sierra games, Ultima Underworld
+REM AWE32 supports UART mode only - SoftMPU adds intelligent mode
+REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
+REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
+REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
+REM WARNING: AWEUTIL /EM:* cannot be combined with SoftMPU!
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+
+REM --- PicoGUS initialization ---
+REM /mode gus    = Gravis UltraSound emulation
+REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
+REM /gusvol 85   = GUS output 85%
+REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+
+REM --- CD-ROM ---
+REM /M:10 = 10 sector lookahead cache in extended memory
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+REM /R2 = horizontal resolution 2 (movement sensitivity)
+REM COM port is auto-detected by CTMOUSE
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: EMS - RAM with SoftMPU
+REM Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
+REM          Games requiring EMS memory
+REM -----------------------------------------------
+:EMS
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: BARE DOS
+REM -----------------------------------------------
 :BARE
 GOTO END
 
 :END
+REM --- Norton Commander ---
+NC
 ```
 
 Save and exit.
@@ -392,7 +600,8 @@ and adds the new WINDOWS entry):
 ; MS-DOS 7.10 + Windows 98SE
 ;===========================================
 
-; Top-level boot menu
+; Boot menu - displayed at startup with 10 second countdown
+; MENUDEFAULT=WINDOWS,10 = auto-boot Windows after 10 seconds if no key pressed
 [MENU]
 MENUITEM=WINDOWS,   Windows 98SE
 MENUITEM=NORMAL,    MS-DOS  SoftMPU         - NOEMS 607KB (MT-32, GUS, everyday)
@@ -404,65 +613,122 @@ MENUDEFAULT=WINDOWS,10
 ;MENUCOLOR=11,1
 
 ; -----------------------------------------------
-; Common settings for ALL profiles
+; Common settings loaded for ALL profiles
 ; -----------------------------------------------
 [COMMON]
+
+; HIMEM.SYS - XMS memory manager, must always be first
+; Using Windows 98SE version (newer than MS-DOS 7.1 version)
+; /TESTMEM:OFF = skip memory test on boot (saves ~30s on 256MB)
 DEVICE=C:\WINDOWS\HIMEM.SYS /TESTMEM:OFF
+
+; Load DOS into HMA (High Memory Area) and enable UMB
+; Must come before EMM386
 DOS=HIGH,UMB
+
+; Larger environment block - prevents DIGN9003 error from AWE32
+; /E:1024 = 1024 bytes for SET variables (BLASTER, ULTRASND etc.)
 SHELL=C:\COMMAND.COM C:\ /E:1024 /P
+
+; FILES=30 - max open file handles (NC + MSCDEX need ~25)
 FILES=30
+; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering, keep low)
 BUFFERS=4,0
+; LASTDRIVE=Z - covers all drives A-Z including C: D: E: + CD-ROM
 LASTDRIVE=Z
+; STACKS=9,256 - interrupt stack frames (required for AWE32 IRQ handling)
 STACKS=9,256
+; FCBS=1,0 - file control blocks (legacy, minimal)
 FCBS=1,0
 
 ; -----------------------------------------------
-; WINDOWS profile - minimal DOS init, then launch Win98
+; WINDOWS - minimal DOS init, then launch Windows 98SE
+; Windows 98SE handles all hardware via its own 32-bit PnP drivers
+; Only HIMEM + EMM386 needed - Windows reinitializes everything else
 ; -----------------------------------------------
 [WINDOWS]
+
+; EMM386 NOEMS - Windows does not use EMS, only UMB needed
+; Using Windows 98SE version (updated, supports larger drives)
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+
+; Samsung CD-ROM driver - needed so MSCDEX in AUTOEXEC.BAT can load
+; Windows will replace this with its own 32-bit CD-ROM driver after boot
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 3: NORMAL - NOEMS with SoftMPU (607KB conventional)
-; Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
+; Profile NORMAL - NOEMS with SoftMPU (607KB conventional)
+; Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday DOS use
+;          AWE32 native games, SC-55, McCake SF2
+; SoftMPU adds intelligent mode MPU-401 emulation for MT-32 games
 ; -----------------------------------------------
 [NORMAL]
+
+; EMM386 NOEMS = no EMS page frame
+; Frees 64KB of UMB compared to RAM mode - more space for drivers
+; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+
+; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
+; /X = disable write cache (safer for unexpected power loss on SSD)
+; 2048KB read cache, 512KB element size
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 4: EMS - RAM with SoftMPU (595KB conventional)
+; Profile EMS - RAM with SoftMPU (595KB conventional)
 ; Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
+;          Games requiring EMS memory (DOS4GW, DOS/4G extenders)
+; Note: 12KB less conventional memory than NORMAL due to EMS page frame
+; Note: AWEUTIL /EM:* does NOT work with DOS extenders - use /S only
 ; -----------------------------------------------
 [EMS]
+
+; EMM386 RAM = EMS + UMB both enabled
+; EMS page frame occupies 64KB of UMB but allows DOS extenders to work
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
+
+; SmartDrive loaded first to claim largest free UMB block
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 1: NOSOFTMPU - NOEMS without SoftMPU (607KB conventional)
+; Profile NOSOFTMPU - NOEMS without SoftMPU (607KB conventional)
 ; Use for: AWEUTIL /EM:GM/GS/MT32 emulation
+;          AWEUTIL /EM conflicts with SoftMPU - do not combine
+;          GM/GS games via AWEUTIL without external MIDI modules
 ; -----------------------------------------------
 [NOSOFTMPU]
+
+; EMM386 NOEMS - no EMS, maximum UMB space
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 2: NOSOFTEMU - RAM without SoftMPU (595KB conventional)
-; Use for: AWEUTIL /EM + EMS games
+; Profile NOSOFTEMU - RAM without SoftMPU (595KB conventional)
+; Use for: AWEUTIL /EM + EMS memory games
+;          Note: AWEUTIL /EM does not work with DOS extenders (DOS4GW)
+;          For DOS extender games without AWEUTIL use profile EMS instead
 ; -----------------------------------------------
 [NOSOFTEMU]
+
+; EMM386 RAM - EMS enabled for games that need it
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 5: BARE - minimal (diagnostics, installation)
+; Profile BARE - minimal (diagnostics, installation, troubleshooting)
+; No SmartDrive, no CD-ROM, no sound - just basic DOS with XMS
 ; -----------------------------------------------
 [BARE]
+
+; Minimal EMM386 for XMS access only
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 ```
 
@@ -477,9 +743,11 @@ Save and exit.
 EDIT C:\AUTOEXEC.BAT
 ```
 
-Replace with the full version — identical to your original except:
-- Added `:WINDOWS` section that launches WIN.COM
-- WINDOWS profile skips all sound drivers (Win98 handles them itself)
+Replace with the full version. Key changes from original DOS-only config:
+- Added `:WINDOWS` section: PGUSINIT + MSCDEX + mouse + WIN.COM
+- PGUSINIT in every profile — initializes PicoGUS hardware before boot
+- ECHO block in every profile — displays sound environment after PGUSINIT
+- UNISOUND and AWEUTIL /S in DOS profiles — Win98SE handles AWE32 itself
 
 ```bat
 @ECHO OFF
