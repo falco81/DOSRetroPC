@@ -54,6 +54,14 @@ REM /gusvol 85  = GUS output 85%
 REM /wtvol 85   = wavetable header output 85% (lowered to prevent clipping)
 REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 
 REM --- CD-ROM ---
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
@@ -83,6 +91,14 @@ REM /gusvol 85  = GUS output 85%
 REM /wtvol 85   = wavetable header output 85% (lowered to prevent clipping)
 REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 
 REM --- CD-ROM ---
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
@@ -124,11 +140,19 @@ LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
 REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /mainvol 70  = celkovy vystup 70% (headroom proti clippingu v mixeru)
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
 REM /gusvol 85   = GUS output 85%
 REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
@@ -166,6 +190,14 @@ REM /gusvol 85  = GUS output 85%
 REM /wtvol 85   = wavetable header output 85% (lowered to prevent clipping)
 REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 
 REM --- CD-ROM ---
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
@@ -184,3 +216,4 @@ GOTO END
 :END
 REM --- Norton Commander ---
 NC
+
