@@ -3,34 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INSTALL NEW DISK</title>
+<title>New Disk Installation Guide</title>
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 
 :root {
-  --bg: #0a0c0a;
-  --bg2: #0f130f;
-  --bg3: #141a14;
-  --border: #1e3a1e;
-  --green: #39ff14;
-  --green-dim: #1a7a08;
-  --green-mid: #22c905;
-  --amber: #ffb300;
-  --amber-dim: #7a5500;
-  --text: #b8e8b0;
-  --text-dim: #6a9460;
-  --heading: #39ff14;
-  --code-bg: #060d06;
+  --bg:         #0a0c0a;
+  --bg2:        #0f130f;
+  --bg3:        #141a14;
+  --border:     #1e3a1e;
+  --green:      #39ff14;
+  --green-dim:  #1a7a08;
+  --green-mid:  #22c905;
+  --amber:      #ffb300;
+  --amber-dim:  #7a5500;
+  --text:       #b8e8b0;
+  --text-dim:   #6a9460;
+  --heading:    #39ff14;
+  --code-bg:    #060d06;
   --table-head: #0f2010;
-  --table-alt: #0c160c;
-  --scrollbar: #1e3a1e;
-  --glow: 0 0 8px rgba(57,255,20,0.4);
-  --glow-strong: 0 0 16px rgba(57,255,20,0.7), 0 0 32px rgba(57,255,20,0.3);
+  --table-alt:  #0c160c;
+  --glow:       0 0 8px rgba(57,255,20,0.4);
+  --glow-strong:0 0 16px rgba(57,255,20,0.7), 0 0 32px rgba(57,255,20,0.3);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { scroll-behavior: smooth; }
 
 body {
@@ -44,23 +41,21 @@ body {
   overflow-x: hidden;
 }
 
-/* CRT scanlines overlay */
-body::before {
+/* CRT scanlines */
+body.scanlines::before {
   content: '';
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   background: repeating-linear-gradient(
     0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.08) 2px,
-    rgba(0,0,0,0.08) 4px
+    transparent, transparent 2px,
+    rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
   );
   pointer-events: none;
   z-index: 999;
 }
 
-/* Sidebar */
+/* ── SIDEBAR ── */
 #sidebar {
   width: 280px;
   min-width: 280px;
@@ -71,10 +66,8 @@ body::before {
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0;
   flex-shrink: 0;
 }
-
 #sidebar::-webkit-scrollbar { width: 4px; }
 #sidebar::-webkit-scrollbar-track { background: var(--bg2); }
 #sidebar::-webkit-scrollbar-thumb { background: var(--green-dim); }
@@ -87,7 +80,6 @@ body::before {
   background: var(--bg2);
   z-index: 10;
 }
-
 .sidebar-header .sys-label {
   font-family: 'Orbitron', monospace;
   font-size: 9px;
@@ -96,7 +88,6 @@ body::before {
   text-transform: uppercase;
   margin-bottom: 6px;
 }
-
 .sidebar-header h2 {
   font-family: 'Orbitron', monospace;
   font-size: 11px;
@@ -105,15 +96,16 @@ body::before {
   letter-spacing: 1px;
   line-height: 1.4;
   font-weight: 700;
+  margin: 0;
+  border: none;
+  padding: 0;
+  background: none;
+  text-shadow: var(--glow);
 }
 
-#toc {
-  padding: 12px 0;
-}
-
+#toc { padding: 12px 0; }
 #toc ul { list-style: none; padding: 0; }
 #toc li { padding: 0; }
-
 #toc a {
   display: block;
   padding: 3px 16px;
@@ -122,50 +114,51 @@ body::before {
   font-size: 11.5px;
   line-height: 1.5;
   border-left: 2px solid transparent;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 #toc a:hover {
   color: var(--green);
   border-left-color: var(--green);
   background: rgba(57,255,20,0.05);
   text-shadow: var(--glow);
 }
-
 #toc > ul > li > a {
   color: var(--green-mid);
   font-size: 12px;
   padding-top: 6px;
   padding-bottom: 6px;
 }
-
 #toc > ul > li > ul > li > a {
   padding-left: 28px;
   font-size: 11px;
 }
-
 #toc > ul > li > ul > li > ul > li > a {
   padding-left: 42px;
   font-size: 10.5px;
   color: #4a7440;
 }
+#toc a.active {
+  color: var(--green) !important;
+  border-left-color: var(--green) !important;
+  background: rgba(57,255,20,0.08) !important;
+  text-shadow: var(--glow) !important;
+}
 
-/* Main content */
+/* ── MAIN CONTENT ── */
 #content {
   flex: 1;
   max-width: calc(100vw - 280px);
-  padding: 40px 56px 80px 56px;
+  padding: 40px 56px 80px;
   overflow-x: auto;
 }
-
-#content::-webkit-scrollbar { width: 6px; }
+#content::-webkit-scrollbar { width: 6px; height: 6px; }
 #content::-webkit-scrollbar-track { background: var(--bg); }
 #content::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 3px; }
 
-/* Top bar */
+/* ── TOPBAR ── */
 .topbar {
   display: flex;
   align-items: center;
@@ -174,14 +167,12 @@ body::before {
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
 }
-
 .topbar .prompt {
   font-family: 'Orbitron', monospace;
   font-size: 10px;
   color: var(--green-dim);
   letter-spacing: 4px;
 }
-
 .topbar .blink {
   display: inline-block;
   width: 10px;
@@ -191,41 +182,45 @@ body::before {
   animation: blink 1.2s step-end infinite;
   vertical-align: middle;
 }
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.topbar .topbar-subtitle {
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 2px;
 }
 
-/* Typography */
+/* ── TYPOGRAPHY ── */
 h1, h2, h3, h4 {
   font-family: 'Orbitron', monospace;
   color: var(--heading);
   line-height: 1.3;
   scroll-margin-top: 20px;
 }
-
 h1 {
   font-size: 24px;
   font-weight: 900;
   text-shadow: var(--glow-strong);
   margin-bottom: 6px;
   letter-spacing: 1px;
+  border: none;
+  padding: 0;
+  margin-top: 0;
 }
-
+h1::after { display: none; }
 h1 + p, h1 + h3 { margin-top: 4px; }
-
 h2 {
   font-size: 16px;
   font-weight: 700;
   margin-top: 48px;
   margin-bottom: 16px;
   padding-bottom: 8px;
+  border: none;
   border-bottom: 1px solid var(--border);
+  background: none;
   text-shadow: var(--glow);
   letter-spacing: 1px;
+  color: var(--heading);
 }
-
 h3 {
   font-size: 13px;
   font-weight: 700;
@@ -234,8 +229,10 @@ h3 {
   margin-bottom: 10px;
   text-shadow: 0 0 8px rgba(255,179,0,0.5);
   letter-spacing: 0.5px;
+  border: none;
+  padding: 0;
 }
-
+h3::before { display: none; }
 h4 {
   font-size: 12px;
   font-weight: 400;
@@ -244,16 +241,17 @@ h4 {
   margin-bottom: 8px;
   text-shadow: none;
 }
+h4::before { display: none; }
+h5 { font-size: 12px; color: var(--text); margin-top: 16px; margin-bottom: 6px; }
+h6 { font-size: 11px; color: var(--text-dim); margin-top: 14px; margin-bottom: 6px; }
 
 p { margin-bottom: 12px; }
-
 strong { color: var(--green); font-weight: normal; text-shadow: var(--glow); }
 em { color: var(--amber); font-style: normal; }
-
 a { color: var(--green-mid); text-decoration: none; border-bottom: 1px dotted var(--green-dim); }
 a:hover { color: var(--green); text-shadow: var(--glow); }
 
-/* Code */
+/* ── CODE ── */
 code {
   background: var(--code-bg);
   color: var(--green);
@@ -264,7 +262,6 @@ code {
   border: 1px solid var(--border);
   text-shadow: var(--glow);
 }
-
 pre {
   background: var(--code-bg);
   border: 1px solid var(--border);
@@ -275,219 +272,164 @@ pre {
   border-radius: 2px;
   position: relative;
 }
-
 pre::before {
   content: '> ';
   color: var(--green-dim);
   font-size: 12px;
 }
-
 pre code {
-  background: none;
-  border: none;
-  padding: 0;
+  background: none; border: none; padding: 0;
   color: var(--green);
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 13px; line-height: 1.6;
   text-shadow: 0 0 4px rgba(57,255,20,0.3);
 }
 
-/* Tables */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0;
-  font-size: 13px;
-}
-
-thead tr {
-  background: var(--table-head);
-  border-bottom: 1px solid var(--green-dim);
-}
-
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+thead tr { background: var(--table-head); border-bottom: 1px solid var(--green-dim); }
 th {
-  padding: 8px 12px;
-  text-align: left;
-  color: var(--green);
-  font-weight: normal;
-  font-family: 'Orbitron', monospace;
-  font-size: 10px;
-  letter-spacing: 1px;
-  text-shadow: var(--glow);
-  text-transform: uppercase;
+  padding: 8px 12px; text-align: left;
+  color: var(--green); font-weight: normal;
+  font-family: 'Orbitron', monospace; font-size: 10px;
+  letter-spacing: 1px; text-shadow: var(--glow); text-transform: uppercase;
 }
-
-td {
-  padding: 7px 12px;
-  border-bottom: 1px solid rgba(30,58,30,0.5);
-  color: var(--text);
-  vertical-align: top;
-}
-
+td { padding: 7px 12px; border-bottom: 1px solid rgba(30,58,30,0.5); color: var(--text); vertical-align: top; }
 tr:nth-child(even) td { background: var(--table-alt); }
 tr:hover td { background: rgba(57,255,20,0.04); }
-
 td code { font-size: 12px; }
 
-/* Blockquotes */
+/* ── BLOCKQUOTE ── */
 blockquote {
   border-left: 3px solid var(--amber-dim);
-  padding: 10px 16px;
-  margin: 16px 0;
+  padding: 10px 16px; margin: 16px 0;
   background: rgba(255,179,0,0.04);
-  color: #c8a060;
-  font-size: 13px;
+  color: #c8a060; font-size: 13px;
 }
-
 blockquote p { margin-bottom: 0; }
 blockquote strong { color: var(--amber); text-shadow: 0 0 8px rgba(255,179,0,0.5); }
 
-/* Lists */
-ul, ol {
-  padding-left: 24px;
-  margin-bottom: 12px;
-}
-
+/* ── LISTS ── */
+ul, ol { padding-left: 24px; margin-bottom: 12px; }
 li { margin-bottom: 4px; }
 li p { margin-bottom: 4px; }
-
 ul li::marker { color: var(--green-dim); content: '> '; }
 ol li::marker { color: var(--green-dim); }
 
-/* HR */
-hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
+/* ── HR ── */
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
 
-/* Status bar */
+/* ── STATUSBAR ── */
 .statusbar {
   position: fixed;
-  bottom: 0;
-  left: 280px;
-  right: 0;
+  bottom: 0; left: 280px; right: 0;
   height: 24px;
   background: var(--green-dim);
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 24px;
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 24px;
   z-index: 100;
-  font-size: 10px;
-  color: var(--bg);
-  font-family: 'Orbitron', monospace;
-  letter-spacing: 1px;
+  font-size: 10px; color: var(--bg);
+  font-family: 'Orbitron', monospace; letter-spacing: 1px;
 }
-
 .statusbar span { opacity: 0.8; }
 .statusbar .right { margin-left: auto; }
 
-/* Scrollbar global */
+/* ── SCROLLBARS ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 3px; }
 
+/* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   #sidebar { display: none; }
   #content { max-width: 100vw; padding: 20px; }
   .statusbar { left: 0; }
 }
-
-
-#toc a.active {
-  color: var(--green) !important;
-  border-left-color: var(--green) !important;
-  background: rgba(57,255,20,0.08) !important;
-  text-shadow: var(--glow) !important;
+@media print {
+  #sidebar, .statusbar, body::before { display: none; }
+  #content { max-width: 100%; padding: 20px; }
 }
-
 </style>
 </head>
-<body>
+<body class="scanlines">
 
 <nav id="sidebar">
   <div class="sidebar-header">
-    <div class="sys-label">Rhino 15 // DOS</div>
-    <h2>INSTALL NEW DISK</h2>
+    <div class="sys-label">Rhino 15 / Pentium MMX / PIIX4 / AWE32 CT3900</div>
+    <h2>NEW DISK INSTALLATION GUIDE</h2>
   </div>
   <div id="toc">
-    
+    <ul>
+<li><a href="#new-disk-installation-guide">New Disk Installation Guide</a>
 <ul>
-<li><a href="#new-disk-installation-guide">New Disk Installation Guide</a><ul>
-<li><a href="#verbatim-vi560-256gb-ms-dos-71-windows-98se">Verbatim Vi560 256GB — MS-DOS 7.1 + Windows 98SE</a><ul>
-<li><a href="#rhino-15-pentium-mmx-piix4-awe32-ct3900">Rhino 15 / Pentium MMX / PIIX4 / AWE32 CT3900</a></li>
-</ul>
-</li>
-<li><a href="#hardware-chain">Hardware chain</a></li>
-<li><a href="#partition-plan">Partition plan</a></li>
-<li><a href="#disk-layout-diagram">Disk layout diagram</a></li>
-<li><a href="#what-you-need-before-starting">What you need before starting</a></li>
-<li><a href="#phase-1-ssd-alignment-on-modern-pc-before-retro-pc-install">Phase 1 — SSD alignment on modern PC (before retro PC install)</a><ul>
-<li><a href="#step-1-connect-ssd-to-modern-pc-via-usb">Step 1 — Connect SSD to modern PC via USB</a></li>
-<li><a href="#step-2-open-minitool-partition-wizard-910">Step 2 — Open MiniTool Partition Wizard 9.1.0</a></li>
-<li><a href="#step-3-delete-all-existing-partitions">Step 3 — Delete all existing partitions</a></li>
-<li><a href="#step-4-create-c-partition-4-gb-primary-fat32-aligned">Step 4 — Create C: partition (4 GB, Primary, FAT32, aligned)</a></li>
-<li><a href="#step-5-create-extended-partition-all-remaining-space">Step 5 — Create Extended partition (all remaining space)</a></li>
-<li><a href="#step-6-create-d-partition-100-gb-logical-fat32-aligned">Step 6 — Create D: partition (100 GB, Logical, FAT32, aligned)</a></li>
-<li><a href="#step-7-create-e-partition-remaining-space-logical-fat32-aligned">Step 7 — Create E: partition (remaining space, Logical, FAT32, aligned)</a></li>
-<li><a href="#step-8-set-c-as-active">Step 8 — Set C: as Active</a></li>
-<li><a href="#step-9-apply">Step 9 — Apply</a></li>
-<li><a href="#step-10-disconnect-and-move-to-retro-pc">Step 10 — Disconnect and move to retro PC</a></li>
-</ul>
-</li>
-<li><a href="#phase-2-format-and-install-ms-dos-71">Phase 2 — Format and install MS-DOS 7.1</a><ul>
-<li><a href="#step-11-boot-from-ms-dos-71-cdu-iso">Step 11 — Boot from MS-DOS 7.1 CDU ISO</a></li>
-<li><a href="#step-12-format-all-three-partitions">Step 12 — Format all three partitions</a></li>
-<li><a href="#step-13-verify">Step 13 — Verify</a></li>
-</ul>
-</li>
-<li><a href="#phase-3-install-ms-dos-71-base-system">Phase 3 — Install MS-DOS 7.1 base system</a><ul>
-<li><a href="#step-14-create-directory-structure-on-c">Step 14 — Create directory structure on C:</a></li>
-<li><a href="#step-15-copy-dos-71-files-from-cdu-media">Step 15 — Copy DOS 7.1 files from CDU media</a></li>
-<li><a href="#step-16-write-configsys-temporary-for-dos-only-boot">Step 16 — Write CONFIG.SYS (temporary — for DOS-only boot)</a></li>
-<li><a href="#step-17-write-autoexecbat-temporary">Step 17 — Write AUTOEXEC.BAT (temporary)</a></li>
-<li><a href="#step-18-copy-samsung-cd-rom-driver">Step 18 — Copy Samsung CD-ROM driver</a></li>
-<li><a href="#step-19-reboot-and-test-dos">Step 19 — Reboot and test DOS</a></li>
-</ul>
-</li>
-<li><a href="#phase-4-install-windows-98se">Phase 4 — Install Windows 98SE</a><ul>
-<li><a href="#step-20-boot-to-dos-insert-win98se-cd">Step 20 — Boot to DOS, insert Win98SE CD</a></li>
-<li><a href="#step-21-run-setup">Step 21 — Run Setup</a></li>
-<li><a href="#step-22-complete-windows-98se-installation">Step 22 — Complete Windows 98SE installation</a></li>
-</ul>
-</li>
-<li><a href="#phase-5-configure-multi-boot-menu">Phase 5 — Configure multi-boot menu</a><ul>
-<li><a href="#step-23-edit-msdossys-to-disable-auto-gui">Step 23 — Edit MSDOS.SYS to disable auto-GUI</a></li>
-<li><a href="#step-24-replace-configsys-with-full-multi-boot-version">Step 24 — Replace CONFIG.SYS with full multi-boot version</a></li>
-<li><a href="#step-25-replace-autoexecbat-with-full-multi-boot-version">Step 25 — Replace AUTOEXEC.BAT with full multi-boot version</a></li>
-</ul>
-</li>
-<li><a href="#phase-6-copy-drivers-from-old-disk">Phase 6 — Copy drivers from old disk</a><ul>
-<li><a href="#step-26-connect-old-disk-and-copy-c-drivers">Step 26 — Connect old disk and copy C: drivers</a></li>
-<li><a href="#step-27-copy-games-to-d-and-data-to-e">Step 27 — Copy games to D: and data to E:</a></li>
-</ul>
-</li>
-<li><a href="#phase-7-first-boot-test">Phase 7 — First boot test</a><ul>
-<li><a href="#step-28-reboot-and-test-boot-menu">Step 28 — Reboot and test boot menu</a></li>
-<li><a href="#step-29-test-each-option">Step 29 — Test each option</a></li>
-<li><a href="#step-30-verify-drive-letters-in-dos">Step 30 — Verify drive letters in DOS</a></li>
-<li><a href="#step-31-verify-drive-letters-in-windows-98se">Step 31 — Verify drive letters in Windows 98SE</a></li>
-</ul>
-</li>
-<li><a href="#phase-8-windows-98se-driver-installation">Phase 8 — Windows 98SE driver installation</a><ul>
-<li><a href="#step-32-install-intel-piix4-ide-bus-master-driver">Step 32 — Install Intel PIIX4 IDE Bus Master driver</a></li>
-<li><a href="#step-33-install-awe32-ct3900-drivers-for-windows">Step 33 — Install AWE32 CT3900 drivers for Windows</a></li>
-<li><a href="#step-34-install-picogus-windows-98se-mpu-401">Step 34 — Install PicoGUS Windows 98SE MPU-401</a></li>
-</ul>
-</li>
-<li><a href="#troubleshooting">Troubleshooting</a></li>
-<li><a href="#summary-boot-menu-profiles">Summary — boot menu profiles</a></li>
-</ul>
-</li>
-</ul>
-
-
+<li><a href="#verbatim-vi560-256gb-ms-dos-71-windows-98se">Verbatim Vi560 256GB — MS-DOS 7.1 + Windows 98SE</a>
+<ul>
+<li><a href="#rhino-15-pentium-mmx-piix4-awe32-ct3900">Rhino 15 / Pentium MMX / PIIX4 / AWE32 CT3900</a>
+</ul></li>
+<li><a href="#hardware-chain">Hardware chain</a>
+<li><a href="#partition-plan">Partition plan</a>
+<li><a href="#disk-layout-diagram">Disk layout diagram</a>
+<li><a href="#what-you-need-before-starting">What you need before starting</a>
+<li><a href="#phase-1-ssd-alignment-on-modern-pc-before-retro-pc-install">Phase 1 — SSD alignment on modern PC (before retro PC install)</a>
+<ul>
+<li><a href="#step-1-connect-ssd-to-modern-pc-via-usb">Step 1 — Connect SSD to modern PC via USB</a>
+<li><a href="#step-2-open-minitool-partition-wizard-910">Step 2 — Open MiniTool Partition Wizard 9.1.0</a>
+<li><a href="#step-3-delete-all-existing-partitions">Step 3 — Delete all existing partitions</a>
+<li><a href="#step-4-create-c-partition-8-gb-primary-fat32-aligned">Step 4 — Create C: partition (8 GB, Primary, FAT32, aligned)</a>
+<li><a href="#step-5-create-extended-partition-all-remaining-space">Step 5 — Create Extended partition (all remaining space)</a>
+<li><a href="#step-6-create-d-partition-all-logical-space-fat32-aligned">Step 6 — Create D: partition (all logical space, FAT32, aligned)</a>
+<li><a href="#step-7-set-c-as-active">Step 7 — Set C: as Active</a>
+<li><a href="#step-8-apply">Step 8 — Apply</a>
+<li><a href="#step-9-disconnect-and-move-to-retro-pc">Step 9 — Disconnect and move to retro PC</a>
+</ul></li>
+<li><a href="#phase-2-format-and-install-ms-dos-71">Phase 2 — Format and install MS-DOS 7.1</a>
+<ul>
+<li><a href="#step-10-boot-from-ms-dos-71-cdu-iso">Step 10 — Boot from MS-DOS 7.1 CDU ISO</a>
+<li><a href="#step-11-format-both-partitions">Step 11 — Format both partitions</a>
+<li><a href="#step-12-verify">Step 12 — Verify</a>
+</ul></li>
+<li><a href="#phase-3-install-ms-dos-71-base-system">Phase 3 — Install MS-DOS 7.1 base system</a>
+<ul>
+<li><a href="#step-13-create-directory-structure-on-c">Step 13 — Create directory structure on C:</a>
+<li><a href="#step-14-copy-dos-71-files-from-cdu-media">Step 14 — Copy DOS 7.1 files from CDU media</a>
+<li><a href="#step-15-write-configsys-temporary-for-dos-only-boot">Step 15 — Write CONFIG.SYS (temporary — for DOS-only boot)</a>
+<li><a href="#step-16-write-autoexecbat-temporary">Step 16 — Write AUTOEXEC.BAT (temporary)</a>
+<li><a href="#step-17-copy-samsung-cd-rom-driver">Step 17 — Copy Samsung CD-ROM driver</a>
+<li><a href="#step-18-reboot-and-test-dos">Step 18 — Reboot and test DOS</a>
+</ul></li>
+<li><a href="#phase-4-install-windows-98se">Phase 4 — Install Windows 98SE</a>
+<ul>
+<li><a href="#step-19-boot-to-dos-insert-win98se-cd">Step 19 — Boot to DOS, insert Win98SE CD</a>
+<li><a href="#step-20-run-setup">Step 20 — Run Setup</a>
+<li><a href="#step-21-complete-windows-98se-installation">Step 21 — Complete Windows 98SE installation</a>
+</ul></li>
+<li><a href="#phase-5-configure-multi-boot-menu">Phase 5 — Configure multi-boot menu</a>
+<ul>
+<li><a href="#step-22-edit-msdossys-to-disable-auto-gui">Step 22 — Edit MSDOS.SYS to disable auto-GUI</a>
+<li><a href="#step-23-replace-configsys-with-full-multi-boot-version">Step 23 — Replace CONFIG.SYS with full multi-boot version</a>
+<li><a href="#step-24-replace-autoexecbat-with-full-multi-boot-version">Step 24 — Replace AUTOEXEC.BAT with full multi-boot version</a>
+</ul></li>
+<li><a href="#phase-6-copy-drivers-from-old-disk">Phase 6 — Copy drivers from old disk</a>
+<ul>
+<li><a href="#step-25-connect-old-disk-and-copy-c-drivers">Step 25 — Connect old disk and copy C: drivers</a>
+<li><a href="#step-26-copy-files-to-d">Step 26 — Copy files to D:</a>
+</ul></li>
+<li><a href="#phase-7-first-boot-test">Phase 7 — First boot test</a>
+<ul>
+<li><a href="#step-27-reboot-and-test-boot-menu">Step 27 — Reboot and test boot menu</a>
+<li><a href="#step-28-test-each-option">Step 28 — Test each option</a>
+<li><a href="#step-29-verify-drive-letters-in-dos">Step 29 — Verify drive letters in DOS</a>
+<li><a href="#step-30-verify-drive-letters-in-windows-98se">Step 30 — Verify drive letters in Windows 98SE</a>
+</ul></li>
+<li><a href="#phase-8-windows-98se-driver-installation">Phase 8 — Windows 98SE driver installation</a>
+<ul>
+<li><a href="#step-31-install-intel-piix4-ide-bus-master-driver">Step 31 — Install Intel PIIX4 IDE Bus Master driver</a>
+<li><a href="#step-32-install-awe32-ct3900-drivers-for-windows">Step 32 — Install AWE32 CT3900 drivers for Windows</a>
+<li><a href="#step-33-install-picogus-windows-98se-mpu-401">Step 33 — Install PicoGUS Windows 98SE MPU-401</a>
+</ul></li>
+<li><a href="#troubleshooting">Troubleshooting</a>
+<li><a href="#summary-boot-menu-profiles">Summary — boot menu profiles</a>
+</li></ul>
+</li></ul>
   </div>
 </nav>
 
@@ -495,7 +437,7 @@ hr {
   <div class="topbar">
     <span class="prompt">C:\&gt;</span>
     <span class="blink"></span>
-    <span style="color:var(--text-dim);font-size:11px;letter-spacing:2px;">VERBATIM Vi560 256GB // MS-DOS 7.1 + WIN98SE INSTALLATION GUIDE</span>
+    <span class="topbar-subtitle">VERBATIM VI560 256GB — MS-DOS 7.1 + WINDOWS 98SE</span>
   </div>
 
   <h1 id="new-disk-installation-guide">New Disk Installation Guide</h1>
@@ -524,46 +466,37 @@ hr {
 <tbody>
 <tr>
 <td>C:</td>
-<td>4 GB</td>
+<td>8 GB</td>
 <td>Primary</td>
 <td>FAT32</td>
 <td>MS-DOS 7.1 system, Windows 98SE, all drivers, tools</td>
 </tr>
 <tr>
 <td>D:</td>
-<td>100 GB</td>
+<td>~230 GB</td>
 <td>Logical</td>
 <td>FAT32</td>
-<td>Games</td>
-</tr>
-<tr>
-<td>E:</td>
-<td>~120 GB</td>
-<td>Logical</td>
-<td>FAT32</td>
-<td>Data, ISOs, backups</td>
+<td>Games + Data</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Why 4 GB for C:</strong>
+<p><strong>Why 8 GB for C:</strong>
 The Rhino 15 Award BIOS (09/18/97) detects the disk as 8 GB due to BIOS LBA limits.
-C: must lie entirely within that 8 GB window — 4 GB is safe, fits DOS + Win98SE +
-all drivers with room to spare.</p>
-<p>D: and E: are inside an Extended partition — Win98SE and DOS 7.1 access them via
-their own 32-bit drivers that bypass the BIOS limit entirely. Full capacity is
+C: must lie entirely within that 8 GB window — using the full 8 GB is safe and
+gives comfortable space for DOS + Win98SE + all drivers and tools.</p>
+<p>D: is inside an Extended partition — Win98SE and DOS 7.1 access it via their own
+32-bit drivers that bypass the BIOS limit entirely. Full ~230 GB capacity is
 available regardless of what BIOS reports.</p>
 <hr />
 <h2 id="disk-layout-diagram">Disk layout diagram</h2>
-<pre><code>Verbatim Vi560 256 GB
+<pre><code>Verbatim Vi560 238 GB (256 GB nominal)
 ┌─────────────────────────────────────────────────────┐
-│ C: Primary FAT32  4 GB [Active]  ← DOS + Win98SE   │
+│ C: Primary  FAT32  8 GB  [Active]  &lt;- DOS + Win98SE │
 ├─────────────────────────────────────────────────────┤
-│ Extended partition (~220 GB)                        │
-│  ┌────────────────────────────────────────────────┐ │
-│  │ D: Logical FAT32  100 GB  ← Games             │ │
-│  ├────────────────────────────────────────────────┤ │
-│  │ E: Logical FAT32  ~120 GB ← Data / ISOs       │ │
-│  └────────────────────────────────────────────────┘ │
+│ Extended partition (~230 GB)                        │
+│  ┌───────────────────────────────────────────────┐  │
+│  │  D:  Logical  FAT32  ~230 GB  &lt;- Games + Data │  │
+│  └───────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────┘
 </code></pre>
 <hr />
@@ -596,7 +529,7 @@ Doing it in this order avoids that problem entirely.</p>
 <h3 id="step-3-delete-all-existing-partitions">Step 3 — Delete all existing partitions</h3>
 <p>In the disk map, right-click each partition → Delete. Apply.</p>
 <p>The disk should show as entirely unallocated.</p>
-<h3 id="step-4-create-c-partition-4-gb-primary-fat32-aligned">Step 4 — Create C: partition (4 GB, Primary, FAT32, aligned)</h3>
+<h3 id="step-4-create-c-partition-8-gb-primary-fat32-aligned">Step 4 — Create C: partition (8 GB, Primary, FAT32, aligned)</h3>
 <p>Right-click the unallocated space → Create:</p>
 <table>
 <thead>
@@ -616,7 +549,7 @@ Doing it in this order avoids that problem entirely.</p>
 </tr>
 <tr>
 <td>Size</td>
-<td><strong>4096 MB</strong></td>
+<td><strong>8192 MB</strong></td>
 </tr>
 <tr>
 <td>Align to</td>
@@ -658,7 +591,7 @@ Doing it in this order avoids that problem entirely.</p>
 </tbody>
 </table>
 <p>Click OK.</p>
-<h3 id="step-6-create-d-partition-100-gb-logical-fat32-aligned">Step 6 — Create D: partition (100 GB, Logical, FAT32, aligned)</h3>
+<h3 id="step-6-create-d-partition-all-logical-space-fat32-aligned">Step 6 — Create D: partition (all logical space, FAT32, aligned)</h3>
 <p>Right-click the free space inside the Extended partition → Create:</p>
 <table>
 <thead>
@@ -678,7 +611,7 @@ Doing it in this order avoids that problem entirely.</p>
 </tr>
 <tr>
 <td>Size</td>
-<td><strong>102400 MB</strong></td>
+<td>all remaining (leave default)</td>
 </tr>
 <tr>
 <td>Align to</td>
@@ -691,44 +624,11 @@ Doing it in this order avoids that problem entirely.</p>
 </tbody>
 </table>
 <p>Click OK.</p>
-<h3 id="step-7-create-e-partition-remaining-space-logical-fat32-aligned">Step 7 — Create E: partition (remaining space, Logical, FAT32, aligned)</h3>
-<p>Right-click the remaining free space inside the Extended partition → Create:</p>
-<table>
-<thead>
-<tr>
-<th>Setting</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Partition Label</td>
-<td>DATA</td>
-</tr>
-<tr>
-<td>File System</td>
-<td>FAT32</td>
-</tr>
-<tr>
-<td>Size</td>
-<td>all remaining (leave default)</td>
-</tr>
-<tr>
-<td>Align to</td>
-<td><strong>2048 sectors</strong></td>
-</tr>
-<tr>
-<td>Partition Type</td>
-<td>Logical (automatic)</td>
-</tr>
-</tbody>
-</table>
-<p>Click OK.</p>
-<h3 id="step-8-set-c-as-active">Step 8 — Set C: as Active</h3>
-<p>Right-click the C: (SYSTEM, 4 GB Primary) partition → Set Active.</p>
-<h3 id="step-9-apply">Step 9 — Apply</h3>
+<h3 id="step-7-set-c-as-active">Step 7 — Set C: as Active</h3>
+<p>Right-click the C: (SYSTEM, 8 GB Primary) partition → Set Active.</p>
+<h3 id="step-8-apply">Step 8 — Apply</h3>
 <p>Click Apply → Yes. MiniTool writes the partition table with correct alignment.</p>
-<h3 id="step-10-disconnect-and-move-to-retro-pc">Step 10 — Disconnect and move to retro PC</h3>
+<h3 id="step-9-disconnect-and-move-to-retro-pc">Step 9 — Disconnect and move to retro PC</h3>
 <p>Safely eject the disk. Reconnect the full adapter chain to the retro PC
 via the 80-conductor IDE cable.</p>
 <blockquote>
@@ -736,10 +636,10 @@ via the 80-conductor IDE cable.</p>
 </blockquote>
 <hr />
 <h2 id="phase-2-format-and-install-ms-dos-71">Phase 2 — Format and install MS-DOS 7.1</h2>
-<h3 id="step-11-boot-from-ms-dos-71-cdu-iso">Step 11 — Boot from MS-DOS 7.1 CDU ISO</h3>
+<h3 id="step-10-boot-from-ms-dos-71-cdu-iso">Step 10 — Boot from MS-DOS 7.1 CDU ISO</h3>
 <p>Set BIOS boot order to boot from your CDU media (USB or CD).
 Boot to DOS prompt (e.g. <code>A:\&gt;</code> or <code>X:\&gt;</code>).</p>
-<h3 id="step-12-format-all-three-partitions">Step 12 — Format all three partitions</h3>
+<h3 id="step-11-format-both-partitions">Step 11 — Format both partitions</h3>
 <blockquote>
 <p>Partitions already exist from MiniTool — only FORMAT is needed, not FDISK.</p>
 </blockquote>
@@ -749,10 +649,9 @@ Boot to DOS prompt (e.g. <code>A:\&gt;</code> or <code>X:\&gt;</code>).</p>
 <code>/V:SYSTEM</code> sets volume label.</p>
 <p>When done:</p>
 <pre><code class="language-bat">FORMAT D: /V:GAMES
-FORMAT E: /V:DATA
 </code></pre>
-<p>D: and E: do not need <code>/S</code> — data drives only.</p>
-<h3 id="step-13-verify">Step 13 — Verify</h3>
+<p>D: does not need <code>/S</code> — data drive only.</p>
+<h3 id="step-12-verify">Step 12 — Verify</h3>
 <pre><code class="language-bat">C:
 DIR
 </code></pre>
@@ -760,7 +659,7 @@ DIR
 Confirm DOS boots from the new drive.</p>
 <hr />
 <h2 id="phase-3-install-ms-dos-71-base-system">Phase 3 — Install MS-DOS 7.1 base system</h2>
-<h3 id="step-14-create-directory-structure-on-c">Step 14 — Create directory structure on C:</h3>
+<h3 id="step-13-create-directory-structure-on-c">Step 13 — Create directory structure on C:</h3>
 <pre><code class="language-bat">C:
 MD DOS
 MD DRIVERS
@@ -768,12 +667,12 @@ MD TOOLS
 MD NC
 MD DOS\TMP
 </code></pre>
-<h3 id="step-15-copy-dos-71-files-from-cdu-media">Step 15 — Copy DOS 7.1 files from CDU media</h3>
+<h3 id="step-14-copy-dos-71-files-from-cdu-media">Step 14 — Copy DOS 7.1 files from CDU media</h3>
 <p>The CDU disc typically has a <code>\DOS</code> folder with all utilities.</p>
 <pre><code class="language-bat">XCOPY X:\DOS\*.* C:\DOS\ /S
 </code></pre>
 <p>(Replace <code>X:</code> with your CDU drive letter — check with <code>DIR X:</code> first.)</p>
-<h3 id="step-16-write-configsys-temporary-for-dos-only-boot">Step 16 — Write CONFIG.SYS (temporary — for DOS-only boot)</h3>
+<h3 id="step-15-write-configsys-temporary-for-dos-only-boot">Step 15 — Write CONFIG.SYS (temporary — for DOS-only boot)</h3>
 <pre><code class="language-bat">EDIT C:\CONFIG.SYS
 </code></pre>
 <p>Enter this minimal config to get DOS working — full multi-boot config
@@ -801,33 +700,241 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 DEVICE=C:\DOS\EMM386.EXE NOEMS
 </code></pre>
 <p>Save (Alt+F → S), exit (Alt+F → X).</p>
-<h3 id="step-17-write-autoexecbat-temporary">Step 17 — Write AUTOEXEC.BAT (temporary)</h3>
+<h3 id="step-16-write-autoexecbat-temporary">Step 16 — Write AUTOEXEC.BAT (temporary)</h3>
 <pre><code class="language-bat">EDIT C:\AUTOEXEC.BAT
 </code></pre>
 <pre><code class="language-bat">@ECHO OFF
 PROMPT $P$G
-PATH C:\DOS;C:\NC;C:\TOOLS
+PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS;C:\DRIVERS\SB16
+
+REM --- Environment variables ---
+SET SYMANTEC=C:\SYMANTEC
+SET NU=C:\TOOLS\NU
 SET TEMP=C:\DOS\TMP
 SET TMP=C:\DOS\TMP
+SET TELIX=C:\TOOLS\TELIX
+
+REM --- AWE32 CT3900 settings ---
+REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
+REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
+REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
+REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
+SET SOUND=C:\DRIVERS\SB16
+SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+SET MIDI=SYNTH:1 MAP:E MODE:0
+
+REM --- PicoGUS / Gravis UltraSound settings ---
+REM Format: port,DMA play,DMA rec,IRQ play,IRQ rec (DMA and IRQ are repeated)
+REM IRQ 7 = LPT1 must be disabled in BIOS to free this IRQ
+SET ULTRASND=240,3,3,7,7
+REM ULTRADIR must point to the GUS software root (not the MIDI subfolder)
+SET ULTRADIR=C:\DRIVERS\PICOGUS
+
+REM --- Route to profile-specific section ---
 GOTO %CONFIG%
 
-:NORMAL
+REM -----------------------------------------------
+REM Profile: WINDOWS - launch Windows 98SE
+REM Use for: Windows 98SE gaming, modern software, Win32 applications
+REM Note: AWE32 and mouse are initialized by Windows 32-bit PnP drivers
+REM       UNISOUND and AWEUTIL are NOT loaded - Windows handles AWE32 itself
+REM       SoftMPU is NOT loaded - Windows MIDI uses its own MPU-401 driver
+REM -----------------------------------------------
+:WINDOWS
+REM --- PicoGUS initialization ---
+REM Required: Windows has no PicoGUS driver - hardware must be init before WIN.COM
+REM /mode gus    = Gravis UltraSound emulation (GUS not usable in Windows)
+REM /mpuport 300 = MPU-401 on port 300h - needed for McCake under Windows
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
+REM /gusvol 85   = GUS output 85%
+REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+
+REM --- CD-ROM ---
+REM /M:10 = 10 sector lookahead cache in extended memory
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+REM /R2 = horizontal resolution 2 (movement sensitivity)
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+
+REM --- Launch Windows 98SE ---
+WIN.COM
 GOTO END
 
+REM -----------------------------------------------
+REM Profile: NOSOFTMPU - NOEMS without SoftMPU
+REM Use for: AWEUTIL /EM:GM/GS/MT32 emulation
+REM -----------------------------------------------
+:NOSOFTMPU
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
+REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90 (real OPL3 CT1747)
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+
+REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
+REM /S = hardware init only, 0KB memory resident
+REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
+REM This profile has no SoftMPU - AWEUTIL /EM:* can run without conflict
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GM    General MIDI emulation
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS    Roland GS emulation
+REM   LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32  Roland MT-32 emulation
+REM   C:\DRIVERS\SB16\AWEUTIL.COM /U           unload from memory
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+
+REM --- SoftMPU NOT loaded - AWEUTIL /EM:* can run without conflict ---
+
+REM --- PicoGUS initialization ---
+REM /mode gus    = Gravis UltraSound emulation
+REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
+REM /gusvol 85   = GUS output 85%
+REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+
+REM --- CD-ROM ---
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: NOSOFTEMU - EMS without SoftMPU
+REM Use for: AWEUTIL /EM + EMS memory
+REM -----------------------------------------------
+:NOSOFTEMU
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- SoftMPU NOT loaded ---
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: NORMAL - NOEMS with SoftMPU
+REM Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
+REM          AWE32 native games, SC-55, McCake SF2
+REM -----------------------------------------------
+:NORMAL
+REM --- AWE32 CT3900 hardware init (UNISOUND) ---
+REM Initializes: IRQ, DMA, I/O ports, OPL3, mixer
+REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from BLASTER variable
+REM /V70 = master volume 70 (range 0-100)
+REM /VF90 = FM/OPL3 volume 90 - real Yamaha OPL3 chip (CT1747) on CT3900
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+
+REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
+REM UNISOUND does not init EMU8000 - AWEUTIL required for AWE32 wavetable features
+REM /S = init EMU8000 from BLASTER variable (E620 = EMU8000 port)
+REM Required for: AWE32 games, GM/GS/MT-32 MIDI emulation
+REM Files: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
+REM Note: AWEUTIL /EM:* conflicts with SoftMPU - use profile NOSOFTMPU
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+
+REM --- SoftMPU - intelligent mode MPU-401 emulation for MT-32 games ---
+REM Required for: Monkey Island 1, Sierra games, Ultima Underworld
+REM AWE32 supports UART mode only - SoftMPU adds intelligent mode
+REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
+REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
+REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
+REM WARNING: AWEUTIL /EM:* cannot be combined with SoftMPU!
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+
+REM --- PicoGUS initialization ---
+REM /mode gus    = Gravis UltraSound emulation
+REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
+REM /mainvol 85  = master output 85% (headroom to prevent clipping)
+REM /gusvol 85   = GUS output 85%
+REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+
+REM --- CD-ROM ---
+REM /M:10 = 10 sector lookahead cache in extended memory
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+
+REM --- Mouse ---
+REM /R2 = horizontal resolution 2 (movement sensitivity)
+REM COM port is auto-detected by CTMOUSE
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: EMS - RAM with SoftMPU
+REM Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
+REM          Games requiring EMS memory
+REM -----------------------------------------------
+:EMS
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: BARE DOS
+REM -----------------------------------------------
 :BARE
 GOTO END
 
 :END
+REM --- Norton Commander ---
+NC
 </code></pre>
 <p>Save and exit.</p>
-<h3 id="step-18-copy-samsung-cd-rom-driver">Step 18 — Copy Samsung CD-ROM driver</h3>
+<h3 id="step-17-copy-samsung-cd-rom-driver">Step 17 — Copy Samsung CD-ROM driver</h3>
 <p>If your old disk is accessible (secondary IDE), copy the driver:</p>
 <pre><code class="language-bat">COPY E:\DRIVERS\SAMSUNG\SSCDROM.SYS C:\DRIVERS\SAMSUNG\SSCDROM.SYS
 </code></pre>
 <p>(Replace <code>E:</code> with actual letter of old disk.)</p>
 <p>Otherwise copy from old disk later or proceed without CD-ROM until Win98SE install.</p>
-<h3 id="step-19-reboot-and-test-dos">Step 19 — Reboot and test DOS</h3>
+<h3 id="step-18-reboot-and-test-dos">Step 18 — Reboot and test DOS</h3>
 <p>Remove CDU media. System should boot from C:, show boot menu, load DOS 7.1.</p>
 <pre><code class="language-bat">VER
 </code></pre>
@@ -837,7 +944,7 @@ GOTO END
 <p>Should show empty D: drive.</p>
 <hr />
 <h2 id="phase-4-install-windows-98se">Phase 4 — Install Windows 98SE</h2>
-<h3 id="step-20-boot-to-dos-insert-win98se-cd">Step 20 — Boot to DOS, insert Win98SE CD</h3>
+<h3 id="step-19-boot-to-dos-insert-win98se-cd">Step 19 — Boot to DOS, insert Win98SE CD</h3>
 <p>With CD-ROM driver active (profile NORMAL), insert Windows 98SE CD.</p>
 <pre><code class="language-bat">D:
 </code></pre>
@@ -846,7 +953,7 @@ GOTO END
 DIR F:
 </code></pre>
 <p>Find the drive with <code>WIN98\SETUP.EXE</code>.</p>
-<h3 id="step-21-run-setup">Step 21 — Run Setup</h3>
+<h3 id="step-20-run-setup">Step 20 — Run Setup</h3>
 <pre><code class="language-bat">E:\WIN98\SETUP.EXE
 </code></pre>
 <p>(Replace E: with actual CD-ROM letter.)</p>
@@ -857,12 +964,12 @@ DIR F:
 <p>⚠️ During Setup, Windows may modify CONFIG.SYS and AUTOEXEC.BAT.
 This is expected — we will replace them with the full multi-boot config afterwards.</p>
 </blockquote>
-<h3 id="step-22-complete-windows-98se-installation">Step 22 — Complete Windows 98SE installation</h3>
+<h3 id="step-21-complete-windows-98se-installation">Step 21 — Complete Windows 98SE installation</h3>
 <p>Let Windows finish first-boot setup (hardware detection, driver installation).
 Install all Windows 98SE drivers as needed (video, etc.) before proceeding.</p>
 <hr />
 <h2 id="phase-5-configure-multi-boot-menu">Phase 5 — Configure multi-boot menu</h2>
-<h3 id="step-23-edit-msdossys-to-disable-auto-gui">Step 23 — Edit MSDOS.SYS to disable auto-GUI</h3>
+<h3 id="step-22-edit-msdossys-to-disable-auto-gui">Step 22 — Edit MSDOS.SYS to disable auto-GUI</h3>
 <p>Windows 98SE normally boots directly to Windows. We need it to show the
 boot menu first.</p>
 <p>MSDOS.SYS is a hidden system read-only file in C:\</p>
@@ -883,7 +990,7 @@ Logo=0
 <p>Save and restore attributes:</p>
 <pre><code class="language-bat">ATTRIB +S +H +R C:\MSDOS.SYS
 </code></pre>
-<h3 id="step-24-replace-configsys-with-full-multi-boot-version">Step 24 — Replace CONFIG.SYS with full multi-boot version</h3>
+<h3 id="step-23-replace-configsys-with-full-multi-boot-version">Step 23 — Replace CONFIG.SYS with full multi-boot version</h3>
 <pre><code class="language-bat">EDIT C:\CONFIG.SYS
 </code></pre>
 <p>Replace with the full config (this restores all original DOS profiles
@@ -894,7 +1001,8 @@ and adds the new WINDOWS entry):</p>
 ; MS-DOS 7.10 + Windows 98SE
 ;===========================================
 
-; Top-level boot menu
+; Boot menu - displayed at startup with 10 second countdown
+; MENUDEFAULT=WINDOWS,10 = auto-boot Windows after 10 seconds if no key pressed
 [MENU]
 MENUITEM=WINDOWS,   Windows 98SE
 MENUITEM=NORMAL,    MS-DOS  SoftMPU         - NOEMS 607KB (MT-32, GUS, everyday)
@@ -906,65 +1014,122 @@ MENUDEFAULT=WINDOWS,10
 ;MENUCOLOR=11,1
 
 ; -----------------------------------------------
-; Common settings for ALL profiles
+; Common settings loaded for ALL profiles
 ; -----------------------------------------------
 [COMMON]
+
+; HIMEM.SYS - XMS memory manager, must always be first
+; Using Windows 98SE version (newer than MS-DOS 7.1 version)
+; /TESTMEM:OFF = skip memory test on boot (saves ~30s on 256MB)
 DEVICE=C:\WINDOWS\HIMEM.SYS /TESTMEM:OFF
+
+; Load DOS into HMA (High Memory Area) and enable UMB
+; Must come before EMM386
 DOS=HIGH,UMB
+
+; Larger environment block - prevents DIGN9003 error from AWE32
+; /E:1024 = 1024 bytes for SET variables (BLASTER, ULTRASND etc.)
 SHELL=C:\COMMAND.COM C:\ /E:1024 /P
+
+; FILES=30 - max open file handles (NC + MSCDEX need ~25)
 FILES=30
+; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering, keep low)
 BUFFERS=4,0
+; LASTDRIVE=Z - covers all drives A-Z including C: D: E: + CD-ROM
 LASTDRIVE=Z
+; STACKS=9,256 - interrupt stack frames (required for AWE32 IRQ handling)
 STACKS=9,256
+; FCBS=1,0 - file control blocks (legacy, minimal)
 FCBS=1,0
 
 ; -----------------------------------------------
-; WINDOWS profile - minimal DOS init, then launch Win98
+; WINDOWS - minimal DOS init, then launch Windows 98SE
+; Windows 98SE handles all hardware via its own 32-bit PnP drivers
+; Only HIMEM + EMM386 needed - Windows reinitializes everything else
 ; -----------------------------------------------
 [WINDOWS]
+
+; EMM386 NOEMS - Windows does not use EMS, only UMB needed
+; Using Windows 98SE version (updated, supports larger drives)
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+
+; Samsung CD-ROM driver - needed so MSCDEX in AUTOEXEC.BAT can load
+; Windows will replace this with its own 32-bit CD-ROM driver after boot
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 3: NORMAL - NOEMS with SoftMPU (607KB conventional)
-; Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
+; Profile NORMAL - NOEMS with SoftMPU (607KB conventional)
+; Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday DOS use
+;          AWE32 native games, SC-55, McCake SF2
+; SoftMPU adds intelligent mode MPU-401 emulation for MT-32 games
 ; -----------------------------------------------
 [NORMAL]
+
+; EMM386 NOEMS = no EMS page frame
+; Frees 64KB of UMB compared to RAM mode - more space for drivers
+; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+
+; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
+; /X = disable write cache (safer for unexpected power loss on SSD)
+; 2048KB read cache, 512KB element size
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 4: EMS - RAM with SoftMPU (595KB conventional)
+; Profile EMS - RAM with SoftMPU (595KB conventional)
 ; Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
+;          Games requiring EMS memory (DOS4GW, DOS/4G extenders)
+; Note: 12KB less conventional memory than NORMAL due to EMS page frame
+; Note: AWEUTIL /EM:* does NOT work with DOS extenders - use /S only
 ; -----------------------------------------------
 [EMS]
+
+; EMM386 RAM = EMS + UMB both enabled
+; EMS page frame occupies 64KB of UMB but allows DOS extenders to work
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
+
+; SmartDrive loaded first to claim largest free UMB block
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 1: NOSOFTMPU - NOEMS without SoftMPU (607KB conventional)
+; Profile NOSOFTMPU - NOEMS without SoftMPU (607KB conventional)
 ; Use for: AWEUTIL /EM:GM/GS/MT32 emulation
+;          AWEUTIL /EM conflicts with SoftMPU - do not combine
+;          GM/GS games via AWEUTIL without external MIDI modules
 ; -----------------------------------------------
 [NOSOFTMPU]
+
+; EMM386 NOEMS - no EMS, maximum UMB space
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 2: NOSOFTEMU - RAM without SoftMPU (595KB conventional)
-; Use for: AWEUTIL /EM + EMS games
+; Profile NOSOFTEMU - RAM without SoftMPU (595KB conventional)
+; Use for: AWEUTIL /EM + EMS memory games
+;          Note: AWEUTIL /EM does not work with DOS extenders (DOS4GW)
+;          For DOS extender games without AWEUTIL use profile EMS instead
 ; -----------------------------------------------
 [NOSOFTEMU]
+
+; EMM386 RAM - EMS enabled for games that need it
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile 5: BARE - minimal (diagnostics, installation)
+; Profile BARE - minimal (diagnostics, installation, troubleshooting)
+; No SmartDrive, no CD-ROM, no sound - just basic DOS with XMS
 ; -----------------------------------------------
 [BARE]
+
+; Minimal EMM386 for XMS access only
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 </code></pre>
 <blockquote>
@@ -972,12 +1137,14 @@ DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 not C:\DOS\ — Win98SE replaces these with updated versions.</p>
 </blockquote>
 <p>Save and exit.</p>
-<h3 id="step-25-replace-autoexecbat-with-full-multi-boot-version">Step 25 — Replace AUTOEXEC.BAT with full multi-boot version</h3>
+<h3 id="step-24-replace-autoexecbat-with-full-multi-boot-version">Step 24 — Replace AUTOEXEC.BAT with full multi-boot version</h3>
 <pre><code class="language-bat">EDIT C:\AUTOEXEC.BAT
 </code></pre>
-<p>Replace with the full version — identical to your original except:
-- Added <code>:WINDOWS</code> section that launches WIN.COM
-- WINDOWS profile skips all sound drivers (Win98 handles them itself)</p>
+<p>Replace with the full version. Key changes from original DOS-only config:
+- Added <code>:WINDOWS</code> section: PGUSINIT + MSCDEX + mouse + WIN.COM
+- PGUSINIT in every profile — initializes PicoGUS hardware before boot
+- ECHO block in every profile — displays sound environment after PGUSINIT
+- UNISOUND and AWEUTIL /S in DOS profiles — Win98SE handles AWE32 itself</p>
 <pre><code class="language-bat">@ECHO OFF
 PROMPT $P$G
 PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS;C:\DRIVERS\SB16
@@ -1092,7 +1259,7 @@ NC
 <p>Save and exit.</p>
 <hr />
 <h2 id="phase-6-copy-drivers-from-old-disk">Phase 6 — Copy drivers from old disk</h2>
-<h3 id="step-26-connect-old-disk-and-copy-c-drivers">Step 26 — Connect old disk and copy C: drivers</h3>
+<h3 id="step-25-connect-old-disk-and-copy-c-drivers">Step 25 — Connect old disk and copy C: drivers</h3>
 <p>Connect old disk as secondary IDE (or use it before swapping).
 Old disk C: will appear as a different drive letter on the new system
 (typically E: or F: — check with <code>DIR E:</code>, <code>DIR F:</code> etc.).</p>
@@ -1105,16 +1272,15 @@ XCOPY E:\DOS C:\DOS /S /E /H /Y
 <p>Do NOT copy CONFIG.SYS, AUTOEXEC.BAT, IO.SYS, MSDOS.SYS, COMMAND.COM
 from the old disk — the new versions are already correct.</p>
 </blockquote>
-<h3 id="step-27-copy-games-to-d-and-data-to-e">Step 27 — Copy games to D: and data to E:</h3>
+<h3 id="step-26-copy-files-to-d">Step 26 — Copy files to D:</h3>
 <pre><code class="language-bat">XCOPY E:\D\*.* D:\ /S /E /H /Y
 </code></pre>
-<p>For anything to go on E: (ISOs, backups, extra data):</p>
 <pre><code class="language-bat">XCOPY E:\DATA\*.* E:\ /S /E /H /Y
 </code></pre>
 <p>(Adjust source drive letter to match the old disk's actual letter on the new system.)</p>
 <hr />
 <h2 id="phase-7-first-boot-test">Phase 7 — First boot test</h2>
-<h3 id="step-28-reboot-and-test-boot-menu">Step 28 — Reboot and test boot menu</h3>
+<h3 id="step-27-reboot-and-test-boot-menu">Step 27 — Reboot and test boot menu</h3>
 <p>Reboot with no media in drives. You should see:</p>
 <pre><code>Microsoft Windows 98 Startup Menu
 ===================================
@@ -1126,7 +1292,7 @@ from the old disk — the new versions are already correct.</p>
   6. MS-DOS  Bare
 </code></pre>
 <p>Default: Windows 98SE (10 second countdown)</p>
-<h3 id="step-29-test-each-option">Step 29 — Test each option</h3>
+<h3 id="step-28-test-each-option">Step 28 — Test each option</h3>
 <table>
 <thead>
 <tr>
@@ -1157,28 +1323,26 @@ from the old disk — the new versions are already correct.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="step-30-verify-drive-letters-in-dos">Step 30 — Verify drive letters in DOS</h3>
-<pre><code class="language-bat">DIR C:    (system, 4 GB)
-DIR D:    (games, 100 GB)
-DIR E:    (data, ~120 GB)
+<h3 id="step-29-verify-drive-letters-in-dos">Step 29 — Verify drive letters in DOS</h3>
+<pre><code class="language-bat">DIR C:    (system, 8 GB)
+DIR D:    (games, ~230 GB)
 </code></pre>
-<h3 id="step-31-verify-drive-letters-in-windows-98se">Step 31 — Verify drive letters in Windows 98SE</h3>
+<h3 id="step-30-verify-drive-letters-in-windows-98se">Step 30 — Verify drive letters in Windows 98SE</h3>
 <p>Open My Computer. You should see:
-- C: (4 GB, system)
-- D: (100 GB, games)
-- E: (~120 GB, data)
-- CD-ROM on next available letter (F: or G:)</p>
+- C: (8 GB, system)
+- D: (~230 GB, games + data)
+- CD-ROM on next available letter (E: or F:)</p>
 <hr />
 <h2 id="phase-8-windows-98se-driver-installation">Phase 8 — Windows 98SE driver installation</h2>
-<h3 id="step-32-install-intel-piix4-ide-bus-master-driver">Step 32 — Install Intel PIIX4 IDE Bus Master driver</h3>
+<h3 id="step-31-install-intel-piix4-ide-bus-master-driver">Step 31 — Install Intel PIIX4 IDE Bus Master driver</h3>
 <p>This enables UDMA/33 in Windows 98SE. Without it Windows uses PIO mode.</p>
 <p>Download: Intel INF Update Utility (inf8xxxx.exe) from Intel or VOGONS drivers.
 Run from Windows, reboot. Device Manager → IDE controllers should show
 "Intel 82371AB/EB PCI Bus Master IDE Controller" with DMA enabled.</p>
-<h3 id="step-33-install-awe32-ct3900-drivers-for-windows">Step 33 — Install AWE32 CT3900 drivers for Windows</h3>
+<h3 id="step-32-install-awe32-ct3900-drivers-for-windows">Step 32 — Install AWE32 CT3900 drivers for Windows</h3>
 <p>Install Creative Sound Blaster AWE32 drivers for Windows 98SE.
 Configure: port 220, IRQ 5, DMA 1/5, EMU8000 port 620.</p>
-<h3 id="step-34-install-picogus-windows-98se-mpu-401">Step 34 — Install PicoGUS Windows 98SE MPU-401</h3>
+<h3 id="step-33-install-picogus-windows-98se-mpu-401">Step 33 — Install PicoGUS Windows 98SE MPU-401</h3>
 <p>In Device Manager → Add hardware → manually add:
 - Sound, video and game controllers
 - MPU-401 Compatible, IRQ 9, port 300h</p>
@@ -1198,7 +1362,7 @@ Configure: port 220, IRQ 5, DMA 1/5, EMU8000 port 620.</p>
 <td>Expected — BIOS limit; DOS 7.1 and Win98SE see full disk via 32-bit driver</td>
 </tr>
 <tr>
-<td>D: or E: not visible in DOS</td>
+<td>D: not visible in DOS</td>
 <td>LASTDRIVE=Z in CONFIG.SYS — already set in the config below</td>
 </tr>
 <tr>
@@ -1223,7 +1387,7 @@ Configure: port 220, IRQ 5, DMA 1/5, EMU8000 port 620.</p>
 </tr>
 <tr>
 <td>Win98 slow disk access</td>
-<td>Install Intel PIIX4 Bus Master driver (see Step 32)</td>
+<td>Install Intel PIIX4 Bus Master driver (see Step 31)</td>
 </tr>
 </tbody>
 </table>
@@ -1282,19 +1446,14 @@ Configure: port 220, IRQ 5, DMA 1/5, EMU8000 port 620.</p>
 </main>
 
 <div class="statusbar">
-  <span>RHINO-15</span>
-  <span>PENTIUM MMX 200MHz</span>
-  <span>AWE32 CT3900 + PicoGUS v2.0</span>
-  <span>MS-DOS 7.10 + Win98SE</span>
-  <span class="right">34 STEPS // 8 PHASES</span>
+  <span>INSTALL NEW DISK</span>
+  <span class="right">33 STEPS // 8 PHASES</span>
 </div>
 
 <script>
 
-// Highlight active TOC item on scroll
 const sections = document.querySelectorAll('h2[id], h3[id]');
 const tocLinks = document.querySelectorAll('#toc a');
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -1307,7 +1466,6 @@ const observer = new IntersectionObserver((entries) => {
     }
   });
 }, { rootMargin: '-10% 0px -80% 0px' });
-
 sections.forEach(s => observer.observe(s));
 
 </script>
