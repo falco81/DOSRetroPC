@@ -215,6 +215,37 @@ GOTO END
 REM -----------------------------------------------
 REM Profile: BARE DOS
 REM -----------------------------------------------
+REM -----------------------------------------------
+REM Profile: ISOCD - NOEMS with virtual ISO CD-ROM
+REM Use for: Running games from ISO images on D:\ISOS\
+REM Physical Samsung CD-ROM NOT loaded - saves UMB space
+REM To switch ISO at runtime: ISO D:\ISOS\GAME.ISO
+REM Requires: C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE + SHSUCDX.COM
+REM Download: http://adoxa.altervista.org/shsucdx/ -> SHSUCD r3-7
+REM -----------------------------------------------
+:ISOCD
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
+REM --- Virtual ISO CD-ROM ---
+REM SHSUCDHD: mounts ISO file as virtual CD device SHSU-CDH
+REM /F: = default ISO to mount at boot (switch later with ISO.BAT)
+REM SHSUCDX: exposes SHSU-CDH as a drive letter (replaces MSCDEX)
+REM /Q = quiet, /I = override any existing MSCDEX
+LH C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE /F:D:\ISOS\DEFAULT.ISO
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
 :BARE
 GOTO END
 

@@ -12,6 +12,7 @@ MENUITEM=NORMAL,    MS-DOS  SoftMPU         - NOEMS 607KB (MT-32, GUS, everyday)
 MENUITEM=EMS,       MS-DOS  SoftMPU EMS     - RAM   595KB (Tyrian, Magic Carpet, Unreal)
 MENUITEM=NOSOFTMPU, MS-DOS  No SoftMPU      - NOEMS 607KB (AWEUTIL /EM)
 MENUITEM=NOSOFTEMU, MS-DOS  No SoftMPU EMS  - RAM   595KB (AWEUTIL /EM + extenders)
+MENUITEM=ISOCD,     MS-DOS  ISO CD-ROM      - NOEMS 607KB (virtual CD from ISO file)
 MENUITEM=BARE,      MS-DOS  Bare            - no drivers
 MENUDEFAULT=WINDOWS,10
 ;MENUCOLOR=11,1
@@ -125,6 +126,19 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
 INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile ISOCD - NOEMS with virtual ISO CD-ROM
+; Use for: Running games from ISO images on D:\ISOS\
+; Physical Samsung CD-ROM NOT loaded - saves UMB space
+; SHSUCDHD.EXE + SHSUCDX.COM loaded in AUTOEXEC.BAT
+; Download: http://adoxa.altervista.org/shsucdx/ -> SHSUCD r3-7
+; -----------------------------------------------
+[ISOCD]
+
+; EMM386 NOEMS - same as NORMAL, no physical CD-ROM driver loaded
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 
 ; -----------------------------------------------
 ; Profile BARE - minimal (diagnostics, installation, troubleshooting)
