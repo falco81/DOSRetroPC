@@ -3,34 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DOS SETUP</title>
+<title>DOS Retro PC — System Overview</title>
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 
 :root {
-  --bg: #0a0c0a;
-  --bg2: #0f130f;
-  --bg3: #141a14;
-  --border: #1e3a1e;
-  --green: #39ff14;
-  --green-dim: #1a7a08;
-  --green-mid: #22c905;
-  --amber: #ffb300;
-  --amber-dim: #7a5500;
-  --text: #b8e8b0;
-  --text-dim: #6a9460;
-  --heading: #39ff14;
-  --code-bg: #060d06;
+  --bg:         #0a0c0a;
+  --bg2:        #0f130f;
+  --bg3:        #141a14;
+  --border:     #1e3a1e;
+  --green:      #39ff14;
+  --green-dim:  #1a7a08;
+  --green-mid:  #22c905;
+  --amber:      #ffb300;
+  --amber-dim:  #7a5500;
+  --text:       #b8e8b0;
+  --text-dim:   #6a9460;
+  --heading:    #39ff14;
+  --code-bg:    #060d06;
   --table-head: #0f2010;
-  --table-alt: #0c160c;
-  --scrollbar: #1e3a1e;
-  --glow: 0 0 8px rgba(57,255,20,0.4);
-  --glow-strong: 0 0 16px rgba(57,255,20,0.7), 0 0 32px rgba(57,255,20,0.3);
+  --table-alt:  #0c160c;
+  --glow:       0 0 8px rgba(57,255,20,0.4);
+  --glow-strong:0 0 16px rgba(57,255,20,0.7), 0 0 32px rgba(57,255,20,0.3);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { scroll-behavior: smooth; }
 
 body {
@@ -44,23 +41,21 @@ body {
   overflow-x: hidden;
 }
 
-/* CRT scanlines overlay */
-body::before {
+/* CRT scanlines */
+body.scanlines::before {
   content: '';
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   background: repeating-linear-gradient(
     0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.08) 2px,
-    rgba(0,0,0,0.08) 4px
+    transparent, transparent 2px,
+    rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
   );
   pointer-events: none;
   z-index: 999;
 }
 
-/* Sidebar */
+/* ── SIDEBAR ── */
 #sidebar {
   width: 280px;
   min-width: 280px;
@@ -71,10 +66,8 @@ body::before {
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0;
   flex-shrink: 0;
 }
-
 #sidebar::-webkit-scrollbar { width: 4px; }
 #sidebar::-webkit-scrollbar-track { background: var(--bg2); }
 #sidebar::-webkit-scrollbar-thumb { background: var(--green-dim); }
@@ -87,7 +80,6 @@ body::before {
   background: var(--bg2);
   z-index: 10;
 }
-
 .sidebar-header .sys-label {
   font-family: 'Orbitron', monospace;
   font-size: 9px;
@@ -96,7 +88,6 @@ body::before {
   text-transform: uppercase;
   margin-bottom: 6px;
 }
-
 .sidebar-header h2 {
   font-family: 'Orbitron', monospace;
   font-size: 11px;
@@ -105,15 +96,16 @@ body::before {
   letter-spacing: 1px;
   line-height: 1.4;
   font-weight: 700;
+  margin: 0;
+  border: none;
+  padding: 0;
+  background: none;
+  text-shadow: var(--glow);
 }
 
-#toc {
-  padding: 12px 0;
-}
-
+#toc { padding: 12px 0; }
 #toc ul { list-style: none; padding: 0; }
 #toc li { padding: 0; }
-
 #toc a {
   display: block;
   padding: 3px 16px;
@@ -122,50 +114,51 @@ body::before {
   font-size: 11.5px;
   line-height: 1.5;
   border-left: 2px solid transparent;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 #toc a:hover {
   color: var(--green);
   border-left-color: var(--green);
   background: rgba(57,255,20,0.05);
   text-shadow: var(--glow);
 }
-
 #toc > ul > li > a {
   color: var(--green-mid);
   font-size: 12px;
   padding-top: 6px;
   padding-bottom: 6px;
 }
-
 #toc > ul > li > ul > li > a {
   padding-left: 28px;
   font-size: 11px;
 }
-
 #toc > ul > li > ul > li > ul > li > a {
   padding-left: 42px;
   font-size: 10.5px;
   color: #4a7440;
 }
+#toc a.active {
+  color: var(--green) !important;
+  border-left-color: var(--green) !important;
+  background: rgba(57,255,20,0.08) !important;
+  text-shadow: var(--glow) !important;
+}
 
-/* Main content */
+/* ── MAIN CONTENT ── */
 #content {
   flex: 1;
   max-width: calc(100vw - 280px);
-  padding: 40px 56px 80px 56px;
+  padding: 40px 56px 80px;
   overflow-x: auto;
 }
-
-#content::-webkit-scrollbar { width: 6px; }
+#content::-webkit-scrollbar { width: 6px; height: 6px; }
 #content::-webkit-scrollbar-track { background: var(--bg); }
 #content::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 3px; }
 
-/* Top bar */
+/* ── TOPBAR ── */
 .topbar {
   display: flex;
   align-items: center;
@@ -174,14 +167,12 @@ body::before {
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
 }
-
 .topbar .prompt {
   font-family: 'Orbitron', monospace;
   font-size: 10px;
   color: var(--green-dim);
   letter-spacing: 4px;
 }
-
 .topbar .blink {
   display: inline-block;
   width: 10px;
@@ -191,41 +182,45 @@ body::before {
   animation: blink 1.2s step-end infinite;
   vertical-align: middle;
 }
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.topbar .topbar-subtitle {
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 2px;
 }
 
-/* Typography */
+/* ── TYPOGRAPHY ── */
 h1, h2, h3, h4 {
   font-family: 'Orbitron', monospace;
   color: var(--heading);
   line-height: 1.3;
   scroll-margin-top: 20px;
 }
-
 h1 {
   font-size: 24px;
   font-weight: 900;
   text-shadow: var(--glow-strong);
   margin-bottom: 6px;
   letter-spacing: 1px;
+  border: none;
+  padding: 0;
+  margin-top: 0;
 }
-
+h1::after { display: none; }
 h1 + p, h1 + h3 { margin-top: 4px; }
-
 h2 {
   font-size: 16px;
   font-weight: 700;
   margin-top: 48px;
   margin-bottom: 16px;
   padding-bottom: 8px;
+  border: none;
   border-bottom: 1px solid var(--border);
+  background: none;
   text-shadow: var(--glow);
   letter-spacing: 1px;
+  color: var(--heading);
 }
-
 h3 {
   font-size: 13px;
   font-weight: 700;
@@ -234,8 +229,10 @@ h3 {
   margin-bottom: 10px;
   text-shadow: 0 0 8px rgba(255,179,0,0.5);
   letter-spacing: 0.5px;
+  border: none;
+  padding: 0;
 }
-
+h3::before { display: none; }
 h4 {
   font-size: 12px;
   font-weight: 400;
@@ -244,16 +241,17 @@ h4 {
   margin-bottom: 8px;
   text-shadow: none;
 }
+h4::before { display: none; }
+h5 { font-size: 12px; color: var(--text); margin-top: 16px; margin-bottom: 6px; }
+h6 { font-size: 11px; color: var(--text-dim); margin-top: 14px; margin-bottom: 6px; }
 
 p { margin-bottom: 12px; }
-
 strong { color: var(--green); font-weight: normal; text-shadow: var(--glow); }
 em { color: var(--amber); font-style: normal; }
-
 a { color: var(--green-mid); text-decoration: none; border-bottom: 1px dotted var(--green-dim); }
 a:hover { color: var(--green); text-shadow: var(--glow); }
 
-/* Code */
+/* ── CODE ── */
 code {
   background: var(--code-bg);
   color: var(--green);
@@ -264,7 +262,6 @@ code {
   border: 1px solid var(--border);
   text-shadow: var(--glow);
 }
-
 pre {
   background: var(--code-bg);
   border: 1px solid var(--border);
@@ -275,280 +272,195 @@ pre {
   border-radius: 2px;
   position: relative;
 }
-
 pre::before {
   content: '> ';
   color: var(--green-dim);
   font-size: 12px;
 }
-
 pre code {
-  background: none;
-  border: none;
-  padding: 0;
+  background: none; border: none; padding: 0;
   color: var(--green);
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 13px; line-height: 1.6;
   text-shadow: 0 0 4px rgba(57,255,20,0.3);
 }
 
-/* Tables */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0;
-  font-size: 13px;
-}
-
-thead tr {
-  background: var(--table-head);
-  border-bottom: 1px solid var(--green-dim);
-}
-
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+thead tr { background: var(--table-head); border-bottom: 1px solid var(--green-dim); }
 th {
-  padding: 8px 12px;
-  text-align: left;
-  color: var(--green);
-  font-weight: normal;
-  font-family: 'Orbitron', monospace;
-  font-size: 10px;
-  letter-spacing: 1px;
-  text-shadow: var(--glow);
-  text-transform: uppercase;
+  padding: 8px 12px; text-align: left;
+  color: var(--green); font-weight: normal;
+  font-family: 'Orbitron', monospace; font-size: 10px;
+  letter-spacing: 1px; text-shadow: var(--glow); text-transform: uppercase;
 }
-
-td {
-  padding: 7px 12px;
-  border-bottom: 1px solid rgba(30,58,30,0.5);
-  color: var(--text);
-  vertical-align: top;
-}
-
+td { padding: 7px 12px; border-bottom: 1px solid rgba(30,58,30,0.5); color: var(--text); vertical-align: top; }
 tr:nth-child(even) td { background: var(--table-alt); }
 tr:hover td { background: rgba(57,255,20,0.04); }
-
 td code { font-size: 12px; }
 
-/* Blockquotes */
+/* ── BLOCKQUOTE ── */
 blockquote {
   border-left: 3px solid var(--amber-dim);
-  padding: 10px 16px;
-  margin: 16px 0;
+  padding: 10px 16px; margin: 16px 0;
   background: rgba(255,179,0,0.04);
-  color: #c8a060;
-  font-size: 13px;
+  color: #c8a060; font-size: 13px;
 }
-
 blockquote p { margin-bottom: 0; }
 blockquote strong { color: var(--amber); text-shadow: 0 0 8px rgba(255,179,0,0.5); }
 
-/* Lists */
-ul, ol {
-  padding-left: 24px;
-  margin-bottom: 12px;
-}
-
+/* ── LISTS ── */
+ul, ol { padding-left: 24px; margin-bottom: 12px; }
 li { margin-bottom: 4px; }
 li p { margin-bottom: 4px; }
-
 ul li::marker { color: var(--green-dim); content: '> '; }
 ol li::marker { color: var(--green-dim); }
 
-/* HR */
-hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
+/* ── HR ── */
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
 
-/* Status bar */
+/* ── STATUSBAR ── */
 .statusbar {
   position: fixed;
-  bottom: 0;
-  left: 280px;
-  right: 0;
+  bottom: 0; left: 280px; right: 0;
   height: 24px;
   background: var(--green-dim);
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 24px;
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 24px;
   z-index: 100;
-  font-size: 10px;
-  color: var(--bg);
-  font-family: 'Orbitron', monospace;
-  letter-spacing: 1px;
+  font-size: 10px; color: var(--bg);
+  font-family: 'Orbitron', monospace; letter-spacing: 1px;
 }
-
 .statusbar span { opacity: 0.8; }
 .statusbar .right { margin-left: auto; }
 
-/* Scrollbar global */
+/* ── SCROLLBARS ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 3px; }
 
+/* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   #sidebar { display: none; }
   #content { max-width: 100vw; padding: 20px; }
   .statusbar { left: 0; }
 }
-
-
-#toc a.active {
-  color: var(--green) !important;
-  border-left-color: var(--green) !important;
-  background: rgba(57,255,20,0.08) !important;
-  text-shadow: var(--glow) !important;
+@media print {
+  #sidebar, .statusbar, body::before { display: none; }
+  #content { max-width: 100%; padding: 20px; }
 }
-
 </style>
 </head>
-<body>
+<body class="scanlines">
 
 <nav id="sidebar">
   <div class="sidebar-header">
-    <div class="sys-label">Rhino 15 // DOS</div>
-    <h2>DOS SETUP</h2>
+    <div class="sys-label">Rhino 15 Socket 7 · Pentium MMX</div>
+    <h2>DOS RETRO PC — SYSTEM OVERVIEW</h2>
   </div>
   <div id="toc">
-    
+    <ul>
+<li><a href="#dos-retro-pc-system-overview">DOS Retro PC — System Overview</a>
 <ul>
-<li><a href="#dos-retro-pc-system-overview">DOS Retro PC — System Overview</a><ul>
-<li><a href="#hardware">Hardware</a></li>
-<li><a href="#bios-settings">BIOS Settings</a><ul>
-<li><a href="#integrated-peripherals">Integrated Peripherals</a></li>
-<li><a href="#pnppci-configuration">PnP/PCI Configuration</a></li>
-</ul>
-</li>
-<li><a href="#irq-map">IRQ Map</a></li>
-<li><a href="#dma-map">DMA Map</a></li>
-<li><a href="#awe64-ct4380-awe32-ct3900-upgrade-guide">AWE64 CT4380 → AWE32 CT3900 Upgrade Guide</a><ul>
-<li><a href="#what-you-are-replacing-and-why">What you are replacing and why</a></li>
-<li><a href="#what-this-adds-to-the-system">What this adds to the system</a></li>
-<li><a href="#before-you-start">Before you start</a></li>
-<li><a href="#step-1-set-ct3900-jumpers">Step 1 — Set CT3900 jumpers</a></li>
-<li><a href="#ct3900-semi-pnp-configuration">CT3900 — Semi-PnP Configuration</a></li>
-<li><a href="#step-2-install-simms">Step 2 — Install SIMMs</a><ul>
-<li><a href="#phase-1-initial-bring-up-now-modules-already-owned">Phase 1 — Initial bring-up (now, modules already owned)</a></li>
-<li><a href="#phase-2-ebay-modules-arriving">Phase 2 — eBay modules arriving</a></li>
-<li><a href="#phase-3-usa-modules-arriving-maximum">Phase 3 — USA modules arriving (maximum)</a></li>
-<li><a href="#simm-rules-summary">SIMM rules summary</a></li>
-</ul>
-</li>
-<li><a href="#step-3-physical-installation">Step 3 — Physical installation</a></li>
-<li><a href="#step-4-first-boot-verification">Step 4 — First boot verification</a></li>
-<li><a href="#software-changes-after-swap">Software changes after swap</a></li>
-<li><a href="#post-installation-checklist">Post-Installation Checklist</a><ul>
-<li><a href="#phase-1-initial-installation-ct3900-2-1mb-samsung">Phase 1 — Initial installation (CT3900 + 2× 1MB Samsung)</a></li>
-<li><a href="#phase-2-simm-swap-to-2-4mb-when-ebay-modules-arrive">Phase 2 — SIMM swap to 2× 4MB (when eBay modules arrive)</a></li>
-<li><a href="#phase-3-simm-swap-to-2-16mb-when-usa-modules-arrive">Phase 3 — SIMM swap to 2× 16MB (when USA modules arrive)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#picogus-v20-wp32-mccake-installation-guide">PicoGUS v2.0 + WP32 McCake — Installation Guide</a><ul>
-<li><a href="#what-you-are-installing">What you are installing</a></li>
-<li><a href="#what-this-adds-to-the-system_1">What this adds to the system</a></li>
-<li><a href="#why-these-resource-values">Why these resource values</a></li>
-<li><a href="#before-you-start_1">Before you start</a></li>
-<li><a href="#software-to-download-before-installing">Software to download before installing</a></li>
-<li><a href="#step-1-bios-settings">Step 1 — BIOS settings</a><ul>
-<li><a href="#integrated-peripherals_1">Integrated Peripherals</a></li>
-<li><a href="#pnppci-configuration_1">PnP/PCI Configuration</a></li>
-</ul>
-</li>
-<li><a href="#step-2-install-dreamblaster-x16gs-onto-picogus">Step 2 — Install DreamBlaster X16GS onto PicoGUS</a></li>
-<li><a href="#step-3-set-picogus-jumpers">Step 3 — Set PicoGUS jumpers</a><ul>
-<li><a href="#irq-jumper-bank">IRQ jumper bank</a></li>
-<li><a href="#dma-jumper-bank">DMA jumper bank</a></li>
-<li><a href="#io-port">IO port</a></li>
-</ul>
-</li>
-<li><a href="#step-4-physical-installation">Step 4 — Physical installation</a></li>
-<li><a href="#step-5-verify-directory-structure">Step 5 — Verify directory structure</a></li>
-<li><a href="#step-6-first-boot-test">Step 6 — First boot test</a></li>
-<li><a href="#step-7-autoexecbat-state-after-installation">Step 7 — AUTOEXEC.BAT — state after installation</a></li>
-<li><a href="#step-8-save-settings-to-picogus-flash-optional">Step 8 — Save settings to PicoGUS flash (optional)</a></li>
-<li><a href="#pgusinitexe-full-parameter-reference">PGUSINIT.EXE — Full Parameter Reference</a></li>
-<li><a href="#picogus-emulation-modes">PicoGUS Emulation Modes</a></li>
-<li><a href="#wp32-mccake-sf2-soundfonty">WP32 McCake — SF2 Soundfonty</a><ul>
-<li><a href="#recommended-sf2-soundfonts-for-dos-gaming">Recommended SF2 soundfonts for DOS gaming</a></li>
-<li><a href="#recommended-combination-for-your-setup">Recommended combination for your setup</a></li>
-<li><a href="#sd-card-file-layout">SD card file layout</a></li>
-<li><a href="#mt32-picfg-recommended-settings-for-sf2-mode">mt32-pi.cfg — recommended settings for SF2 mode</a></li>
-</ul>
-</li>
-<li><a href="#game-setup-key-configurations">Game Setup — Key Configurations</a><ul>
-<li><a href="#gus-games-doom-duke3d-heretic-hexen">GUS games (Doom, Duke3D, Heretic, Hexen…)</a></li>
-<li><a href="#gm-games-via-mccake-sf2-without-sc-55">GM games via McCake SF2 (without SC-55)</a></li>
-<li><a href="#mt-32-games-unchanged-picogus-does-not-affect-this">MT-32 games (unchanged — PicoGUS does not affect this)</a></li>
-</ul>
-</li>
-<li><a href="#mccake-vs-aweutil-emgs-comparison">McCake vs AWEUTIL /EM:GS — Comparison</a></li>
-<li><a href="#awe32-ct3900-picogus-v20-coexistence-full-resource-summary">AWE32 CT3900 + PicoGUS v2.0 Coexistence — Full Resource Summary</a></li>
-<li><a href="#firmware-update-if-needed-in-the-future">Firmware Update (if needed in the future)</a></li>
-<li><a href="#post-installation-checklist_1">Post-Installation Checklist</a></li>
-</ul>
-</li>
-<li><a href="#audio-routing-behringer-qx1222usb">Audio Routing — Behringer QX1222USB</a><ul>
-<li><a href="#channel-assignment">Channel Assignment</a></li>
-<li><a href="#signal-flow">Signal Flow</a></li>
-<li><a href="#midi-hardware-chain">MIDI Hardware Chain</a></li>
-<li><a href="#mixer-operation-which-faders-to-raise">Mixer Operation — which faders to raise</a></li>
-</ul>
-</li>
-<li><a href="#sound-device-reference">Sound Device Reference</a></li>
-<li><a href="#configsys">CONFIG.SYS</a></li>
-<li><a href="#autoexecbat">AUTOEXEC.BAT</a></li>
-<li><a href="#environment-variables-reference">Environment Variables Reference</a></li>
-<li><a href="#aweutil-emu8000-wavetable-synthesizer">AWEUTIL — EMU8000 Wavetable Synthesizer</a><ul>
-<li><a href="#unisound-vs-aweutil-what-each-does">UNISOUND vs AWEUTIL — what each does</a></li>
-<li><a href="#files-required-for-aweutil">Files required for AWEUTIL</a></li>
-<li><a href="#aweutil-commands">AWEUTIL commands</a></li>
-<li><a href="#when-to-use-aweutil-em-vs-sc-55-or-mt-32">When to use AWEUTIL /EM vs. SC-55 or MT-32</a></li>
-<li><a href="#critical-conflict-aweutil-em-softmpu">⚠️ Critical conflict: AWEUTIL /EM + SoftMPU</a></li>
-<li><a href="#fixmpu-hanging-note-bug">FixMPU — hanging note bug</a></li>
-<li><a href="#aweutil-and-memory-key-difference">AWEUTIL and memory — key difference</a></li>
-<li><a href="#aweutil-pre-game-workflow">AWEUTIL — pre-game workflow</a></li>
-<li><a href="#aweutil-in-autoexecbat-profile-overview">AWEUTIL in AUTOEXEC.BAT — profile overview</a></li>
-<li><a href="#games-with-native-awe32-support-aweutil-s-only-needed">Games with native AWE32 support (AWEUTIL /S only needed)</a></li>
-</ul>
-</li>
-<li><a href="#game-setup-guide">Game Setup Guide</a><ul>
-<li><a href="#sound-device-priority-general-rule">Sound device priority — general rule</a></li>
-<li><a href="#category-1-mt-32-games">Category 1 — MT-32 games</a></li>
-<li><a href="#category-2-gmgs-games-sc-55">Category 2 — GM/GS games — SC-55</a></li>
-<li><a href="#category-3-gus-games">Category 3 — GUS games</a></li>
-<li><a href="#category-4-awe32-native-games-emu8000-wavetable">Category 4 — AWE32 native games (EMU8000 wavetable)</a></li>
-<li><a href="#category-5-gmgs-games-without-external-modules">Category 5 — GM/GS games without external modules</a></li>
-<li><a href="#category-6-opl3-adlib-fm-games">Category 6 — OPL3 / AdLib / FM games</a></li>
-<li><a href="#category-7-3dfx-voodoo2-games">Category 7 — 3dfx Voodoo2 games</a></li>
-<li><a href="#quick-reference-qx1222usb-fader-positions">Quick reference — QX1222USB fader positions</a></li>
-<li><a href="#quick-reference-midi-port">Quick reference — MIDI port</a></li>
-<li><a href="#switching-sc-55-mode">Switching SC-55 mode</a></li>
-</ul>
-</li>
-<li><a href="#memory-map-after-optimization">Memory Map (after optimization)</a><ul>
-<li><a href="#umb-contents">UMB Contents</a></li>
-</ul>
-</li>
-<li><a href="#driver-locations">Driver Locations</a></li>
-<li><a href="#video">Video</a></li>
-<li><a href="#key-notes">Key Notes</a></li>
-<li><a href="#dreamblaster-x16gs-alternative-module-currently-under-repair">DreamBlaster X16GS — Alternative (module currently under repair)</a><ul>
-<li><a href="#what-it-is">What it is</a></li>
-<li><a href="#preloaded-x16gs-banks">Preloaded X16GS Banks</a></li>
-<li><a href="#bank-switching-bat-files-in-cdriverspicogusx16">Bank switching (BAT files in C:\DRIVERS\PICOGUS\X16)</a></li>
-<li><a href="#pgusinit-settings-for-x16gs">pgusinit settings for X16GS</a></li>
-<li><a href="#reporting-the-defect-to-serdaco">Reporting the defect to Serdaco</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-
+<li><a href="#hardware">Hardware</a>
+<li><a href="#bios-settings">BIOS Settings</a>
+<ul>
+<li><a href="#integrated-peripherals">Integrated Peripherals</a>
+<li><a href="#pnppci-configuration">PnP/PCI Configuration</a>
+</ul></li>
+<li><a href="#irq-map">IRQ Map</a>
+<li><a href="#dma-map">DMA Map</a>
+<li><a href="#awe64-ct4380-awe32-ct3900-upgrade-guide">AWE64 CT4380 → AWE32 CT3900 Upgrade Guide</a>
+<ul>
+<li><a href="#what-you-are-replacing-and-why">What you are replacing and why</a>
+<li><a href="#what-this-adds-to-the-system">What this adds to the system</a>
+<li><a href="#before-you-start">Before you start</a>
+<li><a href="#step-1-set-ct3900-jumpers">Step 1 — Set CT3900 jumpers</a>
+<li><a href="#ct3900-semi-pnp-configuration">CT3900 — Semi-PnP Configuration</a>
+<li><a href="#step-2-install-simms">Step 2 — Install SIMMs</a>
+<li><a href="#step-3-physical-installation">Step 3 — Physical installation</a>
+<li><a href="#step-4-first-boot-verification">Step 4 — First boot verification</a>
+<li><a href="#software-changes-after-swap">Software changes after swap</a>
+<li><a href="#post-installation-checklist">Post-Installation Checklist</a>
+</ul></li>
+<li><a href="#picogus-v20-wp32-mccake-installation-guide">PicoGUS v2.0 + WP32 McCake — Installation Guide</a>
+<ul>
+<li><a href="#what-you-are-installing">What you are installing</a>
+<li><a href="#what-this-adds-to-the-system-1">What this adds to the system</a>
+<li><a href="#why-these-resource-values">Why these resource values</a>
+<li><a href="#before-you-start-1">Before you start</a>
+<li><a href="#software-to-download-before-installing">Software to download before installing</a>
+<li><a href="#step-1-bios-settings">Step 1 — BIOS settings</a>
+<li><a href="#step-2-install-dreamblaster-x16gs-onto-picogus">Step 2 — Install DreamBlaster X16GS onto PicoGUS</a>
+<li><a href="#step-3-set-picogus-jumpers">Step 3 — Set PicoGUS jumpers</a>
+<li><a href="#step-4-physical-installation">Step 4 — Physical installation</a>
+<li><a href="#step-5-verify-directory-structure">Step 5 — Verify directory structure</a>
+<li><a href="#step-6-first-boot-test">Step 6 — First boot test</a>
+<li><a href="#step-7-autoexecbat-state-after-installation">Step 7 — AUTOEXEC.BAT — state after installation</a>
+<li><a href="#step-8-save-settings-to-picogus-flash-optional">Step 8 — Save settings to PicoGUS flash (optional)</a>
+<li><a href="#pgusinitexe-full-parameter-reference">PGUSINIT.EXE — Full Parameter Reference</a>
+<li><a href="#picogus-emulation-modes">PicoGUS Emulation Modes</a>
+<li><a href="#wp32-mccake-sf2-soundfonty">WP32 McCake — SF2 Soundfonty</a>
+<li><a href="#game-setup-key-configurations">Game Setup — Key Configurations</a>
+<li><a href="#mccake-vs-aweutil-emgs-comparison">McCake vs AWEUTIL /EM:GS — Comparison</a>
+<li><a href="#awe32-ct3900-picogus-v20-coexistence-full-resource-summary">AWE32 CT3900 + PicoGUS v2.0 Coexistence — Full Resource Summary</a>
+<li><a href="#firmware-update-if-needed-in-the-future">Firmware Update (if needed in the future)</a>
+<li><a href="#post-installation-checklist-1">Post-Installation Checklist</a>
+</ul></li>
+<li><a href="#audio-routing-behringer-qx1222usb">Audio Routing — Behringer QX1222USB</a>
+<ul>
+<li><a href="#channel-assignment">Channel Assignment</a>
+<li><a href="#signal-flow">Signal Flow</a>
+<li><a href="#midi-hardware-chain">MIDI Hardware Chain</a>
+<li><a href="#mixer-operation-which-faders-to-raise">Mixer Operation — which faders to raise</a>
+</ul></li>
+<li><a href="#sound-device-reference">Sound Device Reference</a>
+<li><a href="#configsys">CONFIG.SYS</a>
+<li><a href="#autoexecbat">AUTOEXEC.BAT</a>
+<li><a href="#environment-variables-reference">Environment Variables Reference</a>
+<li><a href="#aweutil-emu8000-wavetable-synthesizer">AWEUTIL — EMU8000 Wavetable Synthesizer</a>
+<ul>
+<li><a href="#unisound-vs-aweutil-what-each-does">UNISOUND vs AWEUTIL — what each does</a>
+<li><a href="#files-required-for-aweutil">Files required for AWEUTIL</a>
+<li><a href="#aweutil-commands">AWEUTIL commands</a>
+<li><a href="#when-to-use-aweutil-em-vs-sc-55-or-mt-32">When to use AWEUTIL /EM vs. SC-55 or MT-32</a>
+<li><a href="#critical-conflict-aweutil-em-softmpu">⚠️ Critical conflict: AWEUTIL /EM + SoftMPU</a>
+<li><a href="#fixmpu-hanging-note-bug">FixMPU — hanging note bug</a>
+<li><a href="#aweutil-and-memory-key-difference">AWEUTIL and memory — key difference</a>
+<li><a href="#aweutil-pre-game-workflow">AWEUTIL — pre-game workflow</a>
+<li><a href="#aweutil-in-autoexecbat-profile-overview">AWEUTIL in AUTOEXEC.BAT — profile overview</a>
+<li><a href="#games-with-native-awe32-support-aweutil-s-only-needed">Games with native AWE32 support (AWEUTIL /S only needed)</a>
+</ul></li>
+<li><a href="#game-setup-guide">Game Setup Guide</a>
+<ul>
+<li><a href="#sound-device-priority-general-rule">Sound device priority — general rule</a>
+<li><a href="#category-1-mt-32-games">Category 1 — MT-32 games</a>
+<li><a href="#category-2-gmgs-games-sc-55">Category 2 — GM/GS games — SC-55</a>
+<li><a href="#category-3-gus-games">Category 3 — GUS games</a>
+<li><a href="#category-4-awe32-native-games-emu8000-wavetable">Category 4 — AWE32 native games (EMU8000 wavetable)</a>
+<li><a href="#category-5-gmgs-games-without-external-modules">Category 5 — GM/GS games without external modules</a>
+<li><a href="#category-6-opl3-adlib-fm-games">Category 6 — OPL3 / AdLib / FM games</a>
+<li><a href="#category-7-3dfx-voodoo2-games">Category 7 — 3dfx Voodoo2 games</a>
+<li><a href="#quick-reference-qx1222usb-fader-positions">Quick reference — QX1222USB fader positions</a>
+<li><a href="#quick-reference-midi-port">Quick reference — MIDI port</a>
+<li><a href="#switching-sc-55-mode">Switching SC-55 mode</a>
+</ul></li>
+<li><a href="#memory-map-after-optimization">Memory Map (after optimization)</a>
+<ul>
+<li><a href="#umb-contents">UMB Contents</a>
+</ul></li>
+<li><a href="#driver-locations">Driver Locations</a>
+<li><a href="#video">Video</a>
+<li><a href="#key-notes">Key Notes</a>
+<li><a href="#dreamblaster-x16gs-alternative-module-currently-under-repair">DreamBlaster X16GS — Alternative (module currently under repair)</a>
+<ul>
+<li><a href="#what-it-is">What it is</a>
+<li><a href="#preloaded-x16gs-banks">Preloaded X16GS Banks</a>
+<li><a href="#bank-switching-bat-files-in-cdriverspicogusx16">Bank switching (BAT files in C:\DRIVERS\PICOGUS\X16)</a>
+<li><a href="#pgusinit-settings-for-x16gs">pgusinit settings for X16GS</a>
+<li><a href="#reporting-the-defect-to-serdaco">Reporting the defect to Serdaco</a>
+</li></ul>
+</li></ul>
+</li></ul>
   </div>
 </nav>
 
@@ -556,7 +468,7 @@ hr {
   <div class="topbar">
     <span class="prompt">C:\&gt;</span>
     <span class="blink"></span>
-    <span style="color:var(--text-dim);font-size:11px;letter-spacing:2px;">RHINO 15 // PENTIUM MMX // AWE32 CT3900 // PicoGUS v2.0 // MCCAKE</span>
+    <span class="topbar-subtitle">DOS RETRO PC — SYSTEM OVERVIEW</span>
   </div>
 
   <h1 id="dos-retro-pc-system-overview">DOS Retro PC — System Overview</h1>
@@ -1302,7 +1214,7 @@ Plugs directly into the PicoGUS waveblaster header — no external cable or powe
 required (powered from the header or optionally from a floppy connector).</p>
 <p>McCake audio routes internally through PicoGUS and comes out via the PicoGUS line out —
 jeden stereo kabel do QX1222USB CH 9+10.</p>
-<h3 id="what-this-adds-to-the-system_1">What this adds to the system</h3>
+<h3 id="what-this-adds-to-the-system-1">What this adds to the system</h3>
 <table>
 <thead>
 <tr>
@@ -1363,7 +1275,7 @@ jeden stereo kabel do QX1222USB CH 9+10.</p>
 </tbody>
 </table>
 <hr />
-<h3 id="before-you-start_1">Before you start</h3>
+<h3 id="before-you-start-1">Before you start</h3>
 <ul>
 <li><strong>AWE32 CT3900 must already be installed and working</strong> — SoftMPU active,
   UNISOUND running, games working. PicoGUS adds on top of AWE32, it does not
@@ -1413,11 +1325,11 @@ jeden stereo kabel do QX1222USB CH 9+10.</p>
 <hr />
 <h3 id="step-1-bios-settings">Step 1 — BIOS settings</h3>
 <p>Enter BIOS setup at boot (DEL key on this system).</p>
-<h4 id="integrated-peripherals_1">Integrated Peripherals</h4>
+<h4 id="integrated-peripherals-1">Integrated Peripherals</h4>
 <pre><code>Parallel Port (LPT1) :  Disabled    ← CRITICAL
 </code></pre>
 <p>Without this change IRQ 7 is still used by LPT1 and PGUSINIT will fail.</p>
-<h4 id="pnppci-configuration_1">PnP/PCI Configuration</h4>
+<h4 id="pnppci-configuration-1">PnP/PCI Configuration</h4>
 <p>Verify these are already set (they should be from AWE32 setup):</p>
 <pre><code>IRQ 7  :  Legacy ISA   ← must be Legacy ISA, not PnP
 DMA 3  :  Legacy ISA   ← must be Legacy ISA, not PnP
@@ -1884,7 +1796,7 @@ Do not use <code>pg-ne2k.uf2</code> (WiFi variant, v1.x only — not for v2.0).<
 <p>After firmware update, run PGUSINIT again or use <code>/save</code> version to
 re-initialize the card on the DOS PC.</p>
 <hr />
-<h3 id="post-installation-checklist_1">Post-Installation Checklist</h3>
+<h3 id="post-installation-checklist-1">Post-Installation Checklist</h3>
 <ul>
 <li>[ ] LPT1 disabled in BIOS Integrated Peripherals</li>
 <li>[ ] IRQ 7 = Legacy ISA in BIOS PnP/PCI Configuration</li>
@@ -4229,19 +4141,14 @@ Problem is consistent and reproducible.</p>
 </main>
 
 <div class="statusbar">
-  <span>RHINO-15</span>
-  <span>PENTIUM MMX 200MHz</span>
-  <span>AWE32 CT3900 + PicoGUS v2.0</span>
-  <span>MS-DOS 7.10 + Win98SE</span>
-  <span class="right">FULL SYSTEM REFERENCE</span>
+  <span>Rhino 15 Socket 7</span><span>Pentium MMX</span><span>256 MB (2x 128 MB DIMM)</span><span>MS-DOS 6.22</span>
+  <span class="right">12 STEPS</span>
 </div>
 
 <script>
 
-// Highlight active TOC item on scroll
 const sections = document.querySelectorAll('h2[id], h3[id]');
 const tocLinks = document.querySelectorAll('#toc a');
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -4254,7 +4161,6 @@ const observer = new IntersectionObserver((entries) => {
     }
   });
 }, { rootMargin: '-10% 0px -80% 0px' });
-
 sections.forEach(s => observer.observe(s));
 
 </script>
