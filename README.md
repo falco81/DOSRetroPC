@@ -1661,8 +1661,7 @@ REM Duke Nukem 3D / Shadow Warrior / Blood (SETUP.EXE):
   Port          : 240   IRQ: 7   DMA: 3
 
 REM Quake (GLQuake with Voodoo2):
-  GLQUAKE.EXE -width 640 -height 480
-  Sound: auto-detect SB16
+  GLQUAKE.EXE -width 800 -height 600 -bpp 16 -nolan
 ```
 
 #### ULTRAMID.EXE — required for some GUS games
@@ -1832,8 +1831,16 @@ not the software renderer.
 REM Glide 2.x must be in game directory or PATH
 REM (glide2x.ovl version 2.53 or 2.54)
 
-REM Quake - GLQuake Voodoo2:
-GLQUAKE.EXE -width 640 -height 480 -bpp 16
+REM Quake - GLQuake Voodoo2 (optimal settings):
+REM -width 800 -height 600  = max resolution for single Voodoo2
+REM -bpp 16                 = only supported color depth (hardware limit)
+REM -nolan                  = disable Windows networking init (faster start, single player)
+GLQUAKE.EXE -width 800 -height 600 -bpp 16 -nolan
+
+REM id1\autoexec.cfg — quality tweaks (no FPS cost on Voodoo2):
+REM   gl_texturemode GL_LINEAR_MIPMAP_LINEAR   (trilinear filtering)
+REM   gl_picmip 0                              (full texture resolution)
+REM   r_shadows 0                              (software shadows = CPU cost, disable)
 
 REM Quake 2:
 QUAKE2.EXE +set vid_ref gl
@@ -1931,7 +1938,20 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 | 2D card | ATI MACH64 (Rage Pro Turbo PCI) |
 | VESA | Native VESA 3.00 — UNIVBE not needed |
 | 3D card | 3dfx Voodoo2 (PCI) |
+| Voodoo2 frame buffer | 4 MB |
+| Voodoo2 texture memory | 8 MB (2× TMU × 4 MB) |
+| Voodoo2 max resolution | **800×600×16-bit** (single card) |
+| Voodoo2 color depth | **16-bit only** — hardware limitation, 32-bit not supported |
+| Voodoo2 SLI | Not present (Scanline Interleave: Not Detected) |
+| WinGlide driver | 2.56.00.0459 (latest official 3Dfx) |
 | DOS 3D API | Glide 2.x (glide2x.ovl v2.53 or 2.54) |
+
+### Voodoo2 — hardware limits
+
+- **Color depth** — 16-bit only in 3D. `-bpp 32` will crash or silently fall back to 16-bit.
+- **Max resolution** — 800×600 with single card. 1024×768 requires SLI (two cards).
+- **Performance** — Pentium MMX 200MHz is CPU-bound, not GPU-bound. 640×480 and 800×600 give nearly identical FPS in GLQuake — always use 800×600 for better image quality at no cost.
+- **Frame buffer** — 4MB is tight for 800×600 with Z-buffer. For later Glide games (Tomb Raider 2, Unreal) 640×480 may be more stable if you encounter crashes or visual artefacts.
 
 ---
 
