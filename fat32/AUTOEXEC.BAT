@@ -25,15 +25,6 @@ SET ULTRASND=240,3,3,7,7
 REM ULTRADIR must point to the GUS software root (not the MIDI subfolder)
 SET ULTRADIR=C:\DRIVERS\PICOGUS
 
-ECHO.
-ECHO  [SOUND ENVIRONMENT]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  SOUND   : %SOUND%
-ECHO  ULTRASND: %ULTRASND%
-ECHO  ULTRADIR: %ULTRADIR%
-ECHO.
-
 REM --- Route to profile-specific section ---
 GOTO %CONFIG%
 
@@ -54,6 +45,14 @@ REM /gusvol 85   = GUS output 85%
 REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
@@ -96,6 +95,14 @@ REM /gusvol 85   = GUS output 85%
 REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 
 REM --- CD-ROM ---
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
@@ -113,6 +120,14 @@ LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- SoftMPU NOT loaded ---
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
@@ -155,6 +170,14 @@ REM /gusvol 85   = GUS output 85%
 REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
@@ -177,6 +200,14 @@ REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ULTRADIR: %ULTRADIR%
+ECHO.
 LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
@@ -190,6 +221,7 @@ GOTO END
 :END
 REM --- Norton Commander ---
 NC
+
 
 
 
