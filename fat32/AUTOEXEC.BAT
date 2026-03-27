@@ -40,11 +40,11 @@ REM --- PicoGUS initialization ---
 REM Required: Windows has no PicoGUS driver - hardware must be init before WIN.COM
 REM /mode gus    = Gravis UltraSound emulation (GUS not usable in Windows)
 REM /mpuport 300 = MPU-401 on port 300h - needed for McCake under Windows
-REM /mainvol 85  = master output 85% (headroom to prevent clipping)
-REM /gusvol 85   = GUS output 85%
-REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mainvol 95  = master output 95% (headroom to prevent clipping)
+REM /gusvol 95   = GUS output 95%
+REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -90,11 +90,11 @@ REM --- SoftMPU NOT loaded - AWEUTIL /EM:* can run without conflict ---
 REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
 REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /mainvol 85  = master output 85% (headroom to prevent clipping)
-REM /gusvol 85   = GUS output 85%
-REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mainvol 95  = master output 95% (headroom to prevent clipping)
+REM /gusvol 95   = GUS output 95%
+REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -119,7 +119,7 @@ REM -----------------------------------------------
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- SoftMPU NOT loaded ---
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -165,11 +165,11 @@ LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
 REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
 REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /mainvol 85  = master output 85% (headroom to prevent clipping)
-REM /gusvol 85   = GUS output 85%
-REM /wtvol 85    = wavetable header output 85% (lowered to prevent clipping)
+REM /mainvol 95  = master output 95% (headroom to prevent clipping)
+REM /gusvol 95   = GUS output 95%
+REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -199,7 +199,7 @@ LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 85 /gusvol 85 /wtvol 85 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
