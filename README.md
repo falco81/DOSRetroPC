@@ -65,8 +65,10 @@
 | McCake Panel | Serdaco MT32Pi Drive Bay Panel 5.25" + OLED | 5.25" bay | — |
 | SSD | Verbatim Vi560 S3 256 GB | IDE (via Ableconn IDE40-SAT) | FW: SN21794, S/N: 493626018370372 |
 | CD-ROM | LG HL-DT-ST DVDRAM GH22NS40 | IDE secondary master | FW: NL01, driver: SSCDROM.SYS |
+| PicoIDE Deluxe | polpo PicoIDE (RP2350) | IDE | **čeká na dodání** — přidá se vedle LG mechaniky |
 | NIC | 3Com 3C905C-TX EtherLink XL 10/100 | **PCI** | — |
-| Floppy | 3.5" 1.44 MB | — | — |
+| Floppy A: | Gotek SFR1M44-U100K (USB floppy emulator) | 3.5" floppy konektor | 2 tlačítka + LED displej, FlashFloppy firmware |
+| Floppy B: | Fyzická 3.5" 1.44 MB mechanika (plánováno) | 3.5" floppy konektor | — |
 | Mouse + Keyboard | Moderní BLE myš + BLE klávesnice přes ESP32 BLE bridge | PS/2 nebo RS232 | viz sekce BLE Bridge níže |
 | Monitor | Fujitsu-Siemens (w9/2009) | VGA | 38×30 cm, H: 30–83 kHz, V: 56–75 Hz |
 | MIDI module 1 | Roland SC-55 | MIDI chain (first) | AWE32 MPU-401 port 330h |
@@ -948,6 +950,192 @@ re-initialize the card on the DOS PC.
 - [ ] Reboot test: PGUSINIT message visible in boot sequence
 - [ ] Optional: `/save` run once to persist settings to flash
 
+---
+
+## WP32 McCake — Instalační průvodce
+
+**Stav:** PicoGUS v2.0 nainstalován a funkční. McCake čeká na instalaci.
+**Hardware:** Serdaco WP32 McCake (CM4 Lite), Serdaco MT32Pi Drive Bay Panel 5.25" s OLED displejem a tlačítky.
+**Připojení:** Waveblaster header na PicoGUS + 10-pin kabel na drive bay panel.
+
+---
+
+### Co instaluješ
+
+**WP32 McCake** je waveblaster-kompatibilní karta s Raspberry Pi Compute Module 4 (CM4 Lite)
+běžícím mt32-pi firmware. Přehrává SF2 soundfonty přes FluidSynth engine a volitelně emuluje MT-32.
+
+**Serdaco MT32Pi Drive Bay Panel** je 5.25" panel do šuplíku s OLED displejem (128×32 px),
+tlačítky pro přepínání soundfontů/módů a encodérem hlasitosti. Připojuje se k McCake přes 10-pin plochý kabel.
+
+---
+
+### Než začneš
+
+- [ ] Stáhni konfiguraci pro McCake: `https://serdaco.com/downloads/?dir=WP32McCake`
+      → ZIP obsahuje `mt32-pi.cfg`, složku `soundfonts/` s GeneralUser GS a dokumentaci
+- [ ] Stáhni SF2 soundfonty (viz sekce SF2 Soundfonty výše)
+- [ ] Připrav micro SD kartu (FAT32 formát, doporučeno 8–32 GB)
+- [ ] PC musí být vypnutý a odpojený od sítě
+
+---
+
+### Krok 1 — Připrav micro SD kartu
+
+**Na moderním PC:**
+
+1. Naformátuj micro SD kartu jako FAT32
+2. Stáhni a rozbal konfigurační ZIP ze serdaco.com
+3. Zkopíruj na SD kartu:
+
+```
+/ (kořen SD karty)
+  mt32-pi.cfg          ← konfigurace (viz níže)
+  soundfonts/
+    GeneralUser_GS.sf2          ← výchozí soundfont (slot 0)
+    SC-55_Patch93_v1.9.sf2      ← slot 1
+    Timbres_of_Heaven.sf2       ← slot 2 (volitelné)
+  roms/                ← prázdná složka (MT-32 ROM — nepotřebné, máš fyzický MT-32)
+```
+
+4. Uprav `mt32-pi.cfg` dle nastavení níže
+
+#### mt32-pi.cfg pro tento setup
+
+```ini
+[midi]
+gpio_baud_rate = 31250
+
+[audio]
+output_device = i2s
+i2s_dac_init = adafruit-i2s-stemma
+
+[synth]
+default_synth = soundfont
+
+[fluidsynth]
+soundfont = soundfonts/GeneralUser_GS.sf2
+gain = 0.8
+
+[lcd]
+type = ssd1306i2c
+width = 128
+height = 32
+```
+
+5. Bezpečně vysuň SD kartu a vlož ji do McCake (slot na spodní straně desky)
+
+---
+
+### Krok 2 — Fyzická instalace McCake na PicoGUS
+
+**PC musí být vypnutý a odpojený.**
+
+1. Vyjmi PicoGUS z ISA slotu (pro pohodlnější práci)
+2. Lokalizuj waveblaster header na PicoGUS — dvojřadý pin header, označen "WAVE" nebo "DB"
+3. Orientuj McCake tak, aby pin 1 souhlasil s pinem 1 headeru (označení na PCB)
+4. Zasuň McCake pevně a rovnoměrně — všechny piny musí sedět
+5. McCake musí sedět rovnoběžně s PicoGUS PCB
+6. Vlož PicoGUS zpět do ISA slotu a zajisti šroubkem
+
+> ⚠️ McCake je napájena z waveblaster headeru (5V). Žádný extra napájecí kabel není potřeba,
+> pokud headeru poskytuje dostatečný proud. Alternativně lze připojit floppy Molex konektor
+> přímo na McCake.
+
+---
+
+### Krok 3 — Instalace drive bay panelu
+
+Drive bay panel se montuje do volného **5.25" šuplíku**.
+
+1. Zasuň panel do 5.25" šuplíku a zašroubuj
+2. Propoj panel s McCake přes **10-pin plochý kabel** (dodávaný se Serdaco panelem)
+   - Kabel jde do konektoru označeného "PANEL" nebo "OLED" na McCake PCB
+   - Ujisti se že pin 1 souhlasí (barevný proužek na kabelu = pin 1)
+3. OLED displej a tlačítka jsou nyní dostupné z přední strany skříně
+
+> Panel vyžaduje propojení kabelu před zapnutím PC — nezapínej PC bez připojeného panelu
+> pokud McCake neběží v headless módu.
+
+---
+
+### Krok 4 — První spuštění
+
+1. Zapni PC — bootuj do profilu **NORMAL** nebo **BARE**
+2. McCake bootuje samostatně — OLED displej by měl zobrazit:
+   ```
+   mt32-pi
+   FluidSynth
+   GeneralUser GS
+   ```
+   (nebo podobný status text — záleží na mt32-pi verzi)
+3. Pokud OLED nesvítí nebo zobrazuje nesmysly — zkontroluj kabel panelu a `mt32-pi.cfg`
+4. Počkej ~10–15 sekund než mt32-pi načte soundfont — u větších SF2 déle
+
+---
+
+### Krok 5 — Test z DOSu
+
+McCake odpovídá na port 300h (PicoGUS MPU-401 header). Test:
+
+```bat
+REM Stáhni MT32-PI.EXE z https://github.com/gmcn42/mt32-pi-control
+REM Ulož do C:\DRIVERS\PICOGUS\
+
+REM Test přepnutí módu:
+MT32-PI.EXE -p 300 -g         ← přepne do GM/SF2 módu
+MT32-PI.EXE -p 300 -m         ← přepne do MT-32 emulace módu
+MT32-PI.EXE -p 300 -r         ← reset (bez restartu Pi)
+MT32-PI.EXE -p 300 -f 0       ← přepne na soundfont slot 0
+MT32-PI.EXE -p 300 -f 1       ← přepne na soundfont slot 1
+
+REM Test přehrávání — spusť hru s MPU profilem:
+MPU DOOM.EXE                  ← MIDI na port 300h, GM soundfont
+```
+
+Nebo použij DOSMID přes PicoGUS (GUS mód, ne McCake):
+```bat
+CD C:\DRIVERS\PICOGUS
+DOSMID Slot1.mid
+```
+
+---
+
+### Krok 6 — Přepínání soundfontů a módů
+
+**Z drive bay panelu:**
+- Tlačítko **S** — přepíná mezi SF2 a MT-32 emulací
+- Tlačítko **▲/▼** — přepíná soundfonty (SF2 mód) nebo MT-32 ROM sety (MT-32 mód)
+- Enkodér — hlasitost
+
+**Z DOSu přes MT32-PI.EXE:**
+```bat
+MT32-PI.EXE -p 300 -f 0       ← slot 0 (GeneralUser GS)
+MT32-PI.EXE -p 300 -f 1       ← slot 1 (SC-55 Patch93)
+MT32-PI.EXE -p 300 -f 2       ← slot 2 (Timbres of Heaven)
+```
+
+**Přes MPU.BAT** (automaticky přepne PicoGUS do MPU-401 módu před hrou):
+```bat
+MPU HRA.EXE      ← spustí hru s McCake na port 300h
+```
+
+---
+
+### Post-Installation Checklist — McCake
+
+- [ ] micro SD karta vložena do McCake (slot na spodní straně)
+- [ ] SD karta obsahuje mt32-pi.cfg, soundfonts/ se SF2 soubory
+- [ ] McCake fyzicky usazena na PicoGUS waveblaster header (pin 1 aligned)
+- [ ] Drive bay panel zasunut do 5.25" šuplíku, kabel zapojen do McCake
+- [ ] První boot: OLED displej zobrazuje status, načítá soundfont
+- [ ] Test z DOSu: MT32-PI.EXE -p 300 -g nevypíše chybu
+- [ ] Test přehrávání: GM hra s portem 300h hraje přes McCake (slyšet na CH 9+10)
+- [ ] MT32-PI.EXE uložen do C:\DRIVERS\PICOGUS\
+- [ ] QX1222USB CH 9+10 má přiměřenou hlasitost (McCake sdílí výstup s PicoGUS)
+
+---
+
 
 ---
 
@@ -993,11 +1181,12 @@ AWE32 stereo   ─────────────────────�
 AWE32 gameport MIDI OUT (port 330h)
         │
         ▼
-    MT-32 MIDI IN
+    SC-55 MIDI IN
+        │
     SC-55 MIDI THRU
         │
         ▼
-    SC-55 MIDI IN
+    MT-32 MIDI IN
 ```
 
 ### Mixer Operation — which faders to raise
@@ -3372,6 +3561,68 @@ SMARTCDX.EXE (patchnutý SmartDrive) + SHSUCDX.COM místo MSCDEX — úspora ~25
 
 ---
 
+## PicoIDE Deluxe — Čeká na dodání
+
+Od tvůrce PicoGUS (polpo / Ian Scott). Crowd Supply: `https://www.crowdsupply.com/polpotronics/picoide`
+
+**PicoIDE** je open-source emulátor IDE/ATAPI zařízení na bázi Raspberry Pi RP2350.
+Deluxe verze obsahuje ESP32 front panel s OLED displejem, 4 tlačítky a WiFi.
+
+### Co PicoIDE umí
+
+| Funkce | Popis |
+|---|---|
+| ATAPI CD-ROM emulace | .ISO, .BIN/.CUE včetně **Redbook CD audio** |
+| IDE HDD emulace | .IMG, .HDA, .VHD, .HDF — různé geometrie, LBA i CHS |
+| Redbook audio | MPC-2 konektor (interní → zvuková karta) + 3.5mm jack |
+| Front panel | 1.3" OLED 128×64, 4 tlačítka, přepínání obrazů za běhu |
+| WiFi | Web interface pro správu a nahrávání obrazů |
+| DOS utilita | Přepínání obrazů z DOSu bez dotyku SD karty |
+| Transfer mode | MWDMA mode 2 + PIO mode 4 — **bez UDMA** |
+
+> ⚠️ **PicoIDE nemá UDMA** — bude pracovat v MWDMA/2 nebo PIO/4 režimu. Rychlost je srovnatelná s 52× CD-ROM mechanikou, pro retro gaming plně dostačující. PIIX4 Bus Master driver pro UDMA nebude pro PicoIDE relevantní.
+
+> ⚠️ **PicoIDE zatím emuluje jen jedno zařízení** — buď CD-ROM nebo HDD, ne obě najednou. Podpora dvou zařízení je plánována v budoucím firmware updatu.
+
+### Plánované zapojení po příchodu
+
+```
+Primary IDE master   — Verbatim Vi560 SSD (přes Ableconn IDE40-SAT)
+Secondary IDE master — LG GH22NS40 (fyzická mechanika zůstane)
+Secondary IDE slave  — PicoIDE Deluxe
+```
+
+> Nebo PicoIDE na samostatném IDE kanálu pokud bude dostupný slot — záleží na finálním zapojení.
+
+Redbook audio: MPC-2 konektor PicoIDE → AWE32 CD-IN header nebo přímý vstup QX1222USB.
+
+LG GH22NS40 zůstane — pro fyzické CD disky. SSCDROM.SYS v AUTOEXEC.BAT zůstane pro fyzickou mechaniku.
+
+---
+
+## Gotek SFR1M44-U100K — USB Floppy Emulator
+
+Starší varianta Gotek s **2 tlačítky a LED číselným displejem** (ne OLED).
+Nahrazuje fyzickou 3.5" floppy mechaniku — připojuje se na standardní 3.5" floppy konektor a napájení.
+
+**Doporučený firmware: FlashFloppy**
+- Stáhnout: `https://github.com/keirf/FlashFloppy`
+- Podporuje .IMG, .IMA, .DSK, .ST a další formáty
+- USB flash disk = virtuální diskety — procházení tlačítky
+
+**Instalace FlashFloppy:**
+1. Stáhni nejnovější `FF_Gotek-*.zip` z GitHub releases
+2. Extrahuj `FIRMWARE.UPD` na USB flash disk (FAT32, kořen)
+3. Vlož USB do Goteku, drž levé tlačítko při zapnutí → blikání = update
+4. Po dokončení rebootuj
+
+**Použití:**
+- USB flash disk s `.img` soubory v kořeni nebo ve složkách
+- Levé/pravé tlačítko = procházení obrazů
+- LED displej = číslo aktuálně vybraného obrazu
+
+---
+
 ## BLE Keyboard + Mouse Bridge
 
 Moderní BLE myš a BLE klávesnice jsou připojeny přes vlastní ESP32 firmware bridge.
@@ -3453,6 +3704,161 @@ Při variantě A (RS232 bridge) MSD hlásí serial mouse na COM1/COM2, IRQ 3 neb
 
 ---
 
+
+---
+
+---
+
+## Upgrades
+
+---
+
+### Upgrade — Ableconn IDE40-SAT (HDD + ODD varianta) + UDMA/33 v Windows
+
+**Co se mění:**
+- Stávající adaptér nahrazen za **Ableconn IDE40-SAT SATA Hard Drive or Optical Drive to IDE 40-Pin Mini Vertical Adapter** — podporuje explicitně i optické mechaniky (ODD)
+- 80-pinové IDE kabely jsou již nainstalovány (nutné pro UDMA/33)
+- Aktivace UDMA/33 v Windows 98SE pro HDD i CD-ROM přes PIIX4 Bus Master driver
+
+**Proč 80-pin:** 40-pin kabel omezuje přenos na UDMA/16. 80-pin kabel (ale se stejným 40-pinovým konektorem) přidává 40 zemních vodičů, redukuje přeslechy a umožňuje UDMA/33.
+
+---
+
+#### Krok 0 — Záloha konfigurace z DOSu (před upgradem)
+
+Zálohu proveď z DOSu (ne z Windows) aby registry Windows byly konzistentní.
+Bootuj do profilu **NORMAL** nebo **NOSOFTMPU**.
+
+```bat
+REM --- Záloha DOSových konfiguračních souborů ---
+XCOPY C:\CONFIG.SYS        C:\BACKUP\ /Y
+XCOPY C:\AUTOEXEC.BAT      C:\BACKUP\ /Y
+XCOPY C:\MSDOS.SYS         C:\BACKUP\ /Y
+XCOPY C:\DRIVERS\SCRIPTS\*.BAT  C:\BACKUP\SCRIPTS\ /Y /I
+
+REM --- Záloha Windows registrů (z DOSu přes SCANREG) ---
+SCANREG /BACKUP
+REM Vytvoří zálohu v C:\WINDOWS\SYSBCKUP\RB000.CAB (rotuje přes RB000-RB004)
+
+REM --- Export registrů jako čitelný REG soubor (spustit z Windows) ---
+REM Toto proveď z Windows před upgradem:
+REM   REGEDIT /E C:\BACKUP\REGISTRY.REG
+```
+
+**Záloha přes Windows (spustit ještě před fyzickým upgradem):**
+
+```
+Start → Spustit → regedit
+File → Export Registry File → C:\BACKUP\REGISTRY.REG → All
+```
+
+Nebo z příkazové řádky Windows:
+```bat
+REGEDIT /E C:\BACKUP\REGISTRY.REG
+```
+
+**Záloha System.dat a User.dat:**
+```bat
+REM V DOSu (soubory jsou hidden+system+readonly v C:\WINDOWS)
+ATTRIB -H -S -R C:\WINDOWS\SYSTEM.DAT
+ATTRIB -H -S -R C:\WINDOWS\USER.DAT
+COPY C:\WINDOWS\SYSTEM.DAT C:\BACKUP\SYSTEM.DAT
+COPY C:\WINDOWS\USER.DAT   C:\BACKUP\USER.DAT
+ATTRIB +H +S +R C:\WINDOWS\SYSTEM.DAT
+ATTRIB +H +S +R C:\WINDOWS\USER.DAT
+```
+
+**Obnova registrů (pokud Windows přestane bootovat):**
+```bat
+REM Z DOSu:
+SCANREG /RESTORE
+REM Vybrat nejnovější zálohu ze seznamu (RB000.CAB = nejnovější)
+
+REM Nebo manuálně:
+COPY C:\BACKUP\SYSTEM.DAT C:\WINDOWS\SYSTEM.DAT
+COPY C:\BACKUP\USER.DAT   C:\WINDOWS\USER.DAT
+```
+
+---
+
+#### Krok 1 — Fyzický upgrade adaptéru
+
+1. Vypni PC
+2. Odpoj IDE kabel od stávajícího Ableconn IDE40-SAT na SSD
+3. Odpoj Ableconn IDE40-SAT od SSD
+4. Připoj nový Ableconn IDE40-SAT (HDD+ODD varianta) na SSD — stejné zapojení
+5. Připoj nový Ableconn IDE40-SAT (HDD+ODD varianta) na CD-ROM (LG GH22NS40) — secondary master
+6. Zkontroluj že oba adaptéry jsou napájeny (SATA power → Molex adaptér nebo přímo Molex)
+7. Zkontroluj 80-pin IDE kabely — konektor označený **MASTER** na konci kabelu → disk, střední konektor → slave (nevyužit)
+
+---
+
+#### Krok 2 — Test v DOSu
+
+Bootuj do **BARE** profilu a ověř:
+```bat
+MSD /F C:\TEMP\MSD_POST.TXT
+REM Zkontroluj sekci Fixed Disk — oba disky musí být viditelné
+```
+
+Nebo:
+```bat
+DIR C:\
+DIR D:\
+DIR E:\     REM CD-ROM
+```
+
+---
+
+#### Krok 3 — Instalace PIIX4 IDE Bus Master driveru ve Windows
+
+> ⚠️ Toto proveď až po úspěšném testu v DOSu.
+
+1. Bootuj do Windows 98SE
+2. Stáhni **Intel INF Update Utility** — hledej `INFINST_AUTOL.EXE` nebo `inf8xxxx.exe` na VOGONS Drivers nebo Intel ARK
+3. Spusť instalátor, rebootuj
+4. Po rebootu: `Pravý klik na Můj počítač → Vlastnosti → Správce zařízení`
+5. `Řadiče disků` → mělo by zobrazit: **Intel 82371AB/EB PCI Bus Master IDE Controller**
+6. Pravý klik → Vlastnosti → Nastavení → zaškrtni **DMA** pro Primary a Secondary channel
+
+**Ověření UDMA v Device Manageru:**
+```
+Správce zařízení → Řadiče disků →
+  Intel 82371AB/EB PCI Bus Master IDE Controller
+    ├─ Primary IDE channel  → Vlastnosti → DMA: Enabled ✓
+    └─ Secondary IDE channel → Vlastnosti → DMA: Enabled ✓
+```
+
+**Ověření z DOS po rebootu (HWINFO):**
+
+Z výpisu HWINFO by měly být vidět DMA transfer modes:
+```
+HDD:  Ultra DMA mode 6 active (omezeno PIIX4 na UDMA/33)
+CDROM: Ultra DMA mode 5 active (omezeno PIIX4 na UDMA/33)
+```
+
+---
+
+#### Co dělat pokud Windows nenabootuje po instalaci driveru
+
+```bat
+REM Boot do DOSu, obnov registry:
+SCANREG /RESTORE
+REM Nebo:
+COPY C:\BACKUP\SYSTEM.DAT C:\WINDOWS\SYSTEM.DAT
+COPY C:\BACKUP\USER.DAT   C:\WINDOWS\USER.DAT
+```
+
+Pokud SCANREG /RESTORE nefunguje — bootuj z Win98SE CD nebo bootovací diskety a obnov manuálně.
+
+---
+
+#### Poznámky
+
+- PIIX4 podporuje maximálně **UDMA/33** (Ultra DMA mode 2) bez ohledu na rychlost disku
+- Vi560 S3 SSD podporuje UDMA/6 ale bude omezen na UDMA/2 (33 MB/s) PIIX4 chipsetem — to je v pořádku
+- 80-pin kabel je nutný pro UDMA/33 — bez něj Windows automaticky degraduje na UDMA/16 nebo PIO
+- CD-ROM (LG GH22NS40) — UDMA/33 zvýší rychlost čtení a sníží zatížení CPU při přehrávání CD
 
 ---
 
