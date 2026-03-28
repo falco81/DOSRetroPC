@@ -48,24 +48,32 @@
 
 ## Hardware
 
-| Component | Model | Interface |
-|---|---|---|
-| CPU | Pentium MMX | Socket 7 |
-| RAM | 256 MB (2x 128 MB DIMM) | — |
-| Video | ATI MACH64 (Rage Pro Turbo) | PCI |
-| 3D Accelerator | 3dfx Voodoo2 | PCI |
-| Sound Card | Creative Sound Blaster AWE32 CT3900 | ISA |
-| GUS / MIDI Card | PicoGUS v2.0 | ISA |
-| SF2 / GM Synth | Serdaco WP32 McCake (mt32-pi, CM4) | Waveblaster header |
-| McCake Panel | Serdaco MT32Pi Drive Bay Panel 5.25 + OLED | 5.25" bay |
-| CD-ROM | Samsung (SSCDROM.SYS) | IDE |
-| Mouse | Serial mouse, auto-detected by CTMOUSE | COM2 |
-| BIOS | Award Modular BIOS v4.51PG (09/18/97) | — |
-| MIDI module 1 | Roland MT-32 | MIDI chain (first) |
-| MIDI module 2 | Roland SC-55 | MIDI chain (THRU from MT-32) |
-| Mixer | Behringer XENYX QX1222USB | USB |
-| Headphones | Audio-Technica ATH-M50x | QX1222USB Phones jack |
-| Audio Interface | Focusrite Scarlett 16i16 4th Gen | USB (modern PC) |
+| Component | Model | Interface | Notes |
+|---|---|---|---|
+| Motherboard | Octek Aristo Rhino 15 | Baby AT | — |
+| CPU | Intel Pentium MMX 200 MHz (P55C, stepping xB1) | Socket 7 | CPUID 00000543, 66 MHz FSB, 3.3V |
+| RAM | 256 MB (2× 128 MB SDRAM DIMM) | — | CAS latency 3, BIOS: Slower RAS |
+| North Bridge | Intel 82439TX MTXC (430TX) | — | L2: 512 KB Dual-Bank Pipelined Burst |
+| South Bridge | Intel 82371AB PIIX4 rev B-0 | — | UDMA/33 max |
+| BIOS | Award Modular BIOS v4.51PG | — | 09/18/97 |
+| Super IO | ITE8679/8680 | — | — |
+| Video | ATI Rage 3D Pro (Rage PRO) | PCI | 4 MB DRAM, BIOS BK3.9.0/3.081, VBE 2.0 |
+| 3D Accelerator | 3dfx Voodoo2 | PCI | FBI Rev4, 4 MB FB + 2×4 MB TMU |
+| Sound Card | Creative Sound Blaster AWE32 CT3900 | ISA | DSP 4.16, port 220h, IRQ 5, DMA 1/5, 512 KB DRAM |
+| GUS / MIDI Card | PicoGUS v2.0 | ISA | port 240h, IRQ 7, DMA 3, MPU-401 300h |
+| SF2 / GM Synth | Serdaco WP32 McCake (mt32-pi, CM4) | Waveblaster header | port 300h |
+| McCake Panel | Serdaco MT32Pi Drive Bay Panel 5.25" + OLED | 5.25" bay | — |
+| SSD | Verbatim Vi560 S3 256 GB | IDE (via Ableconn IDE40-SAT) | FW: SN21794, S/N: 493626018370372 |
+| CD-ROM | LG HL-DT-ST DVDRAM GH22NS40 | IDE secondary master | FW: NL01, driver: SSCDROM.SYS |
+| NIC | 3Com 3C905C-TX EtherLink XL 10/100 | **PCI** | — |
+| Floppy | 3.5" 1.44 MB | — | — |
+| Mouse + Keyboard | Moderní BLE myš + BLE klávesnice přes ESP32 BLE bridge | PS/2 nebo RS232 | viz sekce BLE Bridge níže |
+| Monitor | Fujitsu-Siemens (w9/2009) | VGA | 38×30 cm, H: 30–83 kHz, V: 56–75 Hz |
+| MIDI module 1 | Roland MT-32 | MIDI chain (first) | AWE32 MPU-401 port 330h |
+| MIDI module 2 | Roland SC-55 | MIDI chain (THRU from MT-32) | — |
+| Mixer | Behringer XENYX QX1222USB | USB | — |
+| Headphones | Audio-Technica ATH-M50x | QX1222USB Phones jack | — |
+| Audio Interface | Focusrite Scarlett 16i16 4th Gen | USB (modern PC) | — |
 
 ---
 
@@ -94,8 +102,8 @@
 | IRQ 5 | **Legacy ISA** | AWE32 CT3900 |
 | IRQ 7 | **Legacy ISA** | PicoGUS v2.0 |
 | IRQ 10 | PnP | free |
-| IRQ 11 | PnP | free |
-| IRQ 12 | PnP | free |
+| IRQ 11 | PnP | PIIX4 USB |
+| IRQ 12 | PnP | PS/2 Mouse |
 | IRQ 14 | Legacy ISA | Primary IDE |
 | IRQ 15 | Legacy ISA | Secondary IDE |
 
@@ -129,8 +137,8 @@
 | 8 | RTC Clock | reserved |
 | 9 | Redirected IRQ2 | reserved |
 | 10 | FREE | available |
-| 11 | FREE | available |
-| 12 | FREE | available |
+| 11 | PIIX4 USB Host Controller | PCI |
+| 12 | Logitech PS/2 Mouse | — |
 | 13 | Math Coprocessor | internal |
 | 14 | Primary IDE | |
 | 15 | Secondary IDE | |
@@ -3364,6 +3372,62 @@ SMARTCDX.EXE (patchnutý SmartDrive) + SHSUCDX.COM místo MSCDEX — úspora ~25
 
 ---
 
+## BLE Keyboard + Mouse Bridge
+
+Moderní BLE myš a BLE klávesnice jsou připojeny přes vlastní ESP32 firmware bridge.
+Projekt: https://github.com/falco81/BLE-RS232-Bridge a https://github.com/falco81/BLE-PS2-USB-Bridge
+
+Existují dvě varianty zapojení:
+
+### Varianta A — RS232 myš + PS/2 klávesnice (2× ESP32)
+
+| ESP32 | Firmware | Výstup | Připojení k PC |
+|---|---|---|---|
+| ESP32 #1 | `ble_ps2_bridge.ino` | PS/2 AT klávesnice | DIN-5 nebo Mini-DIN 6 klávesnicový port |
+| ESP32 #2 | `ble_serial_mouse_bridge.ino` | RS-232 serial mouse (Microsoft MZ protocol) | DB9 COM1/COM2 |
+
+RS232 bridge: ESP32 → BSS138 level shifter → MAX232CPE → DB9 female (pin 2=data, pin 5=GND, pin 7=RTS, pin 4=DTR).
+Protokol MZ (IntelliMouse se scroll wheel) — vyžaduje CTMOUSE ≥ 3.4.
+
+CTMOUSE parametry pro RS232 myš:
+```bat
+CTMOUSE /R2       (citlivost, hodnoty 1-9)
+CTMOUSE /U        (unload)
+CTMOUSE           (reload — přečte nový protokol po změně)
+```
+
+### Varianta B — PS/2 myš + PS/2 klávesnice (1× ESP32)
+
+| ESP32 | Firmware | Výstup |
+|---|---|---|
+| ESP32 WROOM-32 | `ble_ps2_kb_mouse_bridge.ino` | PS/2 klávesnice (DIN-5/Mini-DIN 6) + PS/2 myš (Mini-DIN 6) |
+
+Jeden ESP32 + jeden 4-kanálový BSS138 level shifter obsluhuje oba PS/2 porty současně.
+PS/2 myš: Explorer protokol (4-byte, scroll wheel, Back, Forward tlačítka), auto-negociace s hostem.
+
+GPIO pinout (obě varianty):
+```
+KB CLK  = GPIO19    KB DATA  = GPIO18
+MS CLK  = GPIO16    MS DATA  = GPIO17   (jen varianta B)
+```
+
+### Společné funkce
+
+- Scan-before-connect — čeká až zařízení začne vysílat
+- Automatický reconnect po odpojení
+- NVS storage — MAC adresa uložena přes rebooty
+- Přihlášení přes Serial konzoli (115200 baud): `scan`, `connect <mac>`, `forget`, `status`
+- Škálování DPI: `scale <1-64>` (default 4 pro 1600 DPI myš)
+- Y-osa inverze: `flipy`, scroll inverze: `flipw`
+- Klávesové zkratky: LCtrl+LAlt+PrtSc = battery %, LCtrl+LAlt+LShift+PrtSc = full status
+
+### MSD report — skutečný stav
+
+MSD hlásí `Logitech PS/2 Mouse, driver 7.05, IRQ 12` — při aktivní variantě B (PS/2 bridge), spuštěno pod profilem EMSMODE.
+Při variantě A (RS232 bridge) MSD hlásí serial mouse na COM1/COM2, IRQ 3 nebo 4.
+
+---
+
 ## Key Notes
 
 - **HIGHSCAN** must NOT be used — Award BIOS 4.51PG freezes at boot
@@ -3379,7 +3443,7 @@ SMARTCDX.EXE (patchnutý SmartDrive) + SHSUCDX.COM místo MSCDEX — úspora ~25
 - PicoGUS MPU-401 → port 300h → McCake (WP32) — SF2 soundfonty, GM hry
 - LPT1 disabled in BIOS to free IRQ 7 for PicoGUS
 - MT-32 must be first in MIDI chain, SC-55 on MT-32 MIDI THRU
-- CTMOUSE /R2 = horizontal resolution 2, COM port auto-detected
+- CTMOUSE /R2 = horizontal resolution 2; myš je moderní BLE myš přes ESP32 bridge (PS/2 IRQ 12 nebo RS232 IRQ 3/4)
 - ULTRADIR must point to C:\DRIVERS\PICOGUS root (not MIDI subfolder)
 - CT3900 IDE port must be DISABLED (JP2+JP3 closed) — conflicts with motherboard IDE
 - CT3900 SIMM slots: both must be populated simultaneously with identical modules
