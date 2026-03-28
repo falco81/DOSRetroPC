@@ -1,7 +1,7 @@
 @ECHO OFF
 REM =============================================================
 REM  MPU.BAT - PicoGUS MPU-401 game launcher
-REM  Switches PicoGUS GUS -> MPU-401 intelligent mode before game
+REM  Switches PicoGUS GUS to MPU-401 intelligent mode before game
 REM  McCake (WP32) on wavetable header provides GM/MT-32 emulation
 REM  Returns PicoGUS to GUS mode after game exits
 REM

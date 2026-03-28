@@ -2,7 +2,7 @@
 REM =============================================================
 REM  ISO.BAT - Virtual CD-ROM ISO switcher
 REM  Uses SHSUCDHD.EXE from SHSUCD suite by Jason Hood
-REM  Download: http://adoxa.altervista.org/shsucdx/ -> SHSUCD r3-7
+REM  Download: http://adoxa.altervista.org/shsucdx/ (SHSUCD r3-7)
 REM
 REM  Place in C:\TOOLS\ (already in PATH)
 REM  Profile ISOCD must be selected at boot menu
