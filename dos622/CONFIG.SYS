@@ -1,0 +1,89 @@
+;===========================================
+; CONFIG.SYS - Boot menu
+; Rhino 15 / Pentium MMX / AWE32 CT3900 / Voodoo2 / ATI MACH64
+; MS-DOS 6.22
+;===========================================
+
+; Boot menu - displayed at startup with 10 second countdown
+[MENU]
+MENUITEM=NORMAL,Normal          - NOEMS 607KB
+MENUITEM=EMS,   EMS/Games       - RAM   595KB (DOS extenders, old games)
+MENUITEM=BARE,  Bare DOS        - no drivers
+; Default profile if no key is pressed within timeout
+MENUDEFAULT=NORMAL,10
+; Menu colors: text color 11 (bright cyan), background 1 (blue)
+;MENUCOLOR=11,1
+
+; -----------------------------------------------
+; Common settings loaded for ALL profiles
+; -----------------------------------------------
+[COMMON]
+
+; 1) HIMEM.SYS - XMS memory manager, must always be first
+;    /TESTMEM:OFF = skip memory test on boot (saves ~30 seconds on 256MB)
+DEVICE=C:\DOS\HIMEM.SYS /TESTMEM:OFF
+
+; 2) Load DOS into HMA (High Memory Area) and enable UMB
+;    Must come before EMM386
+DOS=HIGH,UMB
+
+; 3) Larger environment block - prevents DIGN9003 error from AWE64
+;    /E:1024 = 1024 bytes for SET variables
+SHELL=C:\COMMAND.COM C:\ /E:1024 /P
+
+; --- System settings ---
+; FILES=30  - max open file handles (NC + MSCDEX need ~25)
+FILES=30
+; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering)
+BUFFERS=4,0
+; LASTDRIVE=H - covers drives A,C,D,E,F,G + one spare
+LASTDRIVE=H
+; STACKS=9,256 - interrupt stack frames
+STACKS=9,256
+FCBS=1,0
+
+; -----------------------------------------------
+; Profile 1: NORMAL - NOEMS (max UMB space, 607KB conventional)
+; Use for: everyday DOS, Norton Commander, GUS games, MIDI
+; -----------------------------------------------
+[NORMAL]
+
+; EMM386 NOEMS = no EMS page frame
+; Frees 64KB of UMB compared to RAM mode
+; UNISOUND, CTMOUSE, SoftMPU do not require EMS
+; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
+DEVICE=C:\DOS\EMM386.EXE NOEMS
+
+; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
+; /X = disable write cache (safer for power loss)
+; 2048KB read cache, 512KB write cache
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile 2: EMS/GAMES - RAM mode (EMS enabled, 595KB conventional)
+; Use for: DOS extender games (Tyrian, etc.), programs requiring EMS memory
+; Note: 12KB less conventional memory than NORMAL due to EMS page frame
+; -----------------------------------------------
+[EMS]
+
+; EMM386 RAM = EMS + UMB both enabled
+; EMS page frame uses 64KB of UMB but allows DOS extenders to work
+DEVICE=C:\DOS\EMM386.EXE RAM
+
+; SmartDrive loaded first to claim largest free UMB block
+INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+
+; Samsung CD-ROM driver into UMB
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile 3: BARE DOS - minimal (diagnostics, installation)
+; No sound, no CD-ROM, no mouse - just basic DOS
+; -----------------------------------------------
+[BARE]
+
+; Minimal EMM386 for XMS access only
+DEVICE=C:\DOS\EMM386.EXE NOEMS
