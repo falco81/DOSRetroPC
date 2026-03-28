@@ -55,8 +55,8 @@ ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
 
 REM --- CD-ROM ---
-REM /M:10 = 10 sector lookahead cache in extended memory
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+REM /Q = quiet mode (no drive letter announcement)
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 REM /R2 = horizontal resolution 2 (movement sensitivity)
@@ -105,7 +105,7 @@ ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
 
 REM --- CD-ROM ---
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -128,7 +128,7 @@ ECHO  SOUND   : %SOUND%
 ECHO  ULTRASND: %ULTRASND%
 ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
@@ -180,8 +180,8 @@ ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
 
 REM --- CD-ROM ---
-REM /M:10 = 10 sector lookahead cache in extended memory
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+REM /Q = quiet mode (no drive letter announcement)
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 REM /R2 = horizontal resolution 2 (movement sensitivity)
@@ -194,7 +194,7 @@ REM Profile: EMS - RAM with SoftMPU
 REM Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
 REM          Games requiring EMS memory
 REM -----------------------------------------------
-:EMS
+:EMSMODE
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
 C:\DRIVERS\SB16\AWEUTIL.COM /S
@@ -208,7 +208,7 @@ ECHO  SOUND   : %SOUND%
 ECHO  ULTRASND: %ULTRASND%
 ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
@@ -271,16 +271,104 @@ LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
+REM -----------------------------------------------
+REM Profile: MPU - NOEMS, PicoGUS MPU-401, physical CD-ROM
+REM Use for: GM/MT-32 games via McCake (port 300h), physical disc
+REM In-game MIDI: port 300h, General MIDI or MT-32
+REM -----------------------------------------------
+:MPU
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- PicoGUS in MPU-401 intelligent mode ---
+REM No SoftMPU needed - PicoGUS handles intelligent mode natively
+REM McCake (WP32) on wavetable header: GM/MT-32 on port 300h
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
+ECHO.
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: MPUEMS - RAM (EMS), PicoGUS MPU-401, physical CD-ROM
+REM Use for: GM/MT-32 games + DOS extenders, physical disc
+REM -----------------------------------------------
+:MPUEMS
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- PicoGUS in MPU-401 intelligent mode ---
+REM No SoftMPU needed - PicoGUS handles intelligent mode natively
+REM McCake (WP32) on wavetable header: GM/MT-32 on port 300h
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
+ECHO.
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: MPUISO - NOEMS, PicoGUS MPU-401, virtual ISO CD-ROM
+REM Use for: GM/MT-32 games via McCake, running from ISO image
+REM Physical Samsung CD-ROM NOT loaded
+REM Switch ISO: ISO D:\ISOS\GAME.ISO
+REM -----------------------------------------------
+:MPUISO
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- PicoGUS in MPU-401 intelligent mode ---
+REM No SoftMPU needed - PicoGUS handles intelligent mode natively
+REM McCake (WP32) on wavetable header: GM/MT-32 on port 300h
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
+ECHO.
+LH C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE /F:D:\ISOS\DEFAULT.ISO
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: MPUISOEMS - RAM (EMS), PicoGUS MPU-401, virtual ISO CD-ROM
+REM Use for: GM/MT-32 games + DOS extenders, running from ISO image
+REM Physical Samsung CD-ROM NOT loaded
+REM Switch ISO: ISO D:\ISOS\GAME.ISO
+REM -----------------------------------------------
+:MPUISOEMS
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- PicoGUS in MPU-401 intelligent mode ---
+REM No SoftMPU needed - PicoGUS handles intelligent mode natively
+REM McCake (WP32) on wavetable header: GM/MT-32 on port 300h
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
+ECHO.
+LH C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE /F:D:\ISOS\DEFAULT.ISO
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
 :BARE
 GOTO END
 
 :END
 REM --- Norton Commander ---
 NC
-
-
-
-
-
-
-

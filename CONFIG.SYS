@@ -6,16 +6,29 @@
 
 ; Boot menu - displayed at startup with 10 second countdown
 ; MENUDEFAULT=WINDOWS,10 = auto-boot Windows after 10 seconds if no key pressed
+; Main menu: 4 items
 [MENU]
-MENUITEM=WINDOWS,   Windows 98SE
-MENUITEM=NORMAL,    MS-DOS  SoftMPU         - NOEMS 607KB (MT-32, GUS, everyday)
-MENUITEM=EMS,       MS-DOS  SoftMPU EMS     - RAM   595KB (Tyrian, Magic Carpet, Unreal)
-MENUITEM=NOSOFTMPU, MS-DOS  No SoftMPU      - NOEMS 607KB (AWEUTIL /EM)
-MENUITEM=NOSOFTEMU, MS-DOS  No SoftMPU EMS  - RAM   595KB (AWEUTIL /EM + extenders)
-MENUITEM=ISOCD,     MS-DOS  ISO CD-ROM      - NOEMS 607KB (virtual CD from ISO file)
-MENUITEM=ISOCDEMS,  MS-DOS  ISO CD-ROM EMS  - RAM   595KB (virtual CD + DOS extenders)
-MENUITEM=BARE,      MS-DOS  Bare            - no drivers
+MENUITEM=WINDOWS,  Windows 98SE
+SUBMENU=NOEMS,     MS-DOS  NOEMS  - 607KB conventional
+SUBMENU=EMS,       MS-DOS  EMS    - 595KB conventional (DOS extenders)
+MENUITEM=BARE,     MS-DOS  Bare   - no drivers
 MENUDEFAULT=WINDOWS,10
+
+; NOEMS sub-menu: SoftMPU, No SoftMPU, ISO CD, MPU-401, MPU-401 ISO
+[NOEMS]
+MENUITEM=NORMAL,     SoftMPU               - NOEMS 607KB  (MT-32, GUS, everyday)
+MENUITEM=NOSOFTMPU,  No SoftMPU            - NOEMS 607KB  (AWEUTIL /EM)
+MENUITEM=ISOCD,      ISO CD-ROM            - NOEMS 607KB  (virtual CD)
+MENUITEM=MPU,        MPU-401 CD-ROM        - NOEMS 607KB  (McCake, phys CD)
+MENUITEM=MPUISO,     MPU-401 ISO CD-ROM    - NOEMS 607KB  (McCake, virtual CD)
+
+; EMS sub-menu: SoftMPU EMS, No SoftMPU EMS, ISO CD EMS, MPU-401 EMS, MPU-401 ISO EMS
+[EMS]
+MENUITEM=EMSMODE,    SoftMPU EMS           - RAM   595KB  (DOS extenders)
+MENUITEM=NOSOFTEMU,  No SoftMPU EMS        - RAM   595KB  (AWEUTIL /EM + ext)
+MENUITEM=ISOCDEMS,   ISO CD-ROM EMS        - RAM   595KB  (virtual CD + ext)
+MENUITEM=MPUEMS,     MPU-401 CD-ROM EMS    - RAM   595KB  (McCake + ext, phys CD)
+MENUITEM=MPUISOEMS,  MPU-401 ISO CD EMS    - RAM   595KB  (McCake + ext, virt CD)
 ;MENUCOLOR=11,1
 
 ; -----------------------------------------------
@@ -36,7 +49,7 @@ DOS=HIGH,UMB
 ; /E:1024 = 1024 bytes for SET variables (BLASTER, ULTRASND etc.)
 SHELL=C:\COMMAND.COM C:\ /E:1024 /P
 
-; FILES=30 - max open file handles (NC + MSCDEX need ~25)
+; FILES=30 - max open file handles (NC + SHSUCDX need ~25)
 FILES=30
 ; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering, keep low)
 BUFFERS=4,0
@@ -58,7 +71,7 @@ FCBS=1,0
 ; Using Windows 98SE version (updated, supports larger drives)
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 
-; Samsung CD-ROM driver - needed so MSCDEX in AUTOEXEC.BAT can load
+; Samsung CD-ROM driver - needed so SHSUCDX in AUTOEXEC.BAT can load
 ; Windows will replace this with its own 32-bit CD-ROM driver after boot
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
@@ -78,7 +91,7 @@ DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 ; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
 ; /X = disable write cache (safer for unexpected power loss on SSD)
 ; 2048KB read cache, 512KB element size
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 
 ; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
@@ -90,14 +103,14 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 ; Note: 12KB less conventional memory than NORMAL due to EMS page frame
 ; Note: AWEUTIL /EM:* does NOT work with DOS extenders - use /S only
 ; -----------------------------------------------
-[EMS]
+[EMSMODE]
 
 ; EMM386 RAM = EMS + UMB both enabled
 ; EMS page frame occupies 64KB of UMB but allows DOS extenders to work
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
 
 ; SmartDrive loaded first to claim largest free UMB block
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 
 ; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
@@ -112,7 +125,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; EMM386 NOEMS - no EMS, maximum UMB space
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
@@ -125,7 +138,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; EMM386 RAM - EMS enabled for games that need it
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
@@ -139,7 +152,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; EMM386 NOEMS - same as NORMAL, no physical CD-ROM driver loaded
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 
 ; -----------------------------------------------
 ; Profile ISOCDEMS - RAM (EMS) with virtual ISO CD-ROM
@@ -151,7 +164,49 @@ INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 
 ; EMM386 RAM = EMS + UMB both enabled
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+
+; -----------------------------------------------
+; Profile MPU - NOEMS, PicoGUS in MPU-401 mode, physical CD-ROM
+; Use for: GM/MT-32 games via McCake (port 300h), physical disc
+; PicoGUS: MPU-401 intelligent mode (McCake on wavetable header)
+; No SoftMPU needed - PicoGUS handles intelligent mode natively
+; -----------------------------------------------
+[MPU]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile MPUEMS - RAM (EMS), PicoGUS MPU-401 mode, physical CD-ROM
+; Use for: GM/MT-32 games + DOS extenders, physical disc
+; -----------------------------------------------
+[MPUEMS]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile MPUISO - NOEMS, PicoGUS MPU-401 mode, virtual ISO CD-ROM
+; Use for: GM/MT-32 games via McCake, running from ISO image
+; Physical Samsung CD-ROM NOT loaded
+; -----------------------------------------------
+[MPUISO]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+
+; -----------------------------------------------
+; Profile MPUISOEMS - RAM (EMS), PicoGUS MPU-401 mode, virtual ISO CD-ROM
+; Use for: GM/MT-32 games + DOS extenders, running from ISO image
+; Physical Samsung CD-ROM NOT loaded
+; -----------------------------------------------
+[MPUISOEMS]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 
 ; -----------------------------------------------
 ; Profile BARE - minimal (diagnostics, installation, troubleshooting)
