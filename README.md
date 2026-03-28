@@ -655,7 +655,7 @@ REM 4. Quick X16GS test via DOSMID:
 C:\DRIVERS\PICOGUS\DOSMID.EXE /mpu=300 /preset=GS C:\DRIVERS\PICOGUS\Slot1.mid
 
 REM 5. Quick GUS test — run Doom and check music in setup:
-REM    SETUP.EXE -> Music: Gravis UltraSound (should auto-detect via ULTRASND)
+REM    SETUP.EXE - Music: Gravis UltraSound (should auto-detect via ULTRASND)
 ```
 
 **If PGUSINIT fails or hangs:**
@@ -1649,7 +1649,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 ; Use for: Running games from ISO images on D:\ISOS\
 ; Physical Samsung CD-ROM NOT loaded - saves UMB space
 ; SHSUCDHD.EXE + SHSUCDX.COM loaded in AUTOEXEC.BAT
-; Download: http://adoxa.altervista.org/shsucdx/ -> SHSUCD r3-7
+; Download: http://adoxa.altervista.org/shsucdx/ (SHSUCD r3-7)
 ; -----------------------------------------------
 [ISOCD]
 
@@ -2431,7 +2431,7 @@ REM In-game: Music = General MIDI or MT-32, port 300h
 @ECHO OFF
 REM =============================================================
 REM  MPU.BAT - PicoGUS MPU-401 game launcher
-REM  Switches PicoGUS GUS -> MPU-401 intelligent mode before game
+REM  Switches PicoGUS GUS to MPU-401 intelligent mode before game
 REM  McCake (WP32) on wavetable header provides GM/MT-32 emulation
 REM  Returns PicoGUS to GUS mode after game exits
 REM
@@ -2511,7 +2511,7 @@ REM   ISO                   - show usage
 REM =============================================================
 REM  ISO.BAT - Virtual CD-ROM ISO switcher
 REM  Uses SHSUCDHD.EXE from SHSUCD suite by Jason Hood
-REM  Download: http://adoxa.altervista.org/shsucdx/ -> SHSUCD r3-7
+REM  Download: http://adoxa.altervista.org/shsucdx/ (SHSUCD r3-7)
 REM
 REM  Place in C:\TOOLS\ (already in PATH)
 REM  Profile ISOCD must be selected at boot menu
