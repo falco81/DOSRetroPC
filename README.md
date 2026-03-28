@@ -1504,9 +1504,15 @@ In Device Manager → Add hardware → manually add:
 | 5 | NOSOFTEMU | RAM | 595 KB | AWEUTIL /EM + DOS extenders |
 | 6 | ISOCD | NOEMS | 607 KB | Virtual ISO CD-ROM (SHSUCDHD) |
 | 7 | ISOCDEMS | RAM | 595 KB | Virtual ISO CD-ROM + DOS extenders |
-| 8 | BARE | NOEMS | max | Diagnostics, no drivers |
+| 8 | MPU | NOEMS | 607 KB | McCake GM/MT-32 via PicoGUS MPU-401, physical CD |
+| 9 | MPUEMS | RAM | 595 KB | McCake GM/MT-32 + DOS extenders, physical CD |
+| 10 | MPUISO | NOEMS | 607 KB | McCake GM/MT-32, virtual ISO CD-ROM |
+| 11 | MPUISOEMS | RAM | 595 KB | McCake GM/MT-32 + DOS extenders, virtual ISO CD |
+| 12 | BARE | NOEMS | max | Diagnostics, no drivers |
 
 Default: **WINDOWS** (auto-boot after 10 seconds)
+
+**MPU profiles note:** PicoGUS switches to MPU-401 intelligent mode — no SoftMPU needed. McCake (WP32) on wavetable header provides GM/MT-32 on port 300h. Configure in-game MIDI: port 300h, General MIDI or MT-32.
 
 
 ---
@@ -1552,7 +1558,7 @@ DOS=HIGH,UMB
 ; /E:1024 = 1024 bytes for SET variables (BLASTER, ULTRASND etc.)
 SHELL=C:\COMMAND.COM C:\ /E:1024 /P
 
-; FILES=30 - max open file handles (NC + MSCDEX need ~25)
+; FILES=30 - max open file handles (NC + SHSUCDX need ~25)
 FILES=30
 ; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering, keep low)
 BUFFERS=4,0
@@ -1574,7 +1580,7 @@ FCBS=1,0
 ; Using Windows 98SE version (updated, supports larger drives)
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 
-; Samsung CD-ROM driver - needed so MSCDEX in AUTOEXEC.BAT can load
+; Samsung CD-ROM driver - needed so SHSUCDX in AUTOEXEC.BAT can load
 ; Windows will replace this with its own 32-bit CD-ROM driver after boot
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
@@ -1594,7 +1600,7 @@ DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 ; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
 ; /X = disable write cache (safer for unexpected power loss on SSD)
 ; 2048KB read cache, 512KB element size
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 
 ; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
@@ -1613,7 +1619,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
 
 ; SmartDrive loaded first to claim largest free UMB block
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 
 ; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
@@ -1628,7 +1634,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; EMM386 NOEMS - no EMS, maximum UMB space
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
@@ -1641,7 +1647,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; EMM386 RAM - EMS enabled for games that need it
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
@@ -1655,7 +1661,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; EMM386 NOEMS - same as NORMAL, no physical CD-ROM driver loaded
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 
 ; -----------------------------------------------
 ; Profile ISOCDEMS - RAM (EMS) with virtual ISO CD-ROM
@@ -1667,7 +1673,7 @@ INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
 
 ; EMM386 RAM = EMS + UMB both enabled
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 
 ; -----------------------------------------------
 ; Profile BARE - minimal (diagnostics, installation, troubleshooting)
@@ -1743,7 +1749,7 @@ ECHO.
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 REM /R2 = horizontal resolution 2 (movement sensitivity)
@@ -1792,7 +1798,7 @@ ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
 
 REM --- CD-ROM ---
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -1815,7 +1821,7 @@ ECHO  SOUND   : %SOUND%
 ECHO  ULTRASND: %ULTRASND%
 ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
@@ -1868,7 +1874,7 @@ ECHO.
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 REM /R2 = horizontal resolution 2 (movement sensitivity)
@@ -1895,7 +1901,7 @@ ECHO  SOUND   : %SOUND%
 ECHO  ULTRASND: %ULTRASND%
 ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
@@ -1926,8 +1932,8 @@ ECHO.
 REM --- Virtual ISO CD-ROM ---
 REM SHSUCDHD: mounts ISO file as virtual CD device SHSU-CDH
 REM /F: = default ISO to mount at boot (switch later with ISO.BAT)
-REM SHSUCDX: exposes SHSU-CDH as a drive letter (replaces MSCDEX)
-REM /Q = quiet, /I = override any existing MSCDEX
+REM SHSUCDX: exposes SHSU-CDH as a drive letter (replaces SHSUCDX)
+REM /Q = quiet, /I = override any existing SHSUCDX
 LH C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE /F:D:\ISOS\DEFAULT.ISO
 LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -2061,7 +2067,7 @@ DOS=HIGH,UMB
 SHELL=C:\COMMAND.COM C:\ /E:1024 /P
 
 ; --- System settings ---
-; FILES=30  - max open file handles (NC + MSCDEX need ~25)
+; FILES=30  - max open file handles (NC + SHSUCDX need ~25)
 FILES=30
 ; BUFFERS=4 - disk buffers (SmartDrive replaces DOS buffering)
 BUFFERS=4,0
@@ -2086,7 +2092,7 @@ DEVICE=C:\DOS\EMM386.EXE NOEMS
 ; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
 ; /X = disable write cache (safer for power loss)
 ; 2048KB read cache, 512KB write cache
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 
 ; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
@@ -2103,7 +2109,7 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 DEVICE=C:\DOS\EMM386.EXE RAM
 
 ; SmartDrive loaded first to claim largest free UMB block
-INSTALLHIGH=C:\DOS\SMARTDRV.EXE /X 2048 512
+INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 
 ; Samsung CD-ROM driver into UMB
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
@@ -2190,7 +2196,7 @@ ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
 
 REM --- CD-ROM ---
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -2227,7 +2233,7 @@ ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
 
 REM --- CD-ROM ---
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -2282,7 +2288,7 @@ ECHO.
 
 REM --- CD-ROM ---
 REM /M:10 = 10 sector lookahead cache in extended memory
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 REM /R2 = horizontal resolution 2 (movement sensitivity)
@@ -2326,7 +2332,7 @@ ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
 
 REM --- CD-ROM ---
-LH C:\DOS\MSCDEX.EXE /D:SSCD000 /M:10
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -3248,21 +3254,49 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 
 ## Memory Map (after optimization)
 
-| Type | Total | Used | Free |
-|---|---|---|---|
-| Conventional | 640 KB | 33 KB | **607 KB** |
-| Upper (UMB) | 138 KB | 98 KB | 40 KB |
-| Extended (XMS) | 65,336 KB | 2,356 KB | 62,980 KB |
+Naměřeno MEM.EXE na real hardware (Rhino 15 / Pentium MMX / AWE32 CT3900 / PicoGUS v2.0).
+SMARTCDX.EXE (patchnutý SmartDrive) + SHSUCDX.COM místo MSCDEX — úspora ~25 KB v UMB.
 
-### UMB Contents
+### Přehled profilů
 
-| Driver | Size | Location |
+| Profil | Konv. KB | UMB celkem | UMB volné | Největší blok | Poznámka |
+|---|---|---|---|---|---|
+| NOEMS / SoftMPU (NORMAL) | **608 KB** | 134 KB | 40 KB | 27 KB | SHSUCDX 6 KB v konv. |
+| NOEMS / No SoftMPU (NOSOFTMPU) | **608 KB** | 134 KB | 49 KB | 35 KB | SHSUCDX 6 KB v konv. |
+| NOEMS / ISO CD-ROM (ISOCD) | **614 KB** | 134 KB | 69 KB | 48 KB | ✓ |
+| NOEMS / MPU-401 CD-ROM (MPU) | **608 KB** | 134 KB | 49 KB | 35 KB | SHSUCDX 6 KB v konv. |
+| NOEMS / MPU-401 ISO (MPUISO) | **614 KB** | 134 KB | 77 KB | 56 KB | ✓ nejlepší NOEMS |
+| EMS / SoftMPU EMS (EMSMODE) | 583 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB plný, SOFTMPU v konv. |
+| EMS / No SoftMPU EMS (NOSOFTEMU) | 591 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB plný |
+| EMS / ISO CD-ROM EMS (ISOCDEMS) | **614 KB** | 70 KB | 5 KB | 4 KB | ✓ bez phys CD driveru |
+| EMS / MPU-401 EMS (MPUEMS) | 591 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB plný |
+| EMS / MPU-401 ISO EMS (MPUISOEMS) | **614 KB** | 70 KB | 13 KB | 12 KB | ✓ bez phys CD driveru |
+| Bare | 614 KB | 134 KB | 109 KB | 63 KB | — |
+
+**Poznámka k EMS profilům s fyzickým CD (EMSMODE, NOSOFTEMU, MPUEMS):** EMS page frame zabírá 64 KB z UMB — zbývá jen 70 KB celkem. SSCDROM.SYS (28 KB) + SMARTCDX.EXE (29 KB) + SHSUCDX.COM (6 KB) = 63 KB → UMB téměř plný, 1–2 KB volné. Tyto profily jsou funkční ale bez rezervy. ISO varianty (ISOCDEMS, MPUISOEMS) jsou lepší protože SSCDROM.SYS se nenačítá.
+
+**SHSUCDX.COM (6 KB) v konvenční paměti** u NOEMS profilů s fyzickým CD: UMB je naplněn SSCDROM (28 KB) + SMARTCDX (29 KB) + SOFTMPU/CTMOUSE (11 KB) = 68 KB — SHSUCDX se načítá z AUTOEXEC až po naplnění UMB. Jde o charakteristiku pořadí načítání, ne o problém — 608 KB konvenční je dostatečných.
+
+### UMB obsah — NOEMS profily (134 KB celkem)
+
+| Driver | Velikost | Místo |
 |---|---|---|
-| SSCDROM.SYS | 28 KB | UMB |
-| MSCDEX.EXE | 35 KB | UMB |
-| SMARTDRV.EXE | 28 KB | UMB |
+| SMARTCDX.EXE | 29 KB | UMB (INSTALLHIGH v CONFIG.SYS) |
+| SSCDROM.SYS | 28 KB | UMB (DEVICEHIGH v CONFIG.SYS) |
+| SOFTMPU.EXE | 8 KB | UMB (profily NORMAL, ISOCD) |
+| COMMAND.COM | 7 KB | UMB |
+| IFSHLP.SYS | 3 KB | UMB |
 | CTMOUSE.EXE | 3 KB | UMB |
-| UNISOUND.COM | 0 KB TSR | exits after init |
+| SHSUCDX.COM | 6 KB | konv. paměť (phys CD profily) / UMB (ISO profily) |
+
+### UMB obsah — EMS profily (70 KB celkem po EMS page frame)
+
+| Driver | Velikost | Místo |
+|---|---|---|
+| SMARTCDX.EXE | 29 KB | UMB |
+| SSCDROM.SYS | 28 KB | UMB (jen phys CD profily) |
+| COMMAND.COM | 2 KB | UMB (zbytek) |
+| SOFTMPU.EXE | 8 KB | **konv. paměť** (EMSMODE — UMB plný) |
 
 ---
 
@@ -3275,8 +3309,9 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 |---|---|
 | HIMEM.SYS | C:\DOS\HIMEM.SYS |
 | EMM386.EXE | C:\DOS\EMM386.EXE |
-| SMARTDRV.EXE | C:\DOS\SMARTDRV.EXE |
-| MSCDEX.EXE | C:\DOS\MSCDEX.EXE |
+| SMARTDRV.EXE | C:\DRIVERS\SHSUCDX\SMARTCDX.EXE |
+| SHSUCDX.COM | C:\DRIVERS\SHSUCDX\SHSUCDX.COM |
+| SMARTCDX.EXE | C:\DRIVERS\SHSUCDX\SMARTCDX.EXE (SMARTDRV patchnutý pro SHSUCDX cache) |
 | SSCDROM.SYS | C:\DRIVERS\SAMSUNG\SSCDROM.SYS |
 | UNISOUND.COM | C:\DRIVERS\UNISOUND\UNISOUND.COM |
 | AWEUTIL.COM | C:\DRIVERS\SB16\AWEUTIL.COM |
@@ -3350,6 +3385,7 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 - CT3900 SIMM slots: both must be populated simultaneously with identical modules
 - **ULTRAMID.EXE** required for Tyrian and Raptor GUS music — use `GUS.BAT` launcher, not AUTOEXEC
 - **McCake power** — from waveblaster header (PicoGUS) or floppy connector
+- **CPU upgrade — K6/K6-2 na Socket 7:** K7 v Socket 7 neexistuje (K7 = Athlon, Slot A/Socket A). K6/300 (bez 3DNow!) je prakticky stejný výkon jako Pentium MMX 200 se slabším FPU — není to upgrade. K6-2/300 (s 3DNow!) odpovídá přibližně Pentium MMX 233. **Rhino 15 má Intel PIIX4 chipset** — K6-2 plně využijí jen Super Socket 7 desky s VIA/ALi chipsetem. Na Intel TX chipset K6-2 nenaplní potenciál, v FPU hrách (Quake, GLQuake) bude stejně rychlý nebo pomalejší. Pentium MMX 200 na Intel TX je optimální kombinace pro DOS gaming — výborná kompatibilita, spolehlivý FPU. K6-2/300 není doporučený upgrade pro tento setup.
 
 ---
 
