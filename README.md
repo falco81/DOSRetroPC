@@ -65,11 +65,11 @@
 | McCake Panel | Serdaco MT32Pi Drive Bay Panel 5.25" + OLED | 5.25" bay | — |
 | SSD | Verbatim Vi560 S3 256 GB | IDE (via Ableconn IDE40-SAT) | FW: SN21794, S/N: 493626018370372 |
 | CD-ROM | LG HL-DT-ST DVDRAM GH22NS40 | IDE secondary master | FW: NL01, driver: SSCDROM.SYS |
-| PicoIDE Deluxe | polpo PicoIDE (RP2350) | IDE | **čeká na dodání** — přidá se vedle LG mechaniky |
+| PicoIDE Deluxe | polpo PicoIDE (RP2350) | IDE | **pending delivery** — will be added alongside LG drive |
 | NIC | 3Com 3C905C-TX EtherLink XL 10/100 | **PCI** | — |
-| Floppy A: | Gotek SFR1M44-U100K (USB floppy emulator) | 3.5" floppy konektor | 2 tlačítka + LED displej, FlashFloppy firmware |
-| Floppy B: | Fyzická 3.5" 1.44 MB mechanika (plánováno) | 3.5" floppy konektor | — |
-| Mouse + Keyboard | Moderní BLE myš + BLE klávesnice přes ESP32 BLE bridge | PS/2 nebo RS232 | viz sekce BLE Bridge níže |
+| Floppy A: | Gotek SFR1M44-U100K (USB floppy emulator) | 3.5" floppy konektor | 2 buttons + LED numeric display, FlashFloppy firmware |
+| Floppy B: | Physical 3.5" 1.44 MB drive (planned) | 3.5" floppy connector | — |
+| Mouse + Keyboard | Modern BLE mouse + BLE keyboard via ESP32 BLE bridge | PS/2 or RS232 | see BLE Bridge section |
 | Monitor | Fujitsu-Siemens (w9/2009) | VGA | 38×30 cm, H: 30–83 kHz, V: 56–75 Hz |
 | MIDI module 1 | Roland SC-55 | MIDI chain (first) | AWE32 MPU-401 port 330h |
 | MIDI module 2 | Roland MT-32 | MIDI chain (THRU from SC-55) | — |
@@ -952,53 +952,53 @@ re-initialize the card on the DOS PC.
 
 ---
 
-## WP32 McCake — Instalační průvodce
+## WP32 McCake — Installation Guide
 
-**Stav:** PicoGUS v2.0 nainstalován a funkční. McCake čeká na instalaci.
-**Hardware:** Serdaco WP32 McCake (CM4 Lite), Serdaco MT32Pi Drive Bay Panel 5.25" s OLED displejem a tlačítky.
-**Připojení:** Waveblaster header na PicoGUS + 10-pin kabel na drive bay panel.
-
----
-
-### Co instaluješ
-
-**WP32 McCake** je waveblaster-kompatibilní karta s Raspberry Pi Compute Module 4 (CM4 Lite)
-běžícím mt32-pi firmware. Přehrává SF2 soundfonty přes FluidSynth engine a volitelně emuluje MT-32.
-
-**Serdaco MT32Pi Drive Bay Panel** je 5.25" panel do šuplíku s OLED displejem (128×32 px),
-tlačítky pro přepínání soundfontů/módů a encodérem hlasitosti. Připojuje se k McCake přes 10-pin plochý kabel.
+**Status:** PicoGUS v2.0 installed and working. McCake pending installation.
+**Hardware:** Serdaco WP32 McCake (CM4 Lite), Serdaco MT32Pi Drive Bay Panel 5.25" with OLED display and buttons.
+**Connection:** Waveblaster header on PicoGUS + 10-pin cable to drive bay panel.
 
 ---
 
-### Než začneš
+### What you are installing
 
-- [ ] Stáhni konfiguraci pro McCake: `https://serdaco.com/downloads/?dir=WP32McCake`
-      → ZIP obsahuje `mt32-pi.cfg`, složku `soundfonts/` s GeneralUser GS a dokumentaci
-- [ ] Stáhni SF2 soundfonty (viz sekce SF2 Soundfonty výše)
-- [ ] Připrav micro SD kartu (FAT32 formát, doporučeno 8–32 GB)
-- [ ] PC musí být vypnutý a odpojený od sítě
+**WP32 McCake** is a waveblaster-compatible card with a Raspberry Pi Compute Module 4 (CM4 Lite)
+running mt32-pi firmware. Plays SF2 soundfonts via the FluidSynth engine and optionally emulates MT-32.
+
+**Serdaco MT32Pi Drive Bay Panel** is a 5.25" bay panel with OLED display (128×32 px),
+buttons for switching soundfonts/modes and a volume encoder. Connects to McCake via a 10-pin flat cable.
 
 ---
 
-### Krok 1 — Připrav micro SD kartu
+### Before you start
 
-**Na moderním PC:**
+- [ ] Download McCake config: `https://serdaco.com/downloads/?dir=WP32McCake`
+      → ZIP contains `mt32-pi.cfg`, `soundfonts/` folder with GeneralUser GS and documentation
+- [ ] Download SF2 soundfonts (see SF2 Soundfonts section above)
+- [ ] Prepare micro SD card (FAT32 format, 8–32 GB recommended)
+- [ ] PC must be powered off and disconnected from mains
 
-1. Naformátuj micro SD kartu jako FAT32
-2. Stáhni a rozbal konfigurační ZIP ze serdaco.com
-3. Zkopíruj na SD kartu:
+---
+
+### Step 1 — Prepare the micro SD card
+
+**On a modern PC:**
+
+1. Format micro SD card as FAT32
+2. Download and extract the config ZIP from serdaco.com
+3. Copy to the SD card:
 
 ```
-/ (kořen SD karty)
-  mt32-pi.cfg          ← konfigurace (viz níže)
+/ (SD card root)
+  mt32-pi.cfg          ← configuration (see below)
   soundfonts/
-    GeneralUser_GS.sf2          ← výchozí soundfont (slot 0)
+    GeneralUser_GS.sf2          ← default soundfont (slot 0)
     SC-55_Patch93_v1.9.sf2      ← slot 1
-    Timbres_of_Heaven.sf2       ← slot 2 (volitelné)
-  roms/                ← prázdná složka (MT-32 ROM — nepotřebné, máš fyzický MT-32)
+    Timbres_of_Heaven.sf2       ← slot 2 (optional)
+  roms/                ← empty folder (MT-32 ROM — not needed, you have a physical MT-32)
 ```
 
-4. Uprav `mt32-pi.cfg` dle nastavení níže
+4. Edit `mt32-pi.cfg` according to settings below
 
 #### mt32-pi.cfg pro tento setup
 
@@ -1023,77 +1023,77 @@ width = 128
 height = 32
 ```
 
-5. Bezpečně vysuň SD kartu a vlož ji do McCake (slot na spodní straně desky)
+5. Safely eject the SD card and insert it into McCake (slot on the underside of the board)
 
 ---
 
-### Krok 2 — Fyzická instalace McCake na PicoGUS
+### Step 2 — Physical installation of McCake onto PicoGUS
 
-**PC musí být vypnutý a odpojený.**
+**PC must be powered off and disconnected.**
 
-1. Vyjmi PicoGUS z ISA slotu (pro pohodlnější práci)
-2. Lokalizuj waveblaster header na PicoGUS — dvojřadý pin header, označen "WAVE" nebo "DB"
-3. Orientuj McCake tak, aby pin 1 souhlasil s pinem 1 headeru (označení na PCB)
-4. Zasuň McCake pevně a rovnoměrně — všechny piny musí sedět
-5. McCake musí sedět rovnoběžně s PicoGUS PCB
-6. Vlož PicoGUS zpět do ISA slotu a zajisti šroubkem
+1. Remove PicoGUS from ISA slot (for easier handling)
+2. Locate the waveblaster header on PicoGUS — dual-row pin header, labelled "WAVE" or "DB"
+3. Orient McCake so that pin 1 aligns with pin 1 of the header (marked on PCB)
+4. Press McCake firmly and evenly — all pins must seat properly
+5. McCake must sit parallel to the PicoGUS PCB
+6. Reinsert PicoGUS into the ISA slot and secure with screw
 
-> ⚠️ McCake je napájena z waveblaster headeru (5V). Žádný extra napájecí kabel není potřeba,
-> pokud headeru poskytuje dostatečný proud. Alternativně lze připojit floppy Molex konektor
-> přímo na McCake.
+> ⚠️ McCake is powered from the waveblaster header (5V). No extra power cable is needed
+> if the header provides sufficient current. Alternatively, connect a floppy Molex connector
+> directly to McCake.
 
 ---
 
 ### Krok 3 — Instalace drive bay panelu
 
-Drive bay panel se montuje do volného **5.25" šuplíku**.
+Mount the drive bay panel in a free **5.25" bay**.
 
-1. Zasuň panel do 5.25" šuplíku a zašroubuj
-2. Propoj panel s McCake přes **10-pin plochý kabel** (dodávaný se Serdaco panelem)
-   - Kabel jde do konektoru označeného "PANEL" nebo "OLED" na McCake PCB
-   - Ujisti se že pin 1 souhlasí (barevný proužek na kabelu = pin 1)
-3. OLED displej a tlačítka jsou nyní dostupné z přední strany skříně
+1. Slide the panel into the 5.25" bay and secure with screws
+2. Connect the panel to McCake via the **10-pin flat cable** (supplied with the Serdaco panel)
+   - Cable goes into the connector labelled "PANEL" or "OLED" on the McCake PCB
+   - Ensure pin 1 is aligned (coloured stripe on cable = pin 1)
+3. OLED display and buttons are now accessible from the front of the case
 
-> Panel vyžaduje propojení kabelu před zapnutím PC — nezapínej PC bez připojeného panelu
-> pokud McCake neběží v headless módu.
+> The panel requires the cable to be connected before powering on the PC — do not power on
+> without the panel connected unless McCake is running in headless mode.
 
 ---
 
-### Krok 4 — První spuštění
+### Step 4 — First boot
 
 1. Zapni PC — bootuj do profilu **NORMAL** nebo **BARE**
-2. McCake bootuje samostatně — OLED displej by měl zobrazit:
+2. McCake boots independently — OLED display should show:
    ```
    mt32-pi
    FluidSynth
    GeneralUser GS
    ```
-   (nebo podobný status text — záleží na mt32-pi verzi)
-3. Pokud OLED nesvítí nebo zobrazuje nesmysly — zkontroluj kabel panelu a `mt32-pi.cfg`
-4. Počkej ~10–15 sekund než mt32-pi načte soundfont — u větších SF2 déle
+   (or similar status text — depends on mt32-pi version)
+3. If OLED is blank or shows garbage — check panel cable and `mt32-pi.cfg`
+4. Wait ~10–15 seconds for mt32-pi to load the soundfont — longer for larger SF2 files
 
 ---
 
 ### Krok 5 — Test z DOSu
 
-McCake odpovídá na port 300h (PicoGUS MPU-401 header). Test:
+McCake responds on port 300h (PicoGUS MPU-401 header). Test:
 
 ```bat
-REM Stáhni MT32-PI.EXE z https://github.com/gmcn42/mt32-pi-control
-REM Ulož do C:\DRIVERS\PICOGUS\
+REM Download MT32-PI.EXE from https://github.com/gmcn42/mt32-pi-control
+REM Save to C:\DRIVERS\PICOGUS\
 
-REM Test přepnutí módu:
-MT32-PI.EXE -p 300 -g         ← přepne do GM/SF2 módu
-MT32-PI.EXE -p 300 -m         ← přepne do MT-32 emulace módu
+REM Test mode switching:
+MT32-PI.EXE -p 300 -g         ← switch to GM/SF2 mode
+MT32-PI.EXE -p 300 -m         ← switch to MT-32 emulation mode
 MT32-PI.EXE -p 300 -r         ← reset (bez restartu Pi)
-MT32-PI.EXE -p 300 -f 0       ← přepne na soundfont slot 0
-MT32-PI.EXE -p 300 -f 1       ← přepne na soundfont slot 1
+MT32-PI.EXE -p 300 -f 0       ← switch to soundfont slot 0
+MT32-PI.EXE -p 300 -f 1       ← switch to soundfont slot 1
 
-REM Test přehrávání — spusť hru s MPU profilem:
+REM Test playback — launch a game with MPU profile:
 MPU DOOM.EXE                  ← MIDI na port 300h, GM soundfont
 ```
 
-Nebo použij DOSMID přes PicoGUS (GUS mód, ne McCake):
+Or use DOSMID via PicoGUS (GUS mode, not McCake):
 ```bat
 CD C:\DRIVERS\PICOGUS
 DOSMID Slot1.mid
@@ -1101,38 +1101,38 @@ DOSMID Slot1.mid
 
 ---
 
-### Krok 6 — Přepínání soundfontů a módů
+### Step 6 — Switching soundfonts and modes
 
 **Z drive bay panelu:**
-- Tlačítko **S** — přepíná mezi SF2 a MT-32 emulací
-- Tlačítko **▲/▼** — přepíná soundfonty (SF2 mód) nebo MT-32 ROM sety (MT-32 mód)
-- Enkodér — hlasitost
+- Button **S** — toggles between SF2 and MT-32 emulation
+- Button **▲/▼** — switches soundfonts (SF2 mode) or MT-32 ROM sets (MT-32 mode)
+- Encoder — volume
 
-**Z DOSu přes MT32-PI.EXE:**
+**From DOS via MT32-PI.EXE:**
 ```bat
 MT32-PI.EXE -p 300 -f 0       ← slot 0 (GeneralUser GS)
 MT32-PI.EXE -p 300 -f 1       ← slot 1 (SC-55 Patch93)
 MT32-PI.EXE -p 300 -f 2       ← slot 2 (Timbres of Heaven)
 ```
 
-**Přes MPU.BAT** (automaticky přepne PicoGUS do MPU-401 módu před hrou):
+**Via MPU.BAT** (automatically switches PicoGUS to MPU-401 mode before the game):
 ```bat
-MPU HRA.EXE      ← spustí hru s McCake na port 300h
+MPU GAME.EXE     ← launches game with McCake on port 300h
 ```
 
 ---
 
 ### Post-Installation Checklist — McCake
 
-- [ ] micro SD karta vložena do McCake (slot na spodní straně)
+- [ ] micro SD card inserted into McCake (slot on underside)
 - [ ] SD karta obsahuje mt32-pi.cfg, soundfonts/ se SF2 soubory
 - [ ] McCake fyzicky usazena na PicoGUS waveblaster header (pin 1 aligned)
-- [ ] Drive bay panel zasunut do 5.25" šuplíku, kabel zapojen do McCake
-- [ ] První boot: OLED displej zobrazuje status, načítá soundfont
-- [ ] Test z DOSu: MT32-PI.EXE -p 300 -g nevypíše chybu
-- [ ] Test přehrávání: GM hra s portem 300h hraje přes McCake (slyšet na CH 9+10)
-- [ ] MT32-PI.EXE uložen do C:\DRIVERS\PICOGUS\
-- [ ] QX1222USB CH 9+10 má přiměřenou hlasitost (McCake sdílí výstup s PicoGUS)
+- [ ] Drive bay panel installed in 5.25" bay, cable connected to McCake
+- [ ] First boot: OLED display shows status, loading soundfont
+- [ ] Test from DOS: MT32-PI.EXE -p 300 -g reports no error
+- [ ] Playback test: GM game on port 300h plays through McCake (audible on CH 9+10)
+- [ ] MT32-PI.EXE saved to C:\DRIVERS\PICOGUS\
+- [ ] QX1222USB CH 9+10 has adequate volume (McCake shares output with PicoGUS)
 
 ---
 
@@ -1435,12 +1435,12 @@ XCOPY X:\DOS\*.* C:\DOS\ /S
 
 ### Step 15 — Write CONFIG.SYS (temporary — for DOS-only boot)
 
-> **Viz aktuální konfigurace v sekci níže.**
+> **See current configuration in the section below.**
 
 
 ### Step 16 — Write AUTOEXEC.BAT (temporary)
 
-> **Viz aktuální konfigurace v sekci níže.**
+> **See current configuration in the section below.**
 
 
 ### Step 17 — Copy Samsung CD-ROM driver
@@ -1551,12 +1551,12 @@ ATTRIB +S +H +R C:\MSDOS.SYS
 
 ### Step 23 — Replace CONFIG.SYS with full multi-boot version
 
-> **Viz aktuální konfigurace v sekci níže.**
+> **See current configuration in the section below.**
 
 
 ### Step 24 — Replace AUTOEXEC.BAT with full multi-boot version
 
-> **Viz aktuální konfigurace v sekci níže.**
+> **See current configuration in the section below.**
 
 
 ## Phase 6 — Copy drivers from old disk
@@ -2572,7 +2572,7 @@ REM   GUS DUKE3D.EXE -level 1
 ```bat
 @ECHO OFF
 REM =============================================================
-REM  GUS.BAT ��� Universal GUS game launcher
+REM  GUS.BAT - Universal GUS game launcher
 REM  Place in a directory on PATH (e.g. C:\TOOLS)
 REM
 REM  Usage (run from game directory):
@@ -3451,32 +3451,32 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 
 ## Memory Map (after optimization)
 
-Naměřeno MEM.EXE na real hardware (Rhino 15 / Pentium MMX / AWE32 CT3900 / PicoGUS v2.0).
-SMARTCDX.EXE (patchnutý SmartDrive) + SHSUCDX.COM místo MSCDEX — úspora ~25 KB v UMB.
+Measured with MEM.EXE on real hardware (Rhino 15 / Pentium MMX / AWE32 CT3900 / PicoGUS v2.0).
+SMARTCDX.EXE (patched SmartDrive) + SHSUCDX.COM instead of MSCDEX — saves ~25 KB of UMB.
 
-### Přehled profilů
+### Profile overview
 
-| Profil | Konv. KB | UMB celkem | UMB volné | Největší blok | Poznámka |
+| Profile | Conv. KB | UMB total | UMB free | Largest block | Notes |
 |---|---|---|---|---|---|
 | NOEMS / SoftMPU (NORMAL) | **608 KB** | 134 KB | 40 KB | 27 KB | SHSUCDX 6 KB v konv. |
 | NOEMS / No SoftMPU (NOSOFTMPU) | **608 KB** | 134 KB | 49 KB | 35 KB | SHSUCDX 6 KB v konv. |
 | NOEMS / ISO CD-ROM (ISOCD) | **614 KB** | 134 KB | 69 KB | 48 KB | ✓ |
 | NOEMS / MPU-401 CD-ROM (MPU) | **608 KB** | 134 KB | 49 KB | 35 KB | SHSUCDX 6 KB v konv. |
-| NOEMS / MPU-401 ISO (MPUISO) | **614 KB** | 134 KB | 77 KB | 56 KB | ✓ nejlepší NOEMS |
-| EMS / SoftMPU EMS (EMSMODE) | 583 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB plný, SOFTMPU v konv. |
-| EMS / No SoftMPU EMS (NOSOFTEMU) | 591 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB plný |
+| NOEMS / MPU-401 ISO (MPUISO) | **614 KB** | 134 KB | 77 KB | 56 KB | ✓ best NOEMS |
+| EMS / SoftMPU EMS (EMSMODE) | 583 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB full, SOFTMPU in conv. |
+| EMS / No SoftMPU EMS (NOSOFTEMU) | 591 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB full |
 | EMS / ISO CD-ROM EMS (ISOCDEMS) | **614 KB** | 70 KB | 5 KB | 4 KB | ✓ bez phys CD driveru |
-| EMS / MPU-401 EMS (MPUEMS) | 591 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB plný |
+| EMS / MPU-401 EMS (MPUEMS) | 591 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB full |
 | EMS / MPU-401 ISO EMS (MPUISOEMS) | **614 KB** | 70 KB | 13 KB | 12 KB | ✓ bez phys CD driveru |
 | Bare | 614 KB | 134 KB | 109 KB | 63 KB | — |
 
-**Poznámka k EMS profilům s fyzickým CD (EMSMODE, NOSOFTEMU, MPUEMS):** EMS page frame zabírá 64 KB z UMB — zbývá jen 70 KB celkem. SSCDROM.SYS (28 KB) + SMARTCDX.EXE (29 KB) + SHSUCDX.COM (6 KB) = 63 KB → UMB téměř plný, 1–2 KB volné. Tyto profily jsou funkční ale bez rezervy. ISO varianty (ISOCDEMS, MPUISOEMS) jsou lepší protože SSCDROM.SYS se nenačítá.
+**Note on EMS profiles with physical CD (EMSMODE, NOSOFTEMU, MPUEMS):** EMS page frame takes 64 KB of UMB — only 70 KB total remains. SSCDROM.SYS (28 KB) + SMARTCDX.EXE (29 KB) + SHSUCDX.COM (6 KB) = 63 KB → UMB almost full, 1–2 KB free. These profiles work but have no headroom. ISO variants (ISOCDEMS, MPUISOEMS) are better because SSCDROM.SYS is not loaded.
 
-**SHSUCDX.COM (6 KB) v konvenční paměti** u NOEMS profilů s fyzickým CD: UMB je naplněn SSCDROM (28 KB) + SMARTCDX (29 KB) + SOFTMPU/CTMOUSE (11 KB) = 68 KB — SHSUCDX se načítá z AUTOEXEC až po naplnění UMB. Jde o charakteristiku pořadí načítání, ne o problém — 608 KB konvenční je dostatečných.
+**SHSUCDX.COM (6 KB) in conventional memory** for NOEMS profiles with physical CD: UMB is filled by SSCDROM (28 KB) + SMARTCDX (29 KB) + SOFTMPU/CTMOUSE (11 KB) = 68 KB — SHSUCDX loads from AUTOEXEC after UMB is already full. This is a load-order characteristic, not a problem — 608 KB conventional is sufficient.
 
 ### UMB obsah — NOEMS profily (134 KB celkem)
 
-| Driver | Velikost | Místo |
+| Driver | Size | Location |
 |---|---|---|
 | SMARTCDX.EXE | 29 KB | UMB (INSTALLHIGH v CONFIG.SYS) |
 | SSCDROM.SYS | 28 KB | UMB (DEVICEHIGH v CONFIG.SYS) |
@@ -3484,16 +3484,16 @@ SMARTCDX.EXE (patchnutý SmartDrive) + SHSUCDX.COM místo MSCDEX — úspora ~25
 | COMMAND.COM | 7 KB | UMB |
 | IFSHLP.SYS | 3 KB | UMB |
 | CTMOUSE.EXE | 3 KB | UMB |
-| SHSUCDX.COM | 6 KB | konv. paměť (phys CD profily) / UMB (ISO profily) |
+| SHSUCDX.COM | 6 KB | conv. memory (phys CD profiles) / UMB (ISO profiles) |
 
 ### UMB obsah — EMS profily (70 KB celkem po EMS page frame)
 
-| Driver | Velikost | Místo |
+| Driver | Size | Location |
 |---|---|---|
 | SMARTCDX.EXE | 29 KB | UMB |
 | SSCDROM.SYS | 28 KB | UMB (jen phys CD profily) |
 | COMMAND.COM | 2 KB | UMB (zbytek) |
-| SOFTMPU.EXE | 8 KB | **konv. paměť** (EMSMODE — UMB plný) |
+| SOFTMPU.EXE | 8 KB | **conv. memory** (EMSMODE — UMB full) |
 
 ---
 
@@ -3508,7 +3508,7 @@ SMARTCDX.EXE (patchnutý SmartDrive) + SHSUCDX.COM místo MSCDEX — úspora ~25
 | EMM386.EXE | C:\DOS\EMM386.EXE |
 | SMARTDRV.EXE | C:\DRIVERS\SHSUCDX\SMARTCDX.EXE |
 | SHSUCDX.COM | C:\DRIVERS\SHSUCDX\SHSUCDX.COM |
-| SMARTCDX.EXE | C:\DRIVERS\SHSUCDX\SMARTCDX.EXE (SMARTDRV patchnutý pro SHSUCDX cache) |
+| SMARTCDX.EXE | C:\DRIVERS\SHSUCDX\SMARTCDX.EXE (SMARTDRV patched for SHSUCDX cache) |
 | SSCDROM.SYS | C:\DRIVERS\SAMSUNG\SSCDROM.SYS |
 | UNISOUND.COM | C:\DRIVERS\UNISOUND\UNISOUND.COM |
 | AWEUTIL.COM | C:\DRIVERS\SB16\AWEUTIL.COM |
@@ -3561,121 +3561,121 @@ SMARTCDX.EXE (patchnutý SmartDrive) + SHSUCDX.COM místo MSCDEX — úspora ~25
 
 ---
 
-## PicoIDE Deluxe — Čeká na dodání
+## PicoIDE Deluxe — Pending Delivery
 
-Od tvůrce PicoGUS (polpo / Ian Scott). Crowd Supply: `https://www.crowdsupply.com/polpotronics/picoide`
+From the creator of PicoGUS (polpo / Ian Scott). Crowd Supply: `https://www.crowdsupply.com/polpotronics/picoide`
 
-**PicoIDE** je open-source emulátor IDE/ATAPI zařízení na bázi Raspberry Pi RP2350.
-Deluxe verze obsahuje ESP32 front panel s OLED displejem, 4 tlačítky a WiFi.
+**PicoIDE** is an open-source IDE/ATAPI device emulator based on a Raspberry Pi RP2350.
+The Deluxe version includes an ESP32 front panel with OLED display, 4 buttons and WiFi.
 
-### Co PicoIDE umí
+### Features
 
 | Funkce | Popis |
 |---|---|
-| ATAPI CD-ROM emulace | .ISO, .BIN/.CUE včetně **Redbook CD audio** |
-| IDE HDD emulace | .IMG, .HDA, .VHD, .HDF — různé geometrie, LBA i CHS |
-| Redbook audio | MPC-2 konektor (interní → zvuková karta) + 3.5mm jack |
-| Front panel | 1.3" OLED 128×64, 4 tlačítka, přepínání obrazů za běhu |
-| WiFi | Web interface pro správu a nahrávání obrazů |
-| DOS utilita | Přepínání obrazů z DOSu bez dotyku SD karty |
+| ATAPI CD-ROM emulation | .ISO, .BIN/.CUE including **Redbook CD audio** |
+| IDE HDD emulation | .IMG, .HDA, .VHD, .HDF — various geometries, LBA and CHS |
+| Redbook audio | MPC-2 connector (internal → sound card) + 3.5mm jack |
+| Front panel | 1.3" OLED 128×64, 4 buttons, on-the-fly image switching |
+| WiFi | Web interface for image management and upload |
+| DOS utility | Switch images from DOS without touching the SD card |
 | Transfer mode | MWDMA mode 2 + PIO mode 4 — **bez UDMA** |
 
-> ⚠️ **PicoIDE nemá UDMA** — bude pracovat v MWDMA/2 nebo PIO/4 režimu. Rychlost je srovnatelná s 52× CD-ROM mechanikou, pro retro gaming plně dostačující. PIIX4 Bus Master driver pro UDMA nebude pro PicoIDE relevantní.
+> ⚠️ **PicoIDE has no UDMA** — operates in MWDMA/2 or PIO/4 mode. Performance is equivalent to a 52× CD-ROM drive, fully sufficient for retro gaming. The PIIX4 Bus Master driver for UDMA is not relevant for PicoIDE.
 
-> ⚠️ **PicoIDE zatím emuluje jen jedno zařízení** — buď CD-ROM nebo HDD, ne obě najednou. Podpora dvou zařízení je plánována v budoucím firmware updatu.
+> ⚠️ **PicoIDE currently emulates only one device** — either CD-ROM or HDD, not both simultaneously. Two-device support is planned in a future firmware update.
 
-### Plánované zapojení po příchodu
+### Planned configuration on arrival
 
 ```
-Primary IDE master   — Verbatim Vi560 SSD (přes Ableconn IDE40-SAT)
-Secondary IDE master — LG GH22NS40 (fyzická mechanika zůstane)
+Primary IDE master   — Verbatim Vi560 SSD (via Ableconn IDE40-SAT)
+Secondary IDE master — LG GH22NS40 (physical drive stays)
 Secondary IDE slave  — PicoIDE Deluxe
 ```
 
-> Nebo PicoIDE na samostatném IDE kanálu pokud bude dostupný slot — záleží na finálním zapojení.
+> Or PicoIDE on a separate IDE channel if a slot is available — depends on final layout.
 
-Redbook audio: MPC-2 konektor PicoIDE → AWE32 CD-IN header nebo přímý vstup QX1222USB.
+Redbook audio: MPC-2 connector on PicoIDE → AWE32 CD-IN header or direct input to QX1222USB.
 
-LG GH22NS40 zůstane — pro fyzické CD disky. SSCDROM.SYS v AUTOEXEC.BAT zůstane pro fyzickou mechaniku.
+LG GH22NS40 stays — for physical CDs. SSCDROM.SYS in AUTOEXEC.BAT stays for the physical drive.
 
 ---
 
 ## Gotek SFR1M44-U100K — USB Floppy Emulator
 
-Starší varianta Gotek s **2 tlačítky a LED číselným displejem** (ne OLED).
-Nahrazuje fyzickou 3.5" floppy mechaniku — připojuje se na standardní 3.5" floppy konektor a napájení.
+Older Gotek variant with **2 buttons and LED numeric display** (not OLED).
+Replaces a physical 3.5" floppy drive — connects to the standard 3.5" floppy connector and power.
 
-**Doporučený firmware: FlashFloppy**
-- Stáhnout: `https://github.com/keirf/FlashFloppy`
-- Podporuje .IMG, .IMA, .DSK, .ST a další formáty
-- USB flash disk = virtuální diskety — procházení tlačítky
+**Recommended firmware: FlashFloppy**
+- Download: `https://github.com/keirf/FlashFloppy`
+- Supports .IMG, .IMA, .DSK, .ST and other formats
+- USB flash drive = virtual floppy images — navigate with buttons
 
-**Instalace FlashFloppy:**
-1. Stáhni nejnovější `FF_Gotek-*.zip` z GitHub releases
-2. Extrahuj `FIRMWARE.UPD` na USB flash disk (FAT32, kořen)
-3. Vlož USB do Goteku, drž levé tlačítko při zapnutí → blikání = update
-4. Po dokončení rebootuj
+**FlashFloppy installation:**
+1. Download the latest `FF_Gotek-*.zip` from GitHub releases
+2. Extract `FIRMWARE.UPD` to a USB flash drive (FAT32, root)
+3. Insert USB into Gotek, hold left button while powering on → flashing = update in progress
+4. Reboot when complete
 
-**Použití:**
-- USB flash disk s `.img` soubory v kořeni nebo ve složkách
-- Levé/pravé tlačítko = procházení obrazů
-- LED displej = číslo aktuálně vybraného obrazu
+**Usage:**
+- USB flash drive with `.img` files in root or subdirectories
+- Left/right button = browse images
+- LED display = number of currently selected image
 
 ---
 
 ## BLE Keyboard + Mouse Bridge
 
-Moderní BLE myš a BLE klávesnice jsou připojeny přes vlastní ESP32 firmware bridge.
+A modern BLE mouse and BLE keyboard are connected via a custom ESP32 firmware bridge.
 Projekt: https://github.com/falco81/BLE-RS232-Bridge a https://github.com/falco81/BLE-PS2-USB-Bridge
 
-Existují dvě varianty zapojení:
+Two wiring variants are available:
 
-### Varianta A — RS232 myš + PS/2 klávesnice (2× ESP32)
+### Variant A — RS232 mouse + PS/2 keyboard (2× ESP32)
 
-| ESP32 | Firmware | Výstup | Připojení k PC |
+| ESP32 | Firmware | Output | Connection to PC |
 |---|---|---|---|
-| ESP32 #1 | `ble_ps2_bridge.ino` | PS/2 AT klávesnice | DIN-5 nebo Mini-DIN 6 klávesnicový port |
+| ESP32 #1 | `ble_ps2_bridge.ino` | PS/2 AT keyboard | DIN-5 or Mini-DIN 6 keyboard port |
 | ESP32 #2 | `ble_serial_mouse_bridge.ino` | RS-232 serial mouse (Microsoft MZ protocol) | DB9 COM1/COM2 |
 
 RS232 bridge: ESP32 → BSS138 level shifter → MAX232CPE → DB9 female (pin 2=data, pin 5=GND, pin 7=RTS, pin 4=DTR).
-Protokol MZ (IntelliMouse se scroll wheel) — vyžaduje CTMOUSE ≥ 3.4.
+Protocol MZ (IntelliMouse with scroll wheel) — requires CTMOUSE ≥ 3.4.
 
-CTMOUSE parametry pro RS232 myš:
+CTMOUSE parameters for RS232 mouse:
 ```bat
 CTMOUSE /R2       (citlivost, hodnoty 1-9)
 CTMOUSE /U        (unload)
-CTMOUSE           (reload — přečte nový protokol po změně)
+CTMOUSE           (reload — re-reads protocol after change)
 ```
 
-### Varianta B — PS/2 myš + PS/2 klávesnice (1× ESP32)
+### Variant B — PS/2 mouse + PS/2 keyboard (1× ESP32)
 
-| ESP32 | Firmware | Výstup |
+| ESP32 | Firmware | Output |
 |---|---|---|
-| ESP32 WROOM-32 | `ble_ps2_kb_mouse_bridge.ino` | PS/2 klávesnice (DIN-5/Mini-DIN 6) + PS/2 myš (Mini-DIN 6) |
+| ESP32 WROOM-32 | `ble_ps2_kb_mouse_bridge.ino` | PS/2 keyboard (DIN-5/Mini-DIN 6) + PS/2 mouse (Mini-DIN 6) |
 
-Jeden ESP32 + jeden 4-kanálový BSS138 level shifter obsluhuje oba PS/2 porty současně.
-PS/2 myš: Explorer protokol (4-byte, scroll wheel, Back, Forward tlačítka), auto-negociace s hostem.
+One ESP32 + one 4-channel BSS138 level shifter handles both PS/2 ports simultaneously.
+PS/2 mouse: Explorer protocol (4-byte, scroll wheel, Back, Forward buttons), auto-negotiation with host.
 
-GPIO pinout (obě varianty):
+GPIO pinout (both variants):
 ```
 KB CLK  = GPIO19    KB DATA  = GPIO18
 MS CLK  = GPIO16    MS DATA  = GPIO17   (jen varianta B)
 ```
 
-### Společné funkce
+### Common features
 
-- Scan-before-connect — čeká až zařízení začne vysílat
-- Automatický reconnect po odpojení
-- NVS storage — MAC adresa uložena přes rebooty
-- Přihlášení přes Serial konzoli (115200 baud): `scan`, `connect <mac>`, `forget`, `status`
-- Škálování DPI: `scale <1-64>` (default 4 pro 1600 DPI myš)
+- Scan-before-connect — waits for device to start advertising
+- Automatic reconnect on disconnect
+- NVS storage — MAC address persists across reboots
+- Configuration via Serial console (115200 baud): `scan`, `connect <mac>`, `forget`, `status`
+- DPI scaling: `scale <1-64>` (default 4 for 1600 DPI mouse)
 - Y-osa inverze: `flipy`, scroll inverze: `flipw`
-- Klávesové zkratky: LCtrl+LAlt+PrtSc = battery %, LCtrl+LAlt+LShift+PrtSc = full status
+- Keyboard shortcuts: LCtrl+LAlt+PrtSc = battery %, LCtrl+LAlt+LShift+PrtSc = full status
 
-### MSD report — skutečný stav
+### MSD report — actual state
 
-MSD hlásí `Logitech PS/2 Mouse, driver 7.05, IRQ 12` — při aktivní variantě B (PS/2 bridge), spuštěno pod profilem EMSMODE.
-Při variantě A (RS232 bridge) MSD hlásí serial mouse na COM1/COM2, IRQ 3 nebo 4.
+MSD reports `Logitech PS/2 Mouse, driver 7.05, IRQ 12` — when Variant B (PS/2 bridge) is active, booted under profile EMSMODE.
+With Variant A (RS232 bridge) MSD reports serial mouse on COM1/COM2, IRQ 3 or 4.
 
 ---
 
@@ -3694,13 +3694,13 @@ Při variantě A (RS232 bridge) MSD hlásí serial mouse na COM1/COM2, IRQ 3 neb
 - PicoGUS MPU-401 → port 300h → McCake (WP32) — SF2 soundfonty, GM hry
 - LPT1 disabled in BIOS to free IRQ 7 for PicoGUS
 - SC-55 must be first in MIDI chain, MT-32 on SC-55 MIDI THRU
-- CTMOUSE /R2 = horizontal resolution 2; myš je moderní BLE myš přes ESP32 bridge (PS/2 IRQ 12 nebo RS232 IRQ 3/4)
+- CTMOUSE /R2 = horizontal resolution 2; mouse is a modern BLE mouse via ESP32 bridge (PS/2 IRQ 12 or RS232 IRQ 3/4)
 - ULTRADIR must point to C:\DRIVERS\PICOGUS root (not MIDI subfolder)
 - CT3900 IDE port must be DISABLED (JP2+JP3 closed) — conflicts with motherboard IDE
 - CT3900 SIMM slots: both must be populated simultaneously with identical modules
 - **ULTRAMID.EXE** required for Tyrian and Raptor GUS music — use `GUS.BAT` launcher, not AUTOEXEC
 - **McCake power** — from waveblaster header (PicoGUS) or floppy connector
-- **CPU upgrade — K6/K6-2 na Socket 7:** K7 v Socket 7 neexistuje (K7 = Athlon, Slot A/Socket A). K6/300 (bez 3DNow!) je prakticky stejný výkon jako Pentium MMX 200 se slabším FPU — není to upgrade. K6-2/300 (s 3DNow!) odpovídá přibližně Pentium MMX 233. **Rhino 15 má Intel PIIX4 chipset** — K6-2 plně využijí jen Super Socket 7 desky s VIA/ALi chipsetem. Na Intel TX chipset K6-2 nenaplní potenciál, v FPU hrách (Quake, GLQuake) bude stejně rychlý nebo pomalejší. Pentium MMX 200 na Intel TX je optimální kombinace pro DOS gaming — výborná kompatibilita, spolehlivý FPU. K6-2/300 není doporučený upgrade pro tento setup.
+- **CPU upgrade — K6/K6-2 on Socket 7:** K7 does not exist in Socket 7 (K7 = Athlon, Slot A/Socket A). K6/300 (no 3DNow!) is essentially the same performance as Pentium MMX 200 with a weaker FPU — not an upgrade. K6-2/300 (with 3DNow!) is roughly equivalent to Pentium MMX 233. **Rhino 15 has an Intel PIIX4 chipset** — K6-2 CPUs only reach their potential on Super Socket 7 boards with VIA/ALi chipsets. On Intel TX chipset the K6-2 will not reach its potential and will be equal or slower in FPU-heavy games (Quake, GLQuake). Pentium MMX 200 on Intel TX is the optimal combination for DOS gaming — excellent compatibility, reliable FPU. K6-2/300 is not a recommended upgrade for this system.
 
 ---
 
@@ -3715,49 +3715,49 @@ Při variantě A (RS232 bridge) MSD hlásí serial mouse na COM1/COM2, IRQ 3 neb
 
 ### Upgrade — Ableconn IDE40-SAT (HDD + ODD varianta) + UDMA/33 v Windows
 
-**Co se mění:**
-- Stávající adaptér nahrazen za **Ableconn IDE40-SAT SATA Hard Drive or Optical Drive to IDE 40-Pin Mini Vertical Adapter** — podporuje explicitně i optické mechaniky (ODD)
-- 80-pinové IDE kabely jsou již nainstalovány (nutné pro UDMA/33)
-- Aktivace UDMA/33 v Windows 98SE pro HDD i CD-ROM přes PIIX4 Bus Master driver
+**What changes:**
+- Existing adapter replaced with **Ableconn IDE40-SAT SATA Hard Drive or Optical Drive to IDE 40-Pin Mini Vertical Adapter** — explicitly supports optical drives (ODD)
+- 80-pin IDE cables already installed (required for UDMA/33)
+- Enabling UDMA/33 in Windows 98SE for HDD and CD-ROM via PIIX4 Bus Master driver
 
-**Proč 80-pin:** 40-pin kabel omezuje přenos na UDMA/16. 80-pin kabel (ale se stejným 40-pinovým konektorem) přidává 40 zemních vodičů, redukuje přeslechy a umožňuje UDMA/33.
+**Why 80-pin:** A 40-pin cable limits transfer to UDMA/16. An 80-pin cable (with the same 40-pin connector) adds 40 ground wires, reduces crosstalk and enables UDMA/33.
 
 ---
 
-#### Krok 0 — Záloha konfigurace z DOSu (před upgradem)
+#### Step 0 — Back up configuration from DOS (before upgrade)
 
-Zálohu proveď z DOSu (ne z Windows) aby registry Windows byly konzistentní.
+Perform the backup from DOS (not from Windows) so that the Windows registry is consistent.
 Bootuj do profilu **NORMAL** nebo **NOSOFTMPU**.
 
 ```bat
-REM --- Záloha DOSových konfiguračních souborů ---
+REM --- Backup DOS configuration files ---
 XCOPY C:\CONFIG.SYS        C:\BACKUP\ /Y
 XCOPY C:\AUTOEXEC.BAT      C:\BACKUP\ /Y
 XCOPY C:\MSDOS.SYS         C:\BACKUP\ /Y
 XCOPY C:\DRIVERS\SCRIPTS\*.BAT  C:\BACKUP\SCRIPTS\ /Y /I
 
-REM --- Záloha Windows registrů (z DOSu přes SCANREG) ---
+REM --- Backup Windows registry (from DOS via SCANREG) ---
 SCANREG /BACKUP
-REM Vytvoří zálohu v C:\WINDOWS\SYSBCKUP\RB000.CAB (rotuje přes RB000-RB004)
+REM Creates backup in C:\WINDOWS\SYSBCKUP\RB000.CAB (rotates through RB000-RB004)
 
-REM --- Export registrů jako čitelný REG soubor (spustit z Windows) ---
-REM Toto proveď z Windows před upgradem:
+REM --- Export registry as readable REG file (run from Windows) ---
+REM Run this from Windows before the upgrade:
 REM   REGEDIT /E C:\BACKUP\REGISTRY.REG
 ```
 
-**Záloha přes Windows (spustit ještě před fyzickým upgradem):**
+**Windows backup (run before the physical upgrade):**
 
 ```
 Start → Spustit → regedit
 File → Export Registry File → C:\BACKUP\REGISTRY.REG → All
 ```
 
-Nebo z příkazové řádky Windows:
+Or from the Windows command line:
 ```bat
 REGEDIT /E C:\BACKUP\REGISTRY.REG
 ```
 
-**Záloha System.dat a User.dat:**
+**Back up System.dat and User.dat:**
 ```bat
 REM V DOSu (soubory jsou hidden+system+readonly v C:\WINDOWS)
 ATTRIB -H -S -R C:\WINDOWS\SYSTEM.DAT
@@ -3768,37 +3768,37 @@ ATTRIB +H +S +R C:\WINDOWS\SYSTEM.DAT
 ATTRIB +H +S +R C:\WINDOWS\USER.DAT
 ```
 
-**Obnova registrů (pokud Windows přestane bootovat):**
+**Restore registry (if Windows fails to boot):**
 ```bat
 REM Z DOSu:
 SCANREG /RESTORE
-REM Vybrat nejnovější zálohu ze seznamu (RB000.CAB = nejnovější)
+REM Select the most recent backup from the list (RB000.CAB = newest)
 
-REM Nebo manuálně:
+REM Or manually:
 COPY C:\BACKUP\SYSTEM.DAT C:\WINDOWS\SYSTEM.DAT
 COPY C:\BACKUP\USER.DAT   C:\WINDOWS\USER.DAT
 ```
 
 ---
 
-#### Krok 1 — Fyzický upgrade adaptéru
+#### Step 1 — Physical adapter upgrade
 
 1. Vypni PC
-2. Odpoj IDE kabel od stávajícího Ableconn IDE40-SAT na SSD
+2. Disconnect IDE cable from existing Ableconn IDE40-SAT on SSD
 3. Odpoj Ableconn IDE40-SAT od SSD
-4. Připoj nový Ableconn IDE40-SAT (HDD+ODD varianta) na SSD — stejné zapojení
-5. Připoj nový Ableconn IDE40-SAT (HDD+ODD varianta) na CD-ROM (LG GH22NS40) — secondary master
-6. Zkontroluj že oba adaptéry jsou napájeny (SATA power → Molex adaptér nebo přímo Molex)
-7. Zkontroluj 80-pin IDE kabely — konektor označený **MASTER** na konci kabelu → disk, střední konektor → slave (nevyužit)
+4. Connect new Ableconn IDE40-SAT (HDD+ODD variant) to SSD — same wiring
+5. Connect new Ableconn IDE40-SAT (HDD+ODD variant) to CD-ROM (LG GH22NS40) — secondary master
+6. Verify both adapters are powered (SATA power → Molex adapter or direct Molex)
+7. Check 80-pin IDE cables — connector marked **MASTER** at cable end → drive, middle connector → slave (unused)
 
 ---
 
 #### Krok 2 — Test v DOSu
 
-Bootuj do **BARE** profilu a ověř:
+Boot to **BARE** profile and verify:
 ```bat
 MSD /F C:\TEMP\MSD_POST.TXT
-REM Zkontroluj sekci Fixed Disk — oba disky musí být viditelné
+REM Check Fixed Disk section — both drives must be visible
 ```
 
 Nebo:
@@ -3812,26 +3812,26 @@ DIR E:\     REM CD-ROM
 
 #### Krok 3 — Instalace PIIX4 IDE Bus Master driveru ve Windows
 
-> ⚠️ Toto proveď až po úspěšném testu v DOSu.
+> ⚠️ Only proceed after a successful DOS test.
 
 1. Bootuj do Windows 98SE
-2. Stáhni **Intel INF Update Utility** — hledej `INFINST_AUTOL.EXE` nebo `inf8xxxx.exe` na VOGONS Drivers nebo Intel ARK
-3. Spusť instalátor, rebootuj
-4. Po rebootu: `Pravý klik na Můj počítač → Vlastnosti → Správce zařízení`
-5. `Řadiče disků` → mělo by zobrazit: **Intel 82371AB/EB PCI Bus Master IDE Controller**
-6. Pravý klik → Vlastnosti → Nastavení → zaškrtni **DMA** pro Primary a Secondary channel
+2. Download **Intel INF Update Utility** — look for `INFINST_AUTOL.EXE` or `inf8xxxx.exe` on VOGONS Drivers or Intel ARK
+3. Run the installer, reboot
+4. After reboot: `Right-click My Computer → Properties → Device Manager`
+5. `Disk controllers` → should show: **Intel 82371AB/EB PCI Bus Master IDE Controller**
+6. Right-click → Properties → Settings → check **DMA** for Primary and Secondary channel
 
-**Ověření UDMA v Device Manageru:**
+**Verify UDMA in Device Manager:**
 ```
-Správce zařízení → Řadiče disků →
+Device Manager → Disk controllers →
   Intel 82371AB/EB PCI Bus Master IDE Controller
     ├─ Primary IDE channel  → Vlastnosti → DMA: Enabled ✓
     └─ Secondary IDE channel → Vlastnosti → DMA: Enabled ✓
 ```
 
-**Ověření z DOS po rebootu (HWINFO):**
+**Verify from DOS after reboot (HWINFO):**
 
-Z výpisu HWINFO by měly být vidět DMA transfer modes:
+HWINFO report should show DMA transfer modes:
 ```
 HDD:  Ultra DMA mode 6 active (omezeno PIIX4 na UDMA/33)
 CDROM: Ultra DMA mode 5 active (omezeno PIIX4 na UDMA/33)
@@ -3839,7 +3839,7 @@ CDROM: Ultra DMA mode 5 active (omezeno PIIX4 na UDMA/33)
 
 ---
 
-#### Co dělat pokud Windows nenabootuje po instalaci driveru
+#### What to do if Windows fails to boot after driver installation
 
 ```bat
 REM Boot do DOSu, obnov registry:
@@ -3849,16 +3849,16 @@ COPY C:\BACKUP\SYSTEM.DAT C:\WINDOWS\SYSTEM.DAT
 COPY C:\BACKUP\USER.DAT   C:\WINDOWS\USER.DAT
 ```
 
-Pokud SCANREG /RESTORE nefunguje — bootuj z Win98SE CD nebo bootovací diskety a obnov manuálně.
+If SCANREG /RESTORE does not work — boot from Win98SE CD or boot disk and restore manually.
 
 ---
 
-#### Poznámky
+#### Notes
 
-- PIIX4 podporuje maximálně **UDMA/33** (Ultra DMA mode 2) bez ohledu na rychlost disku
-- Vi560 S3 SSD podporuje UDMA/6 ale bude omezen na UDMA/2 (33 MB/s) PIIX4 chipsetem — to je v pořádku
-- 80-pin kabel je nutný pro UDMA/33 — bez něj Windows automaticky degraduje na UDMA/16 nebo PIO
-- CD-ROM (LG GH22NS40) — UDMA/33 zvýší rychlost čtení a sníží zatížení CPU při přehrávání CD
+- PIIX4 supports a maximum of **UDMA/33** (Ultra DMA mode 2) regardless of drive speed
+- Vi560 S3 SSD supports UDMA/6 but will be limited to UDMA/2 (33 MB/s) by the PIIX4 chipset — this is expected
+- 80-pin cable is required for UDMA/33 — without it Windows automatically degrades to UDMA/16 or PIO
+- CD-ROM (LG GH22NS40) — UDMA/33 will improve read speed and reduce CPU load during CD playback
 
 ---
 
