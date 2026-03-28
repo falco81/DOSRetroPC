@@ -69,8 +69,8 @@
 | Floppy | 3.5" 1.44 MB | — | — |
 | Mouse + Keyboard | Moderní BLE myš + BLE klávesnice přes ESP32 BLE bridge | PS/2 nebo RS232 | viz sekce BLE Bridge níže |
 | Monitor | Fujitsu-Siemens (w9/2009) | VGA | 38×30 cm, H: 30–83 kHz, V: 56–75 Hz |
-| MIDI module 1 | Roland MT-32 | MIDI chain (first) | AWE32 MPU-401 port 330h |
-| MIDI module 2 | Roland SC-55 | MIDI chain (THRU from MT-32) | — |
+| MIDI module 1 | Roland SC-55 | MIDI chain (first) | AWE32 MPU-401 port 330h |
+| MIDI module 2 | Roland MT-32 | MIDI chain (THRU from SC-55) | — |
 | Mixer | Behringer XENYX QX1222USB | USB | — |
 | Headphones | Audio-Technica ATH-M50x | QX1222USB Phones jack | — |
 | Audio Interface | Focusrite Scarlett 16i16 4th Gen | USB (modern PC) | — |
@@ -229,7 +229,7 @@ JP16=Closed  →  port 330h
 
 **Joystick / Gameport:**
 ```
-JP14=Closed  →  enabled  (gameport carries MIDI OUT to MT-32/SC-55 chain)
+JP14=Closed  →  enabled  (gameport carries MIDI OUT to SC-55/MT-32 chain)
 ```
 
 **IDE port — must be DISABLED (conflicts with motherboard IDE):**
@@ -494,7 +494,7 @@ jeden stereo kabel do QX1222USB CH 9+10.
 | IRQ 7 | PicoGUS | LPT1 disabled in BIOS — frees IRQ 7 |
 | DMA 3 | PicoGUS | DMA 1 taken by AWE32 8-bit, DMA 3 is free |
 | Port 240h | GUS base | 220h taken by AWE32 SB16 |
-| Port 300h | MPU-401 | 330h taken by AWE32 MPU-401 (MT-32/SC-55 chain) |
+| Port 300h | MPU-401 | 330h taken by AWE32 MPU-401 (SC-55/MT-32 chain) |
 
 ---
 
@@ -904,7 +904,7 @@ for cases when PicoGUS is not available.
 | Base port | 220h (SB16) | 240h (GUS) |
 | IRQ | 5 | 7 |
 | DMA | 1 (8-bit) / 5 (16-bit) | 3 |
-| MPU-401 | 330h → MT-32 → SC-55 | 300h → McCake SF2 |
+| MPU-401 | 330h → SC-55 → MT-32 | 300h → McCake SF2 |
 | Audio output | QX1222USB CH 11+12 | QX1222USB CH 9+10 |
 | Role | SB16 efekty, real OPL3 FM, EMU8000 wavetable, AWE32 native | GUS hudba, McCake GM/SF2 synth |
 
@@ -994,7 +994,7 @@ AWE32 gameport MIDI OUT (port 330h)
         │
         ▼
     MT-32 MIDI IN
-    MT-32 MIDI THRU
+    SC-55 MIDI THRU
         │
         ▼
     SC-55 MIDI IN
@@ -1025,7 +1025,7 @@ Adjust the music source channel depending on the game.
 | Device | Port | IRQ | DMA | Type |
 |---|---|---|---|---|
 | AWE32 SB16 | 220h | 5 | 1 / 5 | Sound effects, real OPL3 |
-| AWE32 MPU-401 | 330h | 5 | — | MIDI out → MT-32 → SC-55 |
+| AWE32 MPU-401 | 330h | 5 | — | MIDI out → SC-55 → MT-32 |
 | PicoGUS GUS | 240h | 7 | 3 | GUS music |
 | PicoGUS MPU-401 | 300h | 7 | — | MIDI → X16GS internal synth |
 
@@ -1712,7 +1712,7 @@ SET TELIX=C:\TOOLS\TELIX
 
 REM --- AWE32 CT3900 settings ---
 REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
-REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
+REM P330=MPU-401 port (SC-55/MT-32 chain), E620=EMU8000, T6=SB16/AWE type
 REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
 REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
@@ -2151,7 +2151,7 @@ SET TELIX=C:\TOOLS\TELIX
 
 REM --- AWE32 CT3900 settings ---
 REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
-REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
+REM P330=MPU-401 port (SC-55/MT-32 chain), E620=EMU8000, T6=SB16/AWE type
 REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
 REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
@@ -2904,7 +2904,7 @@ MIDI port     : 330
 ```
 
 > SoftMPU is loaded from AUTOEXEC — intelligent mode works automatically.
-> SC-55 is in the MIDI chain after MT-32 (THRU) — it outputs nothing for MT-32 games.
+> MT-32 is in the MIDI chain after SC-55 (THRU) — it outputs nothing for SC-55/GM games.
 
 ---
 
@@ -2977,7 +2977,7 @@ MIDI port     : 330
 ```
 
 > SC-55 must be in GS mode (default). Switch with: DOSMID /mpu=330 /preset=GS.
-> MT-32 is in MIDI chain before SC-55 (THRU) — MIDI data pass through MT-32
+> SC-55 is in MIDI chain before MT-32 (THRU) — MIDI data pass through SC-55
 > transparently and arrive at SC-55.
 >
 > **Warcraft 2 and Civilization 2** also offer a native AWE32 option —
@@ -3253,7 +3253,7 @@ DOSMID /mpu=330 /preset=GS /nosound /dontstop
 ```
 
 > SC-55 MT-32 mode is switched via the physical button on the front panel only.
-> MT-32 must be first in MIDI chain — SC-55 receives data via MT-32 THRU.
+> SC-55 must be first in MIDI chain — MT-32 receives data via SC-55 THRU.
 
 ---
 
@@ -3439,10 +3439,10 @@ Při variantě A (RS232 bridge) MSD hlásí serial mouse na COM1/COM2, IRQ 3 neb
 - **CT3900 is semi-PnP**: I/O address and MPU-401 = jumpers; IRQ and DMA = software (UNISOUND)
 - IRQ/DMA change: update BLASTER in AUTOEXEC.BAT, UNISOUND programs card at boot (IRQ: 2/5/7/10, Low DMA: 0/1/3, High DMA: 5/6/7)
 - **AWEUTIL /EM:* conflicts with SoftMPU** — use profile 1 (NOSOFTMPU) for AWEUTIL emulation
-- AWE32 MPU-401 → port 330h → MT-32 → SC-55 chain
+- AWE32 MPU-401 → port 330h → SC-55 → MT-32 chain
 - PicoGUS MPU-401 → port 300h → McCake (WP32) — SF2 soundfonty, GM hry
 - LPT1 disabled in BIOS to free IRQ 7 for PicoGUS
-- MT-32 must be first in MIDI chain, SC-55 on MT-32 MIDI THRU
+- SC-55 must be first in MIDI chain, MT-32 on SC-55 MIDI THRU
 - CTMOUSE /R2 = horizontal resolution 2; myš je moderní BLE myš přes ESP32 bridge (PS/2 IRQ 12 nebo RS232 IRQ 3/4)
 - ULTRADIR must point to C:\DRIVERS\PICOGUS root (not MIDI subfolder)
 - CT3900 IDE port must be DISABLED (JP2+JP3 closed) — conflicts with motherboard IDE
