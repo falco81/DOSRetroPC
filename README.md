@@ -33,6 +33,15 @@
 - [GUS.BAT](#gusbat--gus-game-launcher)
 - [MPU.BAT](#mpubat--picogus-mpu-401-game-launcher)
 - [ISO.BAT](#isobat--virtual-cd-rom-switcher)
+- [USBMNT.BAT](#usbmntbat--mount-usb-drive)
+- [USBCHCK.BAT](#usbchckbat--check-usb-devices)
+- [USBUMNT.BAT](#usbumntbat--safe-usb-unplug)
+
+**Peripherals**
+- [USBODE — USB CD-ROM / Storage](#usbode--usb-optical-drive-emulator)
+- [PicoIDE Deluxe](#picoide-deluxe--pending-delivery)
+- [Gotek SFR1M44-U100K](#gotek-sfr1m44-u100k--usb-floppy-emulator)
+- [BLE Keyboard + Mouse Bridge](#ble-keyboard--mouse-bridge)
 
 **Reference**
 - [Environment Variables](#environment-variables-reference)
@@ -2776,6 +2785,79 @@ SET SHSUCDX=
 
 ---
 
+## USBMNT.BAT — Mount USB Drive
+
+Mounts a USB mass storage device using Bret Johnson DOSUSB.
+Requires **profile UBSSTM or UBSSTEM** at boot (USBUHCIL.COM already loaded as TSR).
+
+```bat
+@ECHO OFF
+REM USBMNT.BAT - Mount USB mass storage device
+REM Usage: USBMNT
+REM Requires: USBUHCIL loaded (profiles UBSSTM / UBSSTEM)
+REM Driver: Bret Johnson DOSUSB - C:\DRIVERS\USBDOS\
+
+ECHO.
+ECHO  === USB Mass Storage - Mount ===
+ECHO  Plug in USB device NOW, then press Enter.
+ECHO  Wait 3-5 seconds after plugging in.
+ECHO.
+C:\DRIVERS\USBDOS\USBDRIVE.COM /Devices:1 /Disks:1 /Drives:1
+ECHO.
+ECHO  Done. Check drive letters with: DIR E:  DIR F:  etc.
+ECHO  To verify device: USBCHCK
+ECHO.
+```
+
+---
+
+## USBCHCK.BAT — Check USB Devices
+
+Shows all USB devices currently detected by USBUHCIL TSR.
+
+```bat
+@ECHO OFF
+REM USBCHCK.BAT - Show connected USB devices
+REM Usage: USBCHCK
+REM Requires: USBUHCIL loaded (profiles UBSSTM / UBSSTEM)
+
+ECHO.
+ECHO  === USB Devices - Status ===
+ECHO.
+C:\DRIVERS\USBDOS\USBDEVIC.COM
+ECHO.
+```
+
+---
+
+## USBUMNT.BAT — Safe USB Unplug
+
+Reminds to close files before unplugging. Uninstall is disabled — see comments in script.
+
+```bat
+@ECHO OFF
+REM USBUMNT.BAT - Safe to unplug USB drive
+REM USBDRIVE stays in memory (blocked by CTMOUSE - cannot uninstall)
+REM Just stop using the drive before unplugging
+
+REM C:\DRIVERS\USBDOS\USBDRIVE.COM Uninstall
+REM Uninstall is disabled - CTMOUSE loads after USBDRIVE and blocks it.
+REM Calling Uninstall with a blocking TSR causes EMM386 error and system reset.
+REM To unload: reboot. Hotswap works without unloading - just swap the drive.
+
+ECHO.
+ECHO  === USB Mass Storage - Safe Unplug ===
+ECHO.
+ECHO  Make sure all files are closed and
+ECHO  no programs are reading the USB drive.
+ECHO.
+ECHO  It is now safe to unplug the USB device.
+ECHO  To remount: USBMNT
+ECHO.
+```
+
+---
+
 ## Environment Variables Reference
 
 ```bat
@@ -3625,68 +3707,243 @@ Replaces a physical 3.5" floppy drive — connects to the standard 3.5" floppy c
 
 ## USBODE — USB Optical Drive Emulator
 
-Pi Zero 2W connected via USB — emulates CD-ROM drive (Mode 1) or USB mass storage (Mode 2).
-Project: `https://github.com/danifunker/usbode-circle`
+**Project:** `https://github.com/danifunker/usbode-circle`
 
-Hardware: Raspberry Pi Zero 2W, micro SD card (A1/A2 class, 32 GB+), micro USB data cable.
-Optional: Pirate Audio Line Out HAT for Redbook CD audio playback in DOS.
+USBODE turns a Raspberry Pi Zero 2W into a USB CD-ROM drive emulator for retro PCs. It connects via a single micro USB cable which carries both data and power. The Pi presents itself to the PC as a standard USB CD-ROM device (Mode 1) or as a USB mass storage device (Mode 2). ISO images are stored on the Pi's micro SD card and switched via a WiFi web interface or optionally via a hardware HAT.
 
-Power: Pi Zero 2W is powered directly from the PC's USB port — same cable as data. Pi boots and shuts down with the PC.
+### Hardware
 
-> ⚠️ Pi Zero 2W takes ~10 seconds to boot. The PC must be powered on after the Pi is ready, or use the `/w` switch in USBASPI profiles to wait at prompt.
-
-### Mode 1 — CD-ROM emulation
-
-Pi presents itself as a USB CD-ROM drive. DOS sees it via `USBASPI.EXE` + `USBCD1.SYS`.
-Use boot profiles: `UBSNM`, `UBSNS`, `UBSNMP` (NOEMS) or `UBSEM`, `UBSNES`, `UBSEMP` (EMS).
-
-Supported image formats: `.ISO`, `.BIN/.CUE` (with Pirate Audio HAT for Redbook audio).
-
-Image switching: via WiFi web interface (accessible from Win98SE with IE6) or Waveshare OLED HAT.
-
-### Mode 2 — USB mass storage
-
-Pi presents itself as a USB mass storage device (SD card contents visible as a drive letter).
-Use boot profiles: `UBSSTM` (NOEMS) or `UBSSTEM` (EMS).
-
-Driver stack: **Bret Johnson DOSUSB** — `C:\DRIVERS\USBDOS\`
-
-| File | Purpose |
+| Component | Description |
 |---|---|
-| `USBUHCIL.COM` | UHCI TSR — Intel/VIA only, loaded at boot in storage profiles |
-| `USBDRIVE.COM` | Mass storage driver — assigns drive letter |
-| `USBDEVIC.COM` | Shows connected USB devices |
-| `USBHOSTS.COM` | Shows USB host controllers |
-| `USBUHCIL.OVL` | Overlay file — must be in same directory as USBUHCIL.COM |
+| Raspberry Pi Zero 2W | Required — Pi Zero W also works but is too slow |
+| Micro SD card | A1 or A2 class, 32 GB or larger recommended, up to 1 TB supported |
+| Micro USB cable | Data cable (not charge-only) — carries USB data + power |
+| Pirate Audio Line Out HAT | Optional — adds Redbook CD audio output and on-device controls |
+| Waveshare 1.3" OLED HAT | Alternative — on-device controls only, no CD audio |
 
-> ⚠️ `USBUHCIL.OVL` must be present in `C:\DRIVERS\USBDOS\` — USBUHCIL.COM will not start without it.
+**Power:** Pi Zero 2W is powered entirely from the PC's USB port via the data cable. It boots and shuts down with the PC. No separate power supply needed.
 
-PIIX4 UHCI controller: I/O=6400h-641Fh, IRQ 11.
+> ⚠️ Pi Zero 2W takes ~7-10 seconds to boot before it appears as a CD-ROM drive. Boot the PC only after the Pi is ready — use the `/w` switch in USBASPI profiles to pause and wait at prompt.
 
-### DOS scripts — C:\DRIVERS\SCRIPTS\
+> ⚠️ Only Pi Zero W and Pi Zero 2W support USB device (gadget) mode required by USBODE. Pi 3B, Pi 4B, Pi 5 have only USB host ports and cannot be used.
 
-| Script | Usage |
+**PIIX4 USB controller:** Intel 82371AB PIIX4, UHCI, I/O=6400h-641Fh, IRQ 11, USB 1.1 Full Speed (12 Mbit/s).
+
+### Initial Setup
+
+1. Download latest USBODE Circle release from `https://github.com/danifunker/usbode-circle`
+2. Flash image to micro SD card using Raspberry Pi Imager
+3. Configure WiFi in `wpa_supplicant.conf` on the SD card (2.4 GHz only)
+4. Place `.ISO` files in the `/IMGSTORE/` folder on the SD card
+5. Connect Pi Zero 2W to PC USB port via micro USB cable
+6. Pi boots in ~7-10 seconds and appears as CD-ROM drive
+
+---
+
+### Mode 1 — CD-ROM Emulation
+
+Pi presents itself as a standard ATAPI USB CD-ROM drive. DOS loads it via `USBASPI.EXE` (Panasonic ASPI manager) + `USBCD1.SYS` (Panasonic USB CD-ROM driver), both in `C:\DRIVERS\USBCD\`.
+
+**PIIX4 UHCI parameters used:** `/u` (UHCI only), `/w` (pause after init), `/v` (verbose).
+
+Verbose output from `USBASPI.EXE` confirms controller detection:
+```
+Controller: 00-07-2 VID=8086h PID=7112h (0000h-0000h) UHCI
+            I/O=6400h-641Fh
+```
+
+**Boot profiles for Mode 1:**
+
+| Profile | Memory | Sound | Description |
+|---|---|---|---|
+| `UBSNM` | NOEMS 607KB | SoftMPU + GUS | Everyday use, MT-32 games |
+| `UBSNS` | NOEMS 607KB | No SoftMPU | AWEUTIL /EM emulation |
+| `UBSNMP` | NOEMS 607KB | MPU-401 | McCake GM/MT-32 via port 300h |
+| `UBSEM` | EMS 595KB | SoftMPU + GUS | DOS extender games |
+| `UBSNES` | EMS 595KB | No SoftMPU | AWEUTIL /EM + DOS extenders |
+| `UBSEMP` | EMS 595KB | MPU-401 | McCake + DOS extenders |
+
+**Image switching** (without rebooting): via WiFi web interface — accessible from any browser including Win98SE with IE6. Navigate to Pi's IP address shown on OLED display or obtained from router DHCP.
+
+**Redbook CD audio:** requires Pirate Audio Line Out HAT. Audio output via 3.5mm jack on the HAT — connect to mixer or sound card CD-IN.
+
+**CONFIG.SYS drivers loaded in Mode 1 profiles:**
+```
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI.EXE /u /w /w
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:USBCD0
+```
+
+**AUTOEXEC.BAT CD-ROM line in Mode 1 profiles:**
+```bat
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+```
+
+**Files in C:\DRIVERS\USBCD\:**
+
+| File | Description |
 |---|---|
-| `USBMNT` | Mount USB drive — runs `USBDRIVE /Devices:1 /Disks:1 /Drives:1`, adds exactly 1 drive letter |
-| `USBCHCK` | Show connected USB devices via `USBDEVIC` |
-| `USBUMNT` | Safe unplug reminder — Uninstall is disabled (see below) |
+| `USBASPI.EXE` | Panasonic ASPI Manager for USB mass-storage v2.28 |
+| `USBASPI.SYS` | Alternate version (same driver, .SYS extension) |
+| `USBASPI.OLD` | Older v2.27 — rename to USBASPI.SYS to use |
+| `USBCD1.SYS` | Panasonic USB CD-ROM Device Driver v1.0 |
+| `USBCD2.SYS` | TEAC USB CD-ROM Device Driver |
+| `USBCD3.SYS` | ASUSTeK USB CD-ROM Device Driver |
+| `DI1000DD.SYS` | Novac ASPI Mass Storage Device Driver (Mode 2 fallback) |
+| `ASPIDISK.SYS` | Adaptec ASPI Disk Driver (Mode 2 fallback) |
 
-**Hotswap workflow:**
+**USBASPI compatibility note:** USBASPI 2.28 with PIIX4 UHCI correctly detects the controller at I/O=6400h but reports `Target USB device not found` for modern USB 2.0/3.0 flash drives. This is because PIIX4 is USB 1.1 Full Speed only — modern flash drives attempt High Speed (USB 2.0) negotiation which PIIX4 cannot provide. USBODE Pi Zero 2W works correctly because it properly enumerates as a Full Speed USB 1.1 device.
+
+---
+
+### Mode 2 — USB Mass Storage
+
+Pi presents itself as a USB mass storage device. The SD card's `IMGSTORE` partition appears as a DOS drive letter, allowing ISO files to be copied directly from DOS without removing the SD card.
+
+**Driver stack: Bret Johnson DOSUSB** — `C:\DRIVERS\USBDOS\`
+
+This driver set is specifically designed for Intel/VIA UHCI controllers and supports hotswap — USB drives can be plugged and unplugged without rebooting.
+
+**Files in C:\DRIVERS\USBDOS\:**
+
+| File | Description |
+|---|---|
+| `USBUHCIL.COM` | UHCI TSR (lite version, 30KB RAM, max 16 devices) |
+| `USBUHCIL.OVL` | Overlay — **must be in same directory** as USBUHCIL.COM |
+| `USBUHCI.COM` | Full UHCI TSR (43KB RAM, more devices) — alternative to USBUHCIL |
+| `USBUHCI.OVL` | Overlay for USBUHCI.COM |
+| `USBDRIVE.COM` | Mass storage driver — assigns DOS drive letters |
+| `USBDEVIC.COM` | Shows all connected USB devices and their status |
+| `USBHOSTS.COM` | Shows USB host controllers detected by USBUHCIL |
+
+> ⚠️ `USBUHCIL.OVL` must be present in the same directory as `USBUHCIL.COM`. Without it, USBUHCIL.COM will not start.
+
+**Boot profiles for Mode 2:**
+
+| Profile | Memory | Sound | Description |
+|---|---|---|---|
+| `UBSSTM` | NOEMS 607KB | SoftMPU + GUS | USB mass storage, no CD emulation |
+| `UBSSTEM` | EMS 595KB | SoftMPU + GUS | USB mass storage + DOS extenders |
+
+**What loads in Mode 2 profiles:**
+
+CONFIG.SYS — no USB device drivers (DOSUSB is TSR-based, not CONFIG.SYS based):
+```
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+```
+
+AUTOEXEC.BAT — USBUHCIL loaded as TSR with legacy warning suppressed:
+```bat
+LH C:\DRIVERS\USBDOS\USBUHCIL.COM DisableLegacySupport
+```
+
+`DisableLegacySupport` suppresses the BIOS USB keyboard warning that appears when BIOS has USB Legacy Support enabled. Without this switch the driver prompts at every boot asking if you really want to load the USB driver.
+
+**Mounting a drive after boot:**
+```bat
+USBMNT        (run script, plug in device, wait 3-5s, press Enter)
+```
+
+USBDRIVE is called with minimal parameters to reserve exactly 1 drive letter:
+```bat
+C:\DRIVERS\USBDOS\USBDRIVE.COM /Devices:1 /Disks:1 /Drives:1
+```
+
+`/Devices:1` = max 1 USB device (default 4, saves 228 bytes RAM per extra slot)
+`/Disks:1` = max 1 LUN/partition (default 8, saves 1414 bytes RAM)
+`/Drives:1` = max 1 drive letter assigned (default 8 — without this, DOS gets 6-8 extra letters)
+
+**Flash drive compatibility with PIIX4 USB 1.1:**
+Modern USB 2.0/3.0 flash drives often fail to enumerate on PIIX4 UHCI. They attempt High Speed negotiation (USB 2.0, 480 Mbit/s) which the USB 1.1 controller cannot satisfy. Workarounds: use an older flash drive (2-4 GB, pre-2008 era), or use the USBODE Pi Zero 2W SD card directly in Mode 2 — the Pi correctly presents as Full Speed USB 1.1.
+
+---
+
+### DOS Scripts — C:\DRIVERS\SCRIPTS\
+
+#### USBMNT.BAT
+
+```bat
+@ECHO OFF
+REM USBMNT.BAT - Mount USB mass storage device
+REM Usage: USBMNT
+REM Requires: USBUHCIL loaded (profiles UBSSTM / UBSSTEM)
+REM Driver: Bret Johnson DOSUSB - C:\DRIVERS\USBDOS\
+
+ECHO.
+ECHO  === USB Mass Storage - Mount ===
+ECHO  Plug in USB device NOW, then press Enter.
+ECHO  Wait 3-5 seconds after plugging in.
+ECHO.
+C:\DRIVERS\USBDOS\USBDRIVE.COM /Devices:1 /Disks:1 /Drives:1
+ECHO.
+ECHO  Done. Check drive letters with: DIR E:  DIR F:  etc.
+ECHO  To verify device: USBCHCK
+ECHO.
+```
+
+#### USBCHCK.BAT
+
+```bat
+@ECHO OFF
+REM USBCHCK.BAT - Show connected USB devices
+REM Usage: USBCHCK
+REM Requires: USBUHCIL loaded (profiles UBSSTM / UBSSTEM)
+
+ECHO.
+ECHO  === USB Devices - Status ===
+ECHO.
+C:\DRIVERS\USBDOS\USBDEVIC.COM
+ECHO.
+```
+
+#### USBUMNT.BAT
+
+```bat
+@ECHO OFF
+REM USBUMNT.BAT - Safe to unplug USB drive
+REM USBDRIVE stays in memory (blocked by CTMOUSE - cannot uninstall)
+REM Just stop using the drive before unplugging
+
+REM C:\DRIVERS\USBDOS\USBDRIVE.COM Uninstall
+REM Uninstall is disabled - CTMOUSE loads after USBDRIVE and blocks it.
+REM Calling Uninstall with a blocking TSR causes EMM386 error and system reset.
+REM To unload: reboot. Hotswap works without unloading - just swap the drive.
+
+ECHO.
+ECHO  === USB Mass Storage - Safe Unplug ===
+ECHO.
+ECHO  Make sure all files are closed and
+ECHO  no programs are reading the USB drive.
+ECHO.
+ECHO  It is now safe to unplug the USB device.
+ECHO  To remount: USBMNT
+ECHO.
+```
+
+---
+
+### Hotswap Workflow
+
+**First mount:**
 1. Boot into `UBSSTM` or `UBSSTEM` profile
-2. Run `USBMNT` — plug in USB drive, wait 3-5s, press Enter
-3. Access files on the assigned drive letter
-4. To swap: close all files, pull drive, insert new drive, run `USBMNT` again
-5. Run `USBUMNT` before unplugging (informational only — see note below)
+2. `USBUHCIL.COM DisableLegacySupport` loads automatically from AUTOEXEC.BAT
+3. Run `USBMNT` — plug in USB device, wait 3-5 seconds, press Enter
+4. Drive letter assigned automatically (first free letter after existing drives)
 
-**Why Uninstall is disabled in USBUMNT:**
-`CTMOUSE` loads after `USBDRIVE` in AUTOEXEC.BAT and blocks it (TSR ordering). Calling `USBDRIVE Uninstall` with a blocking TSR present causes an EMM386 error and system reset. USBDRIVE stays resident in memory — to fully unload, reboot. Hotswap works without unloading.
+**Swap drive (without reboot):**
+1. Close all files and programs using the USB drive
+2. Pull the USB drive
+3. Insert new USB drive — USBDRIVE detects it automatically in background
+4. Wait 3-5 seconds
+5. Run `USBMNT` again — drive letter reassigned
 
-**USBODE Mode 2 + flash drive compatibility note:**
-PIIX4 is USB 1.1 (Full Speed, 12 Mbit/s). Modern USB 2.0/3.0 flash drives may fail to enumerate — they attempt High Speed negotiation which PIIX4 cannot satisfy. Older flash drives (2-4 GB, pre-2008) work reliably. The USBODE Pi Zero 2W SD card works because Pi presents as a proper Full Speed device.
+**Safe unplug:**
+1. Run `USBUMNT` — reads reminder message
+2. Close all files if not already done
+3. Pull USB drive
 
-### USBASPI driver note (Mode 1 profiles)
-
-USBASPI `2.28` (Panasonic) is used for Mode 1 CD-ROM profiles. With `/u /w /v` it correctly finds the PIIX4 UHCI controller at I/O=6400h but reports `Target USB device not found` for modern flash drives — this is a USB 1.1 / High Speed compatibility issue, not a driver fault. USBODE Pi Zero 2W works correctly in Mode 1.
+**Why Uninstall does not work:**
+CTMOUSE loads after USBDRIVE in AUTOEXEC.BAT. CTMOUSE uses standard interrupt vectors and blocks USBDRIVE from uninstalling itself (TSR ordering — a TSR can only uninstall if no other TSR installed after it). Calling `USBDRIVE Uninstall` with CTMOUSE blocking causes an EMM386 protected mode conflict and immediate system reset. The commented-out `Uninstall` line in USBUMNT.BAT is preserved for reference. To fully unload USBDRIVE from memory, reboot.
 
 ---
 
