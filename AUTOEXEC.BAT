@@ -366,6 +366,209 @@ LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
+REM -----------------------------------------------
+REM Profile: UBSNM - NOEMS, SoftMPU, USBODE CD-ROM
+REM Use for: MT-32/GUS games + Pi Zero 2W as CD-ROM
+REM Pi Zero 2W must be powered on BEFORE the PC
+REM -----------------------------------------------
+:UBSNM
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - USBODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
+ECHO.
+REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
+REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
+REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: UBSNS - NOEMS, No SoftMPU, USBODE CD-ROM
+REM Use for: AWEUTIL /EM emulation + Pi Zero 2W as CD-ROM
+REM -----------------------------------------------
+:UBSNS
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - USBODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
+ECHO.
+REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
+REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
+REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: UBSNMP - NOEMS, PicoGUS MPU-401, USBODE CD-ROM
+REM Use for: GM/MT-32 via McCake (port 300h) + Pi Zero 2W
+REM -----------------------------------------------
+:UBSNMP
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- PicoGUS in MPU-401 intelligent mode ---
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - USBODE + MPU-401]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
+ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
+ECHO.
+REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
+REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
+REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: UBSEM - RAM (EMS), SoftMPU, USBODE CD-ROM
+REM Use for: DOS extender games + Pi Zero 2W as CD-ROM
+REM -----------------------------------------------
+:UBSEM
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - USBODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
+ECHO.
+REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
+REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
+REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: UBSNES - RAM (EMS), No SoftMPU, USBODE CD-ROM
+REM Use for: AWEUTIL /EM + DOS extenders + Pi Zero 2W
+REM -----------------------------------------------
+:UBSNES
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - USBODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
+ECHO.
+REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
+REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
+REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: UBSEMP - RAM (EMS), PicoGUS MPU-401, USBODE CD-ROM
+REM Use for: GM/MT-32 via McCake + DOS extenders + Pi Zero 2W
+REM -----------------------------------------------
+:UBSEMP
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- PicoGUS in MPU-401 intelligent mode ---
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - USBODE + MPU-401]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
+ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
+ECHO.
+REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
+REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
+REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: UBSSTM - NOEMS, USBODE Mode 2 mass storage
+REM Use for: accessing Pi Zero 2W SD card as a DOS drive
+REM USBODE must be in Mode 2 BEFORE booting PC
+REM USBDRIVE.COM assigns drive letter automatically (no SHSUCDX)
+REM NOT for CD emulation - Mode 2 is storage only
+REM -----------------------------------------------
+REM -----------------------------------------------
+REM Profile: UBSSTM - NOEMS, USB mass storage (Bret Johnson DOSUSB)
+REM Use for: USB flash drive or USBODE Mode 2 (Pi SD card) as DOS drive
+REM Drivers: USBUHCIL.COM (TSR) + USBDRIVE.COM from C:\DRIVERS\USBDOS\
+REM Usage after boot:
+REM   USBDRIVE /Devices:1 /Disks:1 /Drives:1
+REM   Drive letter auto-assigned (first free after existing drives)
+REM Hotswap supported - can load/unload without rebooting
+REM NOT for CD emulation - use UBSNM/UBSNS/UBSNMP for that
+REM -----------------------------------------------
+:UBSSTM
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - USB STORAGE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  ULTRASND: %ULTRASND%
+ECHO.
+REM --- DOSUSB UHCI TSR (Bret Johnson) - Intel/VIA UHCI only ---
+REM USBUHCIL = lite version (30KB RAM, max 16 devices) - use USBUHCI for more
+LH C:\DRIVERS\USBDOS\USBUHCIL.COM DisableLegacySupport
+ECHO.
+ECHO  USB STORAGE: USBUHCIL loaded.
+ECHO  To mount drive: USBDRIVE /Devices:1 /Disks:1 /Drives:1
+ECHO  Then plug in USB device and wait 3-5 seconds.
+ECHO  To check devices: USBDEVIC
+ECHO.
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: UBSSTEM - RAM (EMS), USB mass storage (Bret Johnson DOSUSB)
+REM Use for: USB flash drive or USBODE Mode 2 + DOS extenders
+REM -----------------------------------------------
+:UBSSTEM
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - USB STORAGE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  ULTRASND: %ULTRASND%
+ECHO.
+REM --- DOSUSB UHCI TSR (Bret Johnson) - Intel/VIA UHCI only ---
+LH C:\DRIVERS\USBDOS\USBUHCIL.COM DisableLegacySupport
+ECHO.
+ECHO  USB STORAGE: USBUHCIL loaded.
+ECHO  To mount drive: USBDRIVE /Devices:1 /Disks:1 /Drives:1
+ECHO  Then plug in USB device and wait 3-5 seconds.
+ECHO  To check devices: USBDEVIC
+ECHO.
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
 :BARE
 GOTO END
 

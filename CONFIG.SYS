@@ -21,6 +21,10 @@ MENUITEM=NOSOFTMPU,  No SoftMPU            - NOEMS 607KB  (AWEUTIL /EM)
 MENUITEM=ISOCD,      ISO CD-ROM            - NOEMS 607KB  (virtual CD)
 MENUITEM=MPU,        MPU-401 CD-ROM        - NOEMS 607KB  (McCake, phys CD)
 MENUITEM=MPUISO,     MPU-401 ISO CD-ROM    - NOEMS 607KB  (McCake, virtual CD)
+MENUITEM=UBSNM,      USBODE SoftMPU        - NOEMS 607KB  (Pi Zero 2W ODE)
+MENUITEM=UBSNS,      USBODE No SoftMPU     - NOEMS 607KB  (AWEUTIL /EM + ODE)
+MENUITEM=UBSNMP,     USBODE MPU-401        - NOEMS 607KB  (McCake + ODE)
+MENUITEM=UBSSTM,     USBODE Storage        - NOEMS 607KB  (Pi SD card as drive)
 
 ; EMS sub-menu: SoftMPU EMS, No SoftMPU EMS, ISO CD EMS, MPU-401 EMS, MPU-401 ISO EMS
 [EMS]
@@ -29,6 +33,10 @@ MENUITEM=NOSOFTEMU,  No SoftMPU EMS        - RAM   595KB  (AWEUTIL /EM + ext)
 MENUITEM=ISOCDEMS,   ISO CD-ROM EMS        - RAM   595KB  (virtual CD + ext)
 MENUITEM=MPUEMS,     MPU-401 CD-ROM EMS    - RAM   595KB  (McCake + ext, phys CD)
 MENUITEM=MPUISOEMS,  MPU-401 ISO CD EMS    - RAM   595KB  (McCake + ext, virt CD)
+MENUITEM=UBSEM,      USBODE SoftMPU EMS    - RAM   595KB  (Pi Zero 2W ODE + ext)
+MENUITEM=UBSNES,     USBODE No SoftMPU EMS - RAM   595KB  (AWEUTIL /EM + ODE)
+MENUITEM=UBSEMP,     USBODE MPU-401 EMS    - RAM   595KB  (McCake + ODE + ext)
+MENUITEM=UBSSTEM,    USBODE Storage EMS    - RAM   595KB  (Pi SD card as drive)
 ;MENUCOLOR=11,1
 
 ; -----------------------------------------------
@@ -204,6 +212,96 @@ INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 ; Physical Samsung CD-ROM NOT loaded
 ; -----------------------------------------------
 [MPUISOEMS]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+
+; -----------------------------------------------
+; Profile UBSNM - NOEMS, SoftMPU, USBODE (Pi Zero 2W)
+; Use for: MT-32/GUS games + USBODE as CD-ROM
+; No physical CD-ROM driver - USBODE via USB UHCI
+; Power on Pi Zero 2W FIRST, wait 10s, then boot PC
+; -----------------------------------------------
+[UBSNM]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+; USBODE drivers - UHCI only (/u), pause before init (/w /w)
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI.EXE /u /w /w
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:USBCD0
+
+; -----------------------------------------------
+; Profile UBSNS - NOEMS, No SoftMPU, USBODE
+; Use for: AWEUTIL /EM emulation + USBODE as CD-ROM
+; -----------------------------------------------
+[UBSNS]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI.EXE /u /w /w
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:USBCD0
+
+; -----------------------------------------------
+; Profile UBSNMP - NOEMS, PicoGUS MPU-401, USBODE
+; Use for: GM/MT-32 via McCake (port 300h) + USBODE as CD-ROM
+; -----------------------------------------------
+[UBSNMP]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI.EXE /u /w /w
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:USBCD0
+
+; -----------------------------------------------
+; Profile UBSEM - RAM (EMS), SoftMPU, USBODE
+; Use for: DOS extender games + USBODE as CD-ROM
+; -----------------------------------------------
+[UBSEM]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI.EXE /u /w /w
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:USBCD0
+
+; -----------------------------------------------
+; Profile UBSNES - RAM (EMS), No SoftMPU, USBODE
+; Use for: AWEUTIL /EM + DOS extenders + USBODE
+; -----------------------------------------------
+[UBSNES]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI.EXE /u /w /w
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:USBCD0
+
+; -----------------------------------------------
+; Profile UBSEMP - RAM (EMS), PicoGUS MPU-401, USBODE
+; Use for: GM/MT-32 via McCake + DOS extenders + USBODE
+; -----------------------------------------------
+[UBSEMP]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI.EXE /u /w /w
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:USBCD0
+
+; -----------------------------------------------
+; Profile UBSSTM - NOEMS, USB mass storage (Bret Johnson DOSUSB)
+; Use for: USB flash drive or Pi Zero SD card (Mode 2) as DOS drive
+; Drivers loaded as TSR from AUTOEXEC.BAT - no device drivers here
+; USBUHCIL.COM + USBDISK.COM from C:\DRIVERS\USBDOS\
+; NOT for CD emulation - use UBSNM/UBSNS/UBSNMP for that
+; -----------------------------------------------
+[UBSSTM]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+
+; -----------------------------------------------
+; Profile UBSSTEM - RAM (EMS), USB mass storage (Bret Johnson DOSUSB)
+; Use for: USB flash drive or Pi Zero SD card (Mode 2) + DOS extenders
+; -----------------------------------------------
+[UBSSTEM]
 
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
 INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
