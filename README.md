@@ -3623,10 +3623,77 @@ Replaces a physical 3.5" floppy drive — connects to the standard 3.5" floppy c
 
 ---
 
+## USBODE — USB Optical Drive Emulator
+
+Pi Zero 2W connected via USB — emulates CD-ROM drive (Mode 1) or USB mass storage (Mode 2).
+Project: `https://github.com/danifunker/usbode-circle`
+
+Hardware: Raspberry Pi Zero 2W, micro SD card (A1/A2 class, 32 GB+), micro USB data cable.
+Optional: Pirate Audio Line Out HAT for Redbook CD audio playback in DOS.
+
+Power: Pi Zero 2W is powered directly from the PC's USB port — same cable as data. Pi boots and shuts down with the PC.
+
+> ⚠️ Pi Zero 2W takes ~10 seconds to boot. The PC must be powered on after the Pi is ready, or use the `/w` switch in USBASPI profiles to wait at prompt.
+
+### Mode 1 — CD-ROM emulation
+
+Pi presents itself as a USB CD-ROM drive. DOS sees it via `USBASPI.EXE` + `USBCD1.SYS`.
+Use boot profiles: `UBSNM`, `UBSNS`, `UBSNMP` (NOEMS) or `UBSEM`, `UBSNES`, `UBSEMP` (EMS).
+
+Supported image formats: `.ISO`, `.BIN/.CUE` (with Pirate Audio HAT for Redbook audio).
+
+Image switching: via WiFi web interface (accessible from Win98SE with IE6) or Waveshare OLED HAT.
+
+### Mode 2 — USB mass storage
+
+Pi presents itself as a USB mass storage device (SD card contents visible as a drive letter).
+Use boot profiles: `UBSSTM` (NOEMS) or `UBSSTEM` (EMS).
+
+Driver stack: **Bret Johnson DOSUSB** — `C:\DRIVERS\USBDOS\`
+
+| File | Purpose |
+|---|---|
+| `USBUHCIL.COM` | UHCI TSR — Intel/VIA only, loaded at boot in storage profiles |
+| `USBDRIVE.COM` | Mass storage driver — assigns drive letter |
+| `USBDEVIC.COM` | Shows connected USB devices |
+| `USBHOSTS.COM` | Shows USB host controllers |
+| `USBUHCIL.OVL` | Overlay file — must be in same directory as USBUHCIL.COM |
+
+> ⚠️ `USBUHCIL.OVL` must be present in `C:\DRIVERS\USBDOS\` — USBUHCIL.COM will not start without it.
+
+PIIX4 UHCI controller: I/O=6400h-641Fh, IRQ 11.
+
+### DOS scripts — C:\DRIVERS\SCRIPTS\
+
+| Script | Usage |
+|---|---|
+| `USBMNT` | Mount USB drive — runs `USBDRIVE /Devices:1 /Disks:1 /Drives:1`, adds exactly 1 drive letter |
+| `USBCHCK` | Show connected USB devices via `USBDEVIC` |
+| `USBUMNT` | Safe unplug reminder — Uninstall is disabled (see below) |
+
+**Hotswap workflow:**
+1. Boot into `UBSSTM` or `UBSSTEM` profile
+2. Run `USBMNT` — plug in USB drive, wait 3-5s, press Enter
+3. Access files on the assigned drive letter
+4. To swap: close all files, pull drive, insert new drive, run `USBMNT` again
+5. Run `USBUMNT` before unplugging (informational only — see note below)
+
+**Why Uninstall is disabled in USBUMNT:**
+`CTMOUSE` loads after `USBDRIVE` in AUTOEXEC.BAT and blocks it (TSR ordering). Calling `USBDRIVE Uninstall` with a blocking TSR present causes an EMM386 error and system reset. USBDRIVE stays resident in memory — to fully unload, reboot. Hotswap works without unloading.
+
+**USBODE Mode 2 + flash drive compatibility note:**
+PIIX4 is USB 1.1 (Full Speed, 12 Mbit/s). Modern USB 2.0/3.0 flash drives may fail to enumerate — they attempt High Speed negotiation which PIIX4 cannot satisfy. Older flash drives (2-4 GB, pre-2008) work reliably. The USBODE Pi Zero 2W SD card works because Pi presents as a proper Full Speed device.
+
+### USBASPI driver note (Mode 1 profiles)
+
+USBASPI `2.28` (Panasonic) is used for Mode 1 CD-ROM profiles. With `/u /w /v` it correctly finds the PIIX4 UHCI controller at I/O=6400h but reports `Target USB device not found` for modern flash drives — this is a USB 1.1 / High Speed compatibility issue, not a driver fault. USBODE Pi Zero 2W works correctly in Mode 1.
+
+---
+
 ## BLE Keyboard + Mouse Bridge
 
 A modern BLE mouse and BLE keyboard are connected via a custom ESP32 firmware bridge.
-Projekt: https://github.com/falco81/BLE-RS232-Bridge a https://github.com/falco81/BLE-PS2-USB-Bridge
+Projects: https://github.com/falco81/BLE-RS232-Bridge and https://github.com/falco81/BLE-PS2-USB-Bridge
 
 Two wiring variants are available:
 
@@ -3642,7 +3709,7 @@ Protocol MZ (IntelliMouse with scroll wheel) — requires CTMOUSE ≥ 3.4.
 
 CTMOUSE parameters for RS232 mouse:
 ```bat
-CTMOUSE /R2       (citlivost, hodnoty 1-9)
+CTMOUSE /R2       (sensitivity, values 1-9)
 CTMOUSE /U        (unload)
 CTMOUSE           (reload — re-reads protocol after change)
 ```
@@ -3659,7 +3726,7 @@ PS/2 mouse: Explorer protocol (4-byte, scroll wheel, Back, Forward buttons), aut
 GPIO pinout (both variants):
 ```
 KB CLK  = GPIO19    KB DATA  = GPIO18
-MS CLK  = GPIO16    MS DATA  = GPIO17   (jen varianta B)
+MS CLK  = GPIO16    MS DATA  = GPIO17   (Variant B only)
 ```
 
 ### Common features
@@ -3669,7 +3736,7 @@ MS CLK  = GPIO16    MS DATA  = GPIO17   (jen varianta B)
 - NVS storage — MAC address persists across reboots
 - Configuration via Serial console (115200 baud): `scan`, `connect <mac>`, `forget`, `status`
 - DPI scaling: `scale <1-64>` (default 4 for 1600 DPI mouse)
-- Y-osa inverze: `flipy`, scroll inverze: `flipw`
+- Y-axis inversion: `flipy`, scroll inversion: `flipw`
 - Keyboard shortcuts: LCtrl+LAlt+PrtSc = battery %, LCtrl+LAlt+LShift+PrtSc = full status
 
 ### MSD report — actual state
