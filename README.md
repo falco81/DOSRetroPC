@@ -68,23 +68,26 @@
 | Super IO | ITE8679/8680 | — | — |
 | Video | ATI Rage 3D Pro (Rage PRO) | PCI | 4 MB DRAM, BIOS BK3.9.0/3.081, VBE 2.0 |
 | 3D Accelerator | 3dfx Voodoo2 | PCI | FBI Rev4, 4 MB FB + 2×4 MB TMU |
-| Sound Card | Creative Sound Blaster AWE32 CT3900 | ISA | DSP 4.16, port 220h, IRQ 5, DMA 1/5, 512 KB DRAM |
-| GUS / MIDI Card | PicoGUS v2.0 | ISA | port 240h, IRQ 7, DMA 3, MPU-401 300h |
-| SF2 / GM Synth | Serdaco WP32 McCake (mt32-pi, CM4) | Waveblaster header | port 300h |
-| McCake Panel | Serdaco MT32Pi Drive Bay Panel 5.25" + OLED | 5.25" bay | — |
+| Sound Card | Creative Sound Blaster AWE32 CT3900 | ISA | DSP 4.16, port 220h, IRQ 5, DMA 1/5, MPU-401 330h, 512 KB DRAM |
+| GUS / MIDI Card | PicoGUS v2.0 | ISA | port 240h, IRQ 7, DMA 3, MPU-401 330h |
+| SF2 / GM Synth | Serdaco WP32 McCake (mt32-pi, CM4) | Waveblaster header | port 330h (via PicoGUS) |
+| McCake Panel | Serdaco MT32Pi Drive Bay Panel 5.25" + OLED | 5.25" bay | **pending delivery** |
 | SSD | Verbatim Vi560 S3 256 GB | IDE (via Ableconn IDE40-SAT) | FW: SN21794, S/N: 493626018370372 |
 | CD-ROM | LG HL-DT-ST DVDRAM GH22NS40 | IDE secondary master | FW: NL01, driver: SSCDROM.SYS |
 | PicoIDE Deluxe | polpo PicoIDE (RP2350) | IDE | **pending delivery** — will be added alongside LG drive |
 | NIC | 3Com 3C905C-TX EtherLink XL 10/100 | **PCI** | — |
 | Floppy A: | Gotek SFR1M44-U100K (USB floppy emulator) | 3.5" floppy konektor | 2 buttons + LED numeric display, FlashFloppy firmware |
-| Floppy B: | Physical 3.5" 1.44 MB drive (planned) | 3.5" floppy connector | — |
+| Floppy B: | Physical 3.5" 1.44 MB drive | 3.5" floppy connector | instalováno |
 | Mouse + Keyboard | Modern BLE mouse + BLE keyboard via ESP32 BLE bridge | PS/2 or RS232 | see BLE Bridge section |
 | Monitor | Fujitsu-Siemens (w9/2009) | VGA | 38×30 cm, H: 30–83 kHz, V: 56–75 Hz |
-| MIDI module 1 | Roland SC-55 | MIDI chain (first) | AWE32 MPU-401 port 330h |
-| MIDI module 2 | Roland MT-32 | MIDI chain (THRU from SC-55) | — |
+| MIDI module 1 | Roland MT-32 original | MIDI splitter (from PicoGUS) | CH 7+8 on mixer |
+| MIDI module 2 | Roland SC-55 MK2 original | MIDI splitter (from PicoGUS) | CH 9+10 on mixer |
+| MIDI module 3 | Roland SC-88 Pro original | MIDI splitter (from PicoGUS) | CH 11+12 on mixer |
+| GM Synth (ext.) | MT32-pi (SF2) — Serdashop | MIDI splitter (from PicoGUS) | CH 5+6 on mixer |
+| MIDI Splitter | CME WIDI Thru6 BT | MIDI (1-in / 5-out wired + BT) | napájení USB-C |
 | Mixer | Behringer XENYX QX1222USB | USB | — |
 | Headphones | Audio-Technica ATH-M50x | QX1222USB Phones jack | — |
-| Audio Interface | Focusrite Scarlett 16i16 4th Gen | USB (modern PC) | — |
+| Second PC | Windows XP PC | QX1222USB 2-TR input | — |
 
 ---
 
@@ -390,7 +393,7 @@ REM 1. Confirm BLASTER variable is set correctly:
 SET BLASTER
 
 REM Expected output:
-REM   BLASTER=A220 I5 D1 H5 P330 E620 T6
+REM   BLASTER=A220 I5 D1 H5 P300 E620 T6
 
 REM 2. Check memory — UNISOUND should show no footprint:
 MEM /C | MORE
@@ -414,7 +417,7 @@ If boot shows `DIGN9003` error or UNISOUND fails:
 **None required.** The BLASTER variable and all drivers remain identical:
 
 ```bat
-SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+SET BLASTER=A220 I5 D1 H5 P300 E620 T6
 ```
 
 UNISOUND.COM replaces CTCM.EXE — CT3900 is initialized automatically at boot.
@@ -1157,46 +1160,53 @@ MPU GAME.EXE     ← launches game with McCake on port 300h
 
 | QX1222USB Channel | Source | Signal |
 |---|---|---|
-| CH 1 (MONO) | — | empty |
-| CH 2 (MONO) | — | empty |
-| CH 3 (MONO) | MT-32 Left | PAN fully left |
-| CH 4 (MONO) | MT-32 Right | PAN fully right |
-| CH 5+6 (STEREO) | Roland SC-55 | stereo |
-| CH 7+8 (STEREO) | — | reserved — second PC (Windows XP) |
-| CH 9+10 (STEREO) | PicoGUS | GUS music + X16GS synth |
-| CH 11+12 (STEREO) | AWE32 CT3900 | SB16 sound effects + real OPL3 FM |
+| CH 1 (MONO) | PicoGUS Left | PAN fully left |
+| CH 2 (MONO) | PicoGUS Right | PAN fully right |
+| CH 3 (MONO) | AWE32 CT3900 Left | PAN fully left |
+| CH 4 (MONO) | AWE32 CT3900 Right | PAN fully right |
+| CH 5+6 (STEREO) | MT32-pi (SF2) — external | stereo |
+| CH 7+8 (STEREO) | Roland MT-32 original | stereo |
+| CH 9+10 (STEREO) | Roland SC-55 MK2 original | stereo |
+| CH 11+12 (STEREO) | Roland SC-88 Pro original | stereo |
+| 2-TR (STEREO) | Second PC — Windows XP | stereo |
 | PHONES | Audio-Technica ATH-M50x | headphone monitoring |
-| MAIN OUT (XLR) | → Focusrite Scarlett 16i16 | → modern PC + studio monitors |
+| MAIN OUT (XLR) | → recording / monitors | — |
 
 ### Signal Flow
 
 ```
-MT-32 L        ──────────────────────► CH 3 (PAN left)  ─┐
-MT-32 R        ──────────────────────► CH 4 (PAN right) ─┤
-SC-55 stereo   ──────────────────────► CH 5+6           ─┤
-PicoGUS stereo ──────────────────────► CH 9+10          ─┼──► MAIN MIX ──► MAIN OUT (XLR)
-AWE32 stereo   ──────────────────────► CH 11+12         ─┤         │
-(second PC)    ──────────────────────► CH 7+8           ─┘         │
-                                                                   │
-                                                 ATH-M50x ◄── PHONES
-                                                                   │
-                                        Focusrite 16i16 ◄── MAIN OUT
-                                        (studio monitors + recording)
+PicoGUS L      ──────────────────────► CH 1 (PAN left)   ─┐
+PicoGUS R      ──────────────────────► CH 2 (PAN right)  ─┤
+AWE32 L        ──────────────────────► CH 3 (PAN left)   ─┤
+AWE32 R        ──────────────────────► CH 4 (PAN right)  ─┤
+MT32-pi SF2    ──────────────────────► CH 5+6            ─┤
+MT-32 orig.    ──────────────────────► CH 7+8            ─┼──► MAIN MIX ──► MAIN OUT (XLR)
+SC-55 MK2      ──────────────────────► CH 9+10           ─┤         │
+SC-88 Pro      ──────────────────────► CH 11+12          ─┤         │
+Second PC (XP) ──────────────────────► 2-TR              ─┘         │
+                                                                    │
+                                                  ATH-M50x ◄── PHONES
 ```
 
 ### MIDI Hardware Chain
 
 ```
-AWE32 gameport MIDI OUT (port 330h)
+PicoGUS MIDI OUT (port 300h / 330h)
         │
         ▼
-    SC-55 MIDI IN
-        │
-    SC-55 MIDI THRU
-        │
-        ▼
-    MT-32 MIDI IN
+  CME WIDI Thru6 BT
+  (2-in / 6-out, Bluetooth 5, 32-bit, USB-C napájení)
+    ┌───┼───┬───────┐
+    │   │   │       │
+    ▼   ▼   ▼       ▼
+ MT32-pi  MT-32  SC-55 MK2  SC-88 Pro
+ (SF2)   orig.   orig.      orig.
+ CH 5+6  CH 7+8  CH 9+10   CH 11+12
 ```
+
+AWE32 nemá MIDI výstup připojený — gameport není použit pro MIDI.
+McCake (WP32) — interní wavetable na PicoGUS wavetable headeru, aktivní v MPU profilech.
+CME WIDI Thru6 BT podporuje i Bluetooth MIDI (BLE 5, 3ms latency, dosah 20m) — lze připojit iOS/Android/PC bezdrátově.
 
 ### Mixer Operation — which faders to raise
 
@@ -1204,14 +1214,15 @@ The QX1222USB has no mute buttons on stereo channels — use the faders.
 AWE32 (CH11+12) is almost always up for sound effects.
 Adjust the music source channel depending on the game.
 
-| Game type | CH 3+4 MT-32 | CH 5+6 SC-55 | CH 9+10 PicoGUS | CH 11+12 AWE32 |
-|---|---|---|---|---|
-| MT-32 games | **UP** | down | down | up (effects) |
-| GM/GS games — SC-55 | down | **UP** | down | up (effects) |
-| GUS games | down | down | **UP** | up (effects) |
-| AWE32 native games | down | down | down | **UP** (all) |
-| GM/GS — X16GS (PicoGUS) | down | down | **UP** | up (effects) |
-| OPL3/AdLib only | down | down | down | **UP** (all) |
+| Game type | CH 1+2 PicoGUS | CH 3+4 AWE32 | CH 5+6 MT32-pi | CH 7+8 MT-32 | CH 9+10 SC-55 | CH 11+12 SC-88 |
+|---|---|---|---|---|---|---|
+| MT-32 games | down | up (FX) | down | **UP** | down | down |
+| GM/GS — SC-55 | down | up (FX) | down | down | **UP** | down |
+| GM/GS — SC-88 Pro | down | up (FX) | down | down | down | **UP** |
+| GM — MT32-pi SF2 | down | up (FX) | **UP** | down | down | down |
+| GUS games | **UP** | up (FX) | down | down | down | down |
+| AWE32 native | down | **UP** (all) | down | down | down | down |
+| OPL3/AdLib only | down | **UP** (all) | down | down | down | down |
 
 ---
 
@@ -1223,9 +1234,9 @@ Adjust the music source channel depending on the game.
 | Device | Port | IRQ | DMA | Type |
 |---|---|---|---|---|
 | AWE32 SB16 | 220h | 5 | 1 / 5 | Sound effects, real OPL3 |
-| AWE32 MPU-401 | 330h | 5 | — | MIDI out → SC-55 → MT-32 |
+| AWE32 MPU-401 | 300h | 5 | — | nepřipojeno — gameport nepoužit |
 | PicoGUS GUS | 240h | 7 | 3 | GUS music |
-| PicoGUS MPU-401 | 300h | 7 | — | MIDI → X16GS internal synth |
+| PicoGUS MPU-401 | 330h | 7 | — | McCake (wavetable) + MIDI splitter → MT-32/SC-55/SC-88/MT32-pi |
 
 ---
 
@@ -1914,7 +1925,7 @@ REM P330=MPU-401 port (SC-55/MT-32 chain), E620=EMU8000, T6=SB16/AWE type
 REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
 REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
-SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+SET BLASTER=A220 I5 D1 H5 P300 E620 T6
 SET MIDI=SYNTH:1 MAP:E MODE:0
 
 REM --- PicoGUS / Gravis UltraSound settings ---
@@ -2353,7 +2364,7 @@ REM P330=MPU-401 port (SC-55/MT-32 chain), E620=EMU8000, T6=SB16/AWE type
 REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
 REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
-SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+SET BLASTER=A220 I5 D1 H5 P300 E620 T6
 SET MIDI=SYNTH:1 MAP:E MODE:0
 
 REM --- PicoGUS / Gravis UltraSound settings ---
@@ -2861,7 +2872,7 @@ ECHO.
 ## Environment Variables Reference
 
 ```bat
-SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+SET BLASTER=A220 I5 D1 H5 P300 E620 T6
   A220  = SB16 base port 220h
   I5    = IRQ 5
   D1    = DMA 1 (8-bit)
@@ -3708,45 +3719,131 @@ Replaces a physical 3.5" floppy drive — connects to the standard 3.5" floppy c
 ## USBODE — USB Optical Drive Emulator
 
 **Project:** `https://github.com/danifunker/usbode-circle`
+**Current version:** v2.20.3 (February 2026)
+**Discord:** `https://discord.gg/8qfuuUPBts`
 
-USBODE turns a Raspberry Pi Zero 2W into a USB CD-ROM drive emulator for retro PCs. It connects via a single micro USB cable which carries both data and power. The Pi presents itself to the PC as a standard USB CD-ROM device (Mode 1) or as a USB mass storage device (Mode 2). ISO images are stored on the Pi's micro SD card and switched via a WiFi web interface or optionally via a hardware HAT.
+USBODE turns a Raspberry Pi into a virtual USB CD-ROM drive for retro PCs. It connects via USB cable which carries both data and power. Disk images are stored on the Pi's micro SD card and switched via a WiFi web interface or optionally a hardware HAT with display and buttons.
 
-### Hardware
+### Supported Hardware
 
-| Component | Description |
+| Model | Support | Connection | Notes |
+|---|---|---|---|
+| Pi Zero (2015) | ✅ | Micro USB → USB-A | Supported as of v2.9.2 |
+| Pi Zero W (2017) | ✅ | Micro USB → USB-A | Recommended: WH model (pre-soldered headers) |
+| Pi Zero 2W (2021) | ✅ **Recommended** | Micro USB → USB-A | Best performance, multi-core |
+| Pi 3A+ (2018) | ✅ | USB-A → USB-A | Do not connect separate power — power loop risk |
+| Pi 3B / 3B+ | ❌ | — | No USB gadget mode |
+| Pi 4B (2019) | ✅ | USB-C (power port) → USB-A | All RAM configs supported |
+| Pi 400 | ❓ | — | Unknown |
+| Pi 5 (2023) | ❌ | — | USB gadget mode not supported by current dependencies |
+
+> ⚠️ **Connection ports:** Zero/Zero W/Zero 2W — use the **"USB"** micro USB port, **not** the "PWR" port. Pi 3A+ — USB-A to USB-A cable, no separate power. Pi 4B — USB-C power port to USB-A.
+
+**Power:** Pi is powered entirely from the PC's USB port via the data cable. No separate power supply needed. Pi boots and shuts down with the PC.
+
+### Required Hardware
+
+| Component | Notes |
 |---|---|
-| Raspberry Pi Zero 2W | Required — Pi Zero W also works but is too slow |
-| Micro SD card | A1 or A2 class, 32 GB or larger recommended, up to 1 TB supported |
-| Micro USB cable | Data cable (not charge-only) — carries USB data + power |
-| Pirate Audio Line Out HAT | Optional — adds Redbook CD audio output and on-device controls |
-| Waveshare 1.3" OLED HAT | Alternative — on-device controls only, no CD audio |
+| Supported Raspberry Pi | See table above |
+| Micro SD card | A1 or A2 class, 32 GB+, up to 1 TB tested |
+| USB cable | Data cable (not charge-only) — type depends on Pi model |
 
-**Power:** Pi Zero 2W is powered entirely from the PC's USB port via the data cable. It boots and shuts down with the PC. No separate power supply needed.
+### Optional HATs
 
-> ⚠️ Pi Zero 2W takes ~7-10 seconds to boot before it appears as a CD-ROM drive. Boot the PC only after the Pi is ready — use the `/w` switch in USBASPI profiles to pause and wait at prompt.
+| HAT | Features |
+|---|---|
+| Pirate Audio Line Out (PIM483) | On-device controls + **Redbook CD audio via 3.5mm jack** — recommended |
+| Waveshare 1.3" OLED HAT | On-device controls only, no CD audio — requires `config.txt` change |
+| IQaudio DAC+ | CD audio, reported working — requires Pi Zero without headers |
+| HDMI audio | Requires HDMI cable + audio splitter + dummy plug — ~$30 extra hardware |
 
-> ⚠️ Only Pi Zero W and Pi Zero 2W support USB device (gadget) mode required by USBODE. Pi 3B, Pi 4B, Pi 5 have only USB host ports and cannot be used.
+### Supported Image Formats
 
-**PIIX4 USB controller:** Intel 82371AB PIIX4, UHCI, I/O=6400h-641Fh, IRQ 11, USB 1.1 Full Speed (12 Mbit/s).
+| Format | Notes |
+|---|---|
+| `.ISO` | Standard — fully supported |
+| `.BIN/.CUE` | Files must have identical base name. Multi-bin CUEs not supported — convert to CHD first |
+| `.MDS/.MDF` | Files must have identical base name |
+| `.CHD` | Supported, ~50% performance of BIN/CUE. Better compression with `-f -c cdzs,cdfl -hs 9792` (MAME 280+) |
+| `.dvd.iso` | Add `.dvd` extension for DVD images that must be detected as DVD |
 
 ### Initial Setup
 
-1. Download latest USBODE Circle release from `https://github.com/danifunker/usbode-circle`
-2. Flash image to micro SD card using Raspberry Pi Imager
-3. Configure WiFi in `wpa_supplicant.conf` on the SD card (2.4 GHz only)
-4. Place `.ISO` files in the `/IMGSTORE/` folder on the SD card
-5. Connect Pi Zero 2W to PC USB port via micro USB cable
-6. Pi boots in ~7-10 seconds and appears as CD-ROM drive
+1. Download latest `.img` from `https://github.com/danifunker/usbode-circle/releases`
+   - Pi Zero W (not 2W): use 32-bit build
+   - All other supported Pis: either 32-bit or 64-bit (32-bit more tested)
+2. Flash image to SD card using Raspberry Pi Imager (Choose OS → Use Custom)
+3. Open `bootfs` volume on SD card, edit `wpa_supplicant.conf`:
+   - Set `country=` to your two-letter country code
+   - Set `ssid=` to your 2.4 GHz WiFi network name
+   - Set `psk=` to your WiFi password
+4. Safely eject SD card, insert into Pi
+5. Connect Pi to PC USB port — Pi boots in ~7-10 seconds
+6. Copy `.ISO` and other image files to the `IMGSTORE` volume on SD card
+
+### Initial Setup — PIIX4 USB Speed Note
+
+PIIX4 (Rhino 15) is USB 1.1 Full Speed only. After USBODE is running, open the web interface, go to **Configuration → USB Configuration** and set USB speed to **Full Speed (USB 1.1)**. This prevents USBODE from attempting High Speed negotiation which PIIX4 cannot complete.
+
+### Web Interface
+
+Access via browser: `http://usbode` or `http://usbode.local` or `http://<IP address>`
+
+| Function | Location |
+|---|---|
+| Switch disk image | Main page — click image name |
+| USB speed (Full/High Speed) | Configuration → USB Configuration |
+| HAT type | Configuration → Display Configuration |
+| Audio output mode | Configuration → Audio Configuration |
+| CD audio test | Configuration → Audio Test |
+| FTP image upload | Connect FTP client (port 21, anonymous) → navigate to `1:/` |
+| Logging | Configuration → Logging Configuration |
+| Shutdown | Main page → Shutdown USBODE |
+
+### Adding Images
+
+Three methods to copy images to IMGSTORE:
+
+1. **Eject SD card** from Pi, connect directly to PC — fastest method
+2. **FTP** — FTP client (port 21, anonymous login) → `1:/` directory
+3. **Win98SE browser** — web interface supports file upload from browser
+
+> ⚠️ Do not delete `image.iso` from IMGSTORE — it is required as a fallback.
+
+### Folder Support (v2.19.0+)
+
+Images can be organized into subdirectories on IMGSTORE. Max path 512 characters. Web interface has a "Flattened folders" toggle to list all images on one screen regardless of folder structure.
+
+### Disc Artwork
+
+Place a 240×240 px JPG with the same base name as the image file in the same folder. Example: `mygame.iso` → `mygame.jpg`. Shown in web interface and on ST7789 HAT screen.
+
+Companion tool for artwork download: `https://github.com/danifunker/ODE-artwork-downloader`
+
+### Redbook CD Audio — Pirate Audio HAT
+
+Connect 3.5mm jack from Pirate Audio HAT to sound card Line-In or mixer. For internal connection use a 4-pin CD audio cable (MPC-2 connector) wired to a TRS adapter:
+
+```
+Yellow (TRS) → White (CD Audio L)
+Red (TRS)    → Red   (CD Audio R)
+Black (TRS)  → Black (CD Audio GND)
+```
+
+After connecting, test with the `usb-audio-sampler` image included on IMGSTORE — play track 2 in Win98SE CD Player.
+
+### Upgrading USBODE
+
+Download from latest release: `sysupgrade.tar`, `sysupgrade.crc` (+ 64-bit variants). Copy to root of `bootfs` partition, reboot. Update takes < 5 minutes. Requires v2.14.0+ for Pirate Audio, v2.18.3+ for Waveshare.
 
 ---
 
-### Mode 1 — CD-ROM Emulation
+### Mode 1 — CD-ROM Emulation (DOS)
 
-Pi presents itself as a standard ATAPI USB CD-ROM drive. DOS loads it via `USBASPI.EXE` (Panasonic ASPI manager) + `USBCD1.SYS` (Panasonic USB CD-ROM driver), both in `C:\DRIVERS\USBCD\`.
+Pi presents itself as a standard ATAPI USB CD-ROM drive. DOS loads it via `USBASPI.EXE` + `USBCD1.SYS`, both in `C:\DRIVERS\USBCD\`.
 
-**PIIX4 UHCI parameters used:** `/u` (UHCI only), `/w` (pause after init), `/v` (verbose).
-
-Verbose output from `USBASPI.EXE` confirms controller detection:
+**PIIX4 UHCI — confirmed output from USBASPI verbose mode:**
 ```
 Controller: 00-07-2 VID=8086h PID=7112h (0000h-0000h) UHCI
             I/O=6400h-641Fh
@@ -3756,24 +3853,20 @@ Controller: 00-07-2 VID=8086h PID=7112h (0000h-0000h) UHCI
 
 | Profile | Memory | Sound | Description |
 |---|---|---|---|
-| `UBSNM` | NOEMS 607KB | SoftMPU + GUS | Everyday use, MT-32 games |
-| `UBSNS` | NOEMS 607KB | No SoftMPU | AWEUTIL /EM emulation |
-| `UBSNMP` | NOEMS 607KB | MPU-401 | McCake GM/MT-32 via port 300h |
-| `UBSEM` | EMS 595KB | SoftMPU + GUS | DOS extender games |
-| `UBSNES` | EMS 595KB | No SoftMPU | AWEUTIL /EM + DOS extenders |
-| `UBSEMP` | EMS 595KB | MPU-401 | McCake + DOS extenders |
+| `UBSNM` | NOEMS 607 KB | SoftMPU + GUS | Everyday use, MT-32 games |
+| `UBSNS` | NOEMS 607 KB | No SoftMPU | AWEUTIL /EM emulation |
+| `UBSNMP` | NOEMS 607 KB | MPU-401 | McCake GM/MT-32 via port 300h |
+| `UBSEM` | EMS 595 KB | SoftMPU + GUS | DOS extender games |
+| `UBSNES` | EMS 595 KB | No SoftMPU | AWEUTIL /EM + DOS extenders |
+| `UBSEMP` | EMS 595 KB | MPU-401 | McCake + DOS extenders |
 
-**Image switching** (without rebooting): via WiFi web interface — accessible from any browser including Win98SE with IE6. Navigate to Pi's IP address shown on OLED display or obtained from router DHCP.
-
-**Redbook CD audio:** requires Pirate Audio Line Out HAT. Audio output via 3.5mm jack on the HAT — connect to mixer or sound card CD-IN.
-
-**CONFIG.SYS drivers loaded in Mode 1 profiles:**
+**CONFIG.SYS (all Mode 1 profiles):**
 ```
 DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI.EXE /u /w /w
 DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:USBCD0
 ```
 
-**AUTOEXEC.BAT CD-ROM line in Mode 1 profiles:**
+**AUTOEXEC.BAT (all Mode 1 profiles):**
 ```bat
 LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
 ```
@@ -3783,167 +3876,90 @@ LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
 | File | Description |
 |---|---|
 | `USBASPI.EXE` | Panasonic ASPI Manager for USB mass-storage v2.28 |
-| `USBASPI.SYS` | Alternate version (same driver, .SYS extension) |
-| `USBASPI.OLD` | Older v2.27 — rename to USBASPI.SYS to use |
-| `USBCD1.SYS` | Panasonic USB CD-ROM Device Driver v1.0 |
+| `USBASPI.SYS` | Same driver, .SYS extension variant |
+| `USBASPI.OLD` | Older v2.27 — rename to use as alternative |
+| `USBCD1.SYS` | Panasonic USB CD-ROM Device Driver v1.0 — recommended |
 | `USBCD2.SYS` | TEAC USB CD-ROM Device Driver |
 | `USBCD3.SYS` | ASUSTeK USB CD-ROM Device Driver |
 | `DI1000DD.SYS` | Novac ASPI Mass Storage Device Driver (Mode 2 fallback) |
 | `ASPIDISK.SYS` | Adaptec ASPI Disk Driver (Mode 2 fallback) |
 
-**USBASPI compatibility note:** USBASPI 2.28 with PIIX4 UHCI correctly detects the controller at I/O=6400h but reports `Target USB device not found` for modern USB 2.0/3.0 flash drives. This is because PIIX4 is USB 1.1 Full Speed only — modern flash drives attempt High Speed (USB 2.0) negotiation which PIIX4 cannot provide. USBODE Pi Zero 2W works correctly because it properly enumerates as a Full Speed USB 1.1 device.
+**USBASPI compatibility note:** USBASPI 2.28 correctly finds PIIX4 UHCI at I/O=6400h but reports `Target USB device not found` for modern USB 2.0/3.0 flash drives. This is a USB 1.1 / High Speed compatibility issue — modern drives attempt High Speed negotiation which PIIX4 cannot satisfy. USBODE Pi Zero 2W works correctly because it properly enumerates as Full Speed USB 1.1. **Set USBODE USB speed to Full Speed in web interface.**
 
 ---
 
-### Mode 2 — USB Mass Storage
+### Mode 2 — USB Mass Storage (DOS)
 
-Pi presents itself as a USB mass storage device. The SD card's `IMGSTORE` partition appears as a DOS drive letter, allowing ISO files to be copied directly from DOS without removing the SD card.
+Pi presents its SD card IMGSTORE partition as a DOS drive letter. Used for transferring ISO files to USBODE without removing the SD card.
 
 **Driver stack: Bret Johnson DOSUSB** — `C:\DRIVERS\USBDOS\`
-
-This driver set is specifically designed for Intel/VIA UHCI controllers and supports hotswap — USB drives can be plugged and unplugged without rebooting.
-
-**Files in C:\DRIVERS\USBDOS\:**
-
-| File | Description |
-|---|---|
-| `USBUHCIL.COM` | UHCI TSR (lite version, 30KB RAM, max 16 devices) |
-| `USBUHCIL.OVL` | Overlay — **must be in same directory** as USBUHCIL.COM |
-| `USBUHCI.COM` | Full UHCI TSR (43KB RAM, more devices) — alternative to USBUHCIL |
-| `USBUHCI.OVL` | Overlay for USBUHCI.COM |
-| `USBDRIVE.COM` | Mass storage driver — assigns DOS drive letters |
-| `USBDEVIC.COM` | Shows all connected USB devices and their status |
-| `USBHOSTS.COM` | Shows USB host controllers detected by USBUHCIL |
-
-> ⚠️ `USBUHCIL.OVL` must be present in the same directory as `USBUHCIL.COM`. Without it, USBUHCIL.COM will not start.
+Specifically designed for Intel/VIA UHCI controllers. Supports hotswap.
 
 **Boot profiles for Mode 2:**
 
 | Profile | Memory | Sound | Description |
 |---|---|---|---|
-| `UBSSTM` | NOEMS 607KB | SoftMPU + GUS | USB mass storage, no CD emulation |
-| `UBSSTEM` | EMS 595KB | SoftMPU + GUS | USB mass storage + DOS extenders |
+| `UBSSTM` | NOEMS 607 KB | SoftMPU + GUS | USB mass storage |
+| `UBSSTEM` | EMS 595 KB | SoftMPU + GUS | USB mass storage + DOS extenders |
 
-**What loads in Mode 2 profiles:**
-
-CONFIG.SYS — no USB device drivers (DOSUSB is TSR-based, not CONFIG.SYS based):
+**CONFIG.SYS (Mode 2 profiles):** No USB device drivers — DOSUSB is TSR-based.
 ```
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 ```
 
-AUTOEXEC.BAT — USBUHCIL loaded as TSR with legacy warning suppressed:
+**AUTOEXEC.BAT (Mode 2 profiles):**
 ```bat
 LH C:\DRIVERS\USBDOS\USBUHCIL.COM DisableLegacySupport
 ```
+`DisableLegacySupport` suppresses the BIOS USB keyboard warning at every boot.
 
-`DisableLegacySupport` suppresses the BIOS USB keyboard warning that appears when BIOS has USB Legacy Support enabled. Without this switch the driver prompts at every boot asking if you really want to load the USB driver.
+**Files in C:\DRIVERS\USBDOS\:**
 
-**Mounting a drive after boot:**
+| File | Description |
+|---|---|
+| `USBUHCIL.COM` | UHCI TSR lite (30 KB RAM, max 16 devices) — Intel/VIA UHCI only |
+| `USBUHCIL.OVL` | **Required overlay — must be in same directory as USBUHCIL.COM** |
+| `USBUHCI.COM` | Full UHCI TSR (43 KB RAM) — alternative to USBUHCIL |
+| `USBUHCI.OVL` | Overlay for USBUHCI.COM |
+| `USBDRIVE.COM` | Mass storage driver — assigns DOS drive letters |
+| `USBDEVIC.COM` | Shows connected USB devices and status |
+| `USBHOSTS.COM` | Shows USB host controllers detected by USBUHCIL |
+
+> ⚠️ `USBUHCIL.OVL` must be present in the same directory. Without it USBUHCIL.COM will not start.
+
+**Mounting (run after boot):**
 ```bat
-USBMNT        (run script, plug in device, wait 3-5s, press Enter)
+USBMNT
 ```
-
-USBDRIVE is called with minimal parameters to reserve exactly 1 drive letter:
-```bat
-C:\DRIVERS\USBDOS\USBDRIVE.COM /Devices:1 /Disks:1 /Drives:1
-```
-
-`/Devices:1` = max 1 USB device (default 4, saves 228 bytes RAM per extra slot)
-`/Disks:1` = max 1 LUN/partition (default 8, saves 1414 bytes RAM)
-`/Drives:1` = max 1 drive letter assigned (default 8 — without this, DOS gets 6-8 extra letters)
+Calls `USBDRIVE /Devices:1 /Disks:1 /Drives:1` — reserves exactly 1 device slot, 1 LUN, 1 drive letter. Without `/Drives:1` DOS receives 6-8 extra phantom drive letters.
 
 **Flash drive compatibility with PIIX4 USB 1.1:**
-Modern USB 2.0/3.0 flash drives often fail to enumerate on PIIX4 UHCI. They attempt High Speed negotiation (USB 2.0, 480 Mbit/s) which the USB 1.1 controller cannot satisfy. Workarounds: use an older flash drive (2-4 GB, pre-2008 era), or use the USBODE Pi Zero 2W SD card directly in Mode 2 — the Pi correctly presents as Full Speed USB 1.1.
-
----
-
-### DOS Scripts — C:\DRIVERS\SCRIPTS\
-
-#### USBMNT.BAT
-
-```bat
-@ECHO OFF
-REM USBMNT.BAT - Mount USB mass storage device
-REM Usage: USBMNT
-REM Requires: USBUHCIL loaded (profiles UBSSTM / UBSSTEM)
-REM Driver: Bret Johnson DOSUSB - C:\DRIVERS\USBDOS\
-
-ECHO.
-ECHO  === USB Mass Storage - Mount ===
-ECHO  Plug in USB device NOW, then press Enter.
-ECHO  Wait 3-5 seconds after plugging in.
-ECHO.
-C:\DRIVERS\USBDOS\USBDRIVE.COM /Devices:1 /Disks:1 /Drives:1
-ECHO.
-ECHO  Done. Check drive letters with: DIR E:  DIR F:  etc.
-ECHO  To verify device: USBCHCK
-ECHO.
-```
-
-#### USBCHCK.BAT
-
-```bat
-@ECHO OFF
-REM USBCHCK.BAT - Show connected USB devices
-REM Usage: USBCHCK
-REM Requires: USBUHCIL loaded (profiles UBSSTM / UBSSTEM)
-
-ECHO.
-ECHO  === USB Devices - Status ===
-ECHO.
-C:\DRIVERS\USBDOS\USBDEVIC.COM
-ECHO.
-```
-
-#### USBUMNT.BAT
-
-```bat
-@ECHO OFF
-REM USBUMNT.BAT - Safe to unplug USB drive
-REM USBDRIVE stays in memory (blocked by CTMOUSE - cannot uninstall)
-REM Just stop using the drive before unplugging
-
-REM C:\DRIVERS\USBDOS\USBDRIVE.COM Uninstall
-REM Uninstall is disabled - CTMOUSE loads after USBDRIVE and blocks it.
-REM Calling Uninstall with a blocking TSR causes EMM386 error and system reset.
-REM To unload: reboot. Hotswap works without unloading - just swap the drive.
-
-ECHO.
-ECHO  === USB Mass Storage - Safe Unplug ===
-ECHO.
-ECHO  Make sure all files are closed and
-ECHO  no programs are reading the USB drive.
-ECHO.
-ECHO  It is now safe to unplug the USB device.
-ECHO  To remount: USBMNT
-ECHO.
-```
+Modern USB 2.0/3.0 flash drives often fail to enumerate — they attempt High Speed negotiation which PIIX4 cannot satisfy. Workarounds:
+- Use older flash drive (2-4 GB, pre-2008 era)
+- Use USBODE Pi Zero 2W SD card directly in Mode 2 — Pi correctly presents as Full Speed USB 1.1
 
 ---
 
 ### Hotswap Workflow
 
 **First mount:**
-1. Boot into `UBSSTM` or `UBSSTEM` profile
+1. Boot into `UBSSTM` or `UBSSTEM`
 2. `USBUHCIL.COM DisableLegacySupport` loads automatically from AUTOEXEC.BAT
-3. Run `USBMNT` — plug in USB device, wait 3-5 seconds, press Enter
-4. Drive letter assigned automatically (first free letter after existing drives)
+3. Run `USBMNT` — plug in USB device, wait 3-5 s, press Enter
+4. Drive letter assigned automatically (first free after existing drives)
 
-**Swap drive (without reboot):**
+**Swap drive (no reboot needed):**
 1. Close all files and programs using the USB drive
 2. Pull the USB drive
-3. Insert new USB drive — USBDRIVE detects it automatically in background
-4. Wait 3-5 seconds
-5. Run `USBMNT` again — drive letter reassigned
+3. Insert new drive — USBDRIVE detects it automatically in background
+4. Wait 3-5 seconds, run `USBMNT` again
 
 **Safe unplug:**
-1. Run `USBUMNT` — reads reminder message
-2. Close all files if not already done
-3. Pull USB drive
+Run `USBUMNT` — reminder message only, USBDRIVE stays in memory (see note below).
 
 **Why Uninstall does not work:**
-CTMOUSE loads after USBDRIVE in AUTOEXEC.BAT. CTMOUSE uses standard interrupt vectors and blocks USBDRIVE from uninstalling itself (TSR ordering — a TSR can only uninstall if no other TSR installed after it). Calling `USBDRIVE Uninstall` with CTMOUSE blocking causes an EMM386 protected mode conflict and immediate system reset. The commented-out `Uninstall` line in USBUMNT.BAT is preserved for reference. To fully unload USBDRIVE from memory, reboot.
+CTMOUSE loads after USBDRIVE in AUTOEXEC.BAT. CTMOUSE does not use IBM Interrupt Sharing Protocol and blocks USBDRIVE from uninstalling (TSR ordering rule). Calling `USBDRIVE Uninstall` with a blocking TSR causes an EMM386 protected mode conflict and immediate system reset. To fully unload USBDRIVE, reboot. Hotswap works without unloading.
 
 ---
 
@@ -4185,6 +4201,235 @@ If SCANREG /RESTORE does not work — boot from Win98SE CD or boot disk and rest
 - CD-ROM (LG GH22NS40) — UDMA/33 will improve read speed and reduce CPU load during CD playback
 
 ---
+
+---
+
+# MIDI Synthesizer Reference
+
+> Všechny moduly jsou připojeny přes **CME WIDI Thru6 BT** (MIDI splitter) na MIDI OUT z PicoGUS.
+> Každý modul přijímá všechny kanály současně — hru přepínáš výběrem správného kanálu v nastavení hry.
+
+---
+
+## Roland MT-32 (original)
+
+**Typ:** LA syntezátor (Linear Arithmetic), 1987  
+**Polyfonie:** 32 hlasů, 8 partů + rytmus  
+**Kanály:** MIDI 2–9 (part 1–8), kanál 10 = rytmus  
+**Výstup:** CH 7+8 na mixpultu
+
+### Ovládání panelu
+
+| Tlačítko | Funkce |
+|---|---|
+| PART 1–8 | Výběr partu (zobrazí nastavení) |
+| RHYTHM PART | Výběr rytmické sady |
+| MASTER VOLUME | Zobrazí hlasitost — otočit SELECT/VOLUME |
+| SOUND GROUP + MASTER VOLUME | Nastaví reverb (0–10) |
+| SOUND GROUP + PART | Nastaví timbr partu |
+
+### Speciální módy / reset
+
+```
+Factory reset (vymaže user timbry):
+  Drž MASTER VOLUME → stiskni RHYTHM PART → stiskni PART 1
+
+ROM Play (demo přehrávání, 5 skladeb):
+  Drž MASTER VOLUME při zapnutí → PART (1–5) vybere skladbu → VOLUME spustí
+  SOUND GROUP zastaví → vypnout/zapnout pro exit
+
+Reverb nastavení:
+  Drž MASTER VOLUME → stiskni SOUND GROUP → SELECT/VOLUME mění mód (0–10)
+```
+
+### Použití ve hrách
+
+Hry zasílají MT-32 reset SysEx při startu (`F0 41 10 16 12 7F 01 F7`) — MT-32 se inicializuje automaticky. Před hrou není třeba nic nastavovat. Pokud MT-32 vydává šum nebo špatné zvuky — proveď factory reset.
+
+---
+
+## Roland SC-55 MK2
+
+**Typ:** GS Sound Canvas, GM + GS standard  
+**Polyfonie:** 28 hlasů  
+**Kanály:** 1–16, kanál 10 = perkuse  
+**Výstup:** CH 9+10 na mixpultu
+
+### Ovládání panelu
+
+| Tlačítko | Funkce |
+|---|---|
+| INSTRUMENT ◄ / ► | Přepíná zobrazený part / nástroj |
+| MIDI CH ◄ / ► | Mění MIDI kanál pro zobrazení |
+| KEY SHIFT ◄ / ► | Transpozice |
+| PART ◄ / ► | Přepíná party |
+| ALL | Zobrazuje celkové info / potvrzuje akci |
+| MUTE | Ztlumí aktuální part |
+
+### Speciální módy / reset
+
+```
+Factory reset (vymaže user data):
+  Standby → drž INSTRUMENT ◄ + INSTRUMENT ► → stiskni POWER
+  Zobrazí "Init All, Sure?" → stiskni ALL → provede reset
+
+MT-32 emulační mód:
+  Drž INSTRUMENT ◄ při zapínání → stiskni ALL
+
+GS mód (výchozí):
+  Drž INSTRUMENT ► při zapínání → stiskni ALL
+
+Zjištění verze firmware:
+  Standby → drž INSTRUMENT ◄ + INSTRUMENT ► → stiskni MIDI CH ◄ + MIDI CH ►
+  Na LCD se zobrazí verze CPU ROM a Control ROM
+```
+
+### Použití ve hrách
+
+Hry posílají GS Reset SysEx (`F0 41 10 42 12 40 00 7F 00 41 F7`) — SC-55 MK2 se inicializuje automaticky. V nastavení hry vyber **Sound Canvas**, **Roland GS**, nebo **General MIDI**. SC-55 MK2 má rozšířenou sadu nástrojů oproti původnímu SC-55.
+
+---
+
+## Roland SC-88 Pro
+
+**Typ:** GS Sound Canvas Pro, GM + GS + SC-88 Map + SC-55 Map  
+**Polyfonie:** 64 hlasů, 2× 16 kanálů (Part A + Part B)  
+**Kanály:** Part A = MIDI IN A, Part B = MIDI IN B  
+**Výstup:** CH 11+12 na mixpultu
+
+### Ovládání panelu
+
+| Tlačítko / kombinace | Funkce |
+|---|---|
+| SC-55 Map | Přepne instrument mapu na SC-55 MK2 kompatibilní |
+| SC-88 Map | Přepne instrument mapu na SC-88 |
+| SELECT + ALL | Aktivuje **compatibility mode** (ALL bliká) — pak použij mapu |
+| SELECT + PART ► | GM mód |
+| SELECT + INSTRUMENT ◄ | CM-64 mód |
+| SELECT + INSTRUMENT ► | GS mód |
+| SELECT + INSTRUMENT ◄ + INSTRUMENT ► | Factory reset |
+
+### ⚠ Důležité — mapování
+
+Pouhé stisknutí SC-55 Map **NEMĚNÍ GM patche**. Jen mění mapping doplňkových nástrojů. Pro správnou SC-55 kompatibilitu:
+
+```
+1. Drž SELECT → stiskni ALL  → ALL bliká (compatibility mode)
+2. Stiskni SC-55 Map nebo SC-88 Map
+```
+
+Přepnutí mapy za běhu MIDI souboru způsobí reset parametrů → špatné zvuky. Přepínej vždy před spuštěním hry/souboru.
+
+### Speciální módy / reset
+
+```
+Factory reset:
+  Drž SELECT → stiskni INSTRUMENT ◄ + INSTRUMENT ► → stiskni ALL
+
+GM reset (z panelu):
+  Drž SELECT → stiskni PART ►
+
+GS reset (z panelu):
+  Drž SELECT → stiskni INSTRUMENT ►
+
+CM-64 mód:
+  Drž SELECT → stiskni INSTRUMENT ◄
+```
+
+### Použití ve hrách
+
+SC-88 Pro má 2 MIDI vstupy (Part A + Part B = 32 kanálů celkem). V retro hrách stačí Part A (standardní MIDI port). Pro hry vyžadující SC-88 Pro specifické zvuky — mód ponech na výchozím GS (neresetuj na SC-55 Map).
+
+---
+
+## Serdashop SF2 (external MIDI synth)
+
+**Zařízení:** [Serdashop SF2](https://www.serdashop.com/SF2) — standalone MIDI synthesizer v krabičce  
+**Hardware:** Raspberry Pi Zero 2W, 512 MB RAM, DAC PCM5xxx, 81×75×26 mm, 74 g  
+**Software:** mt32-pi (baremetal, FluidSynth) — SF2 soundfonty, volitelně MT-32 emuláce  
+**Polyfonie:** 128 hlasů, 16 MIDI kanálů  
+**Latence:** 3.9 ms (měřeno osciloskopem, woodblock, buffer 32)  
+**Výstup:** 3.5mm stereo line out → CH 5+6 na mixpultu  
+**Napájení:** USB-C, 5V 2A (doporučeno originální Raspberry Pi napájení)  
+**SD karta:** microSD, SF2 soubory do `soundfonts/`, max. 400 MB per soundfont
+
+### Přepínání soundfontů — tlačítko na zařízení
+
+SF2 má fyzické tlačítko pro přepínání mezi soundfonty uloženými na SD kartě. Stisk přepne na další SF2 v adresáři.
+
+### Ovládání — MT32-PI.EXE z DOSu
+
+Utilita `MT32-PI.EXE` od gmcn42 ovládá zařízení přes MIDI SysEx na portu PicoGUS:
+
+```bat
+REM Port — dle boot profilu: 300h (GUS profily) nebo 330h (MPU profily)
+MT32-PI.EXE -p 300 -g          přepne do SF2/FluidSynth GM módu (výchozí)
+MT32-PI.EXE -p 300 -m          přepne do MT-32 módu (pokud jsou ROM soubory na SD)
+MT32-PI.EXE -p 300 -s 0        soundfont č. 0 (první v adresáři soundfonts/)
+MT32-PI.EXE -p 300 -s 1        soundfont č. 1
+MT32-PI.EXE -p 300 -r          reboot Pi
+MT32-PI.EXE -p 300 --gm-reset  pošle GM reset SysEx
+MT32-PI.EXE -p 300 --gs-reset  pošle GS reset SysEx
+MT32-PI.EXE -p 300 --mt32-reset  pošle MT-32 reset SysEx (jen v MT-32 módu)
+MT32-PI.EXE -p 300 -b old      MT-32 Old romset (model 1987)
+MT32-PI.EXE -p 300 -b new      MT-32 New romset (model 1989+)
+MT32-PI.EXE -p 300 -b cm32l    CM-32L romset
+MT32-PI.EXE -p 300 -t "Hello"  text na display (MT-32 mód)
+```
+
+**Download:** `https://github.com/gmcn42/mt32-pi-control`  
+**Umístění:** `C:\DRIVERS\MT32PI\MT32-PI.EXE`
+
+### Soundfonty — doporučené
+
+Stažení SD obsahu: `https://serdaco.com/downloads/SF2`  
+Předinstalováno: **GeneralUser GS** (S. Christian Collins)
+
+| Soundfont | Velikost | Zaměření |
+|---|---|---|
+| GeneralUser GS (předinstalovaný) | ~31 MB | GM/GS, retro hry |
+| Roland SC-55 v3.7 (EmperorGrieferus) | ~120 MB | SC-55 emuláce |
+| Arachno | ~148 MB | moderní GM |
+
+### Použití ve hrách
+
+Výchozí mód je SF2/GM — pro většinu retro her stačí. Vyber v nastavení hry **General MIDI** nebo **Roland GS** na portu PicoGUS.
+
+```bat
+REM Workflow před GM/GS hrou:
+MT32-PI.EXE -p 300 -g --gm-reset
+
+REM Workflow před MT-32 hrou (jen pokud máš ROM na SD):
+MT32-PI.EXE -p 300 -m --mt32-reset
+```
+
+---
+
+## McCake WP32 (interní wavetable)
+
+**Zařízení:** Serdaco WP32 McCake (mt32-pi, CM4)  
+**Umístění:** Wavetable header na PicoGUS v2.0  
+**Port:** 330h (v MPU profilech)  
+**Aktivní v profilech:** MPU, MPUEMS  
+**Výstup:** přes PicoGUS → CH 1+2 na mixpultu (sdílí s GUS)
+
+### Ovládání z DOSu
+
+Stejná utilita `MT32-PI.EXE` jako pro externí MT32-pi SF2, jen na jiném portu:
+
+```bat
+MT32-PI.EXE -p 330 -m     MT-32 mód
+MT32-PI.EXE -p 330 -g     SF2/GM mód
+MT32-PI.EXE -p 330 -s 0   soundfont č. 0
+MT32-PI.EXE -p 330 -r     reboot McCake
+```
+
+Panel (Serdaco MT32Pi Drive Bay Panel 5.25") je příslušenství k McCake — **dosud nedoručen**. Po instalaci přidá fyzická tlačítka pro přepínání módů a OLED displej.
+
+### Použití ve hrách
+
+Aktivní pouze v profilech **MPU** a **MPUEMS**. PicoGUS běží v MPU-401 intelligent mode, McCake odpovídá na portu 330h. V nastavení hry vyber General MIDI nebo MT-32 na MIDI portu 330h. SoftMPU není potřeba — PicoGUS zvládá intelligent mode nativně.
+
 
 ## DreamBlaster X16GS — Alternative (module currently under repair)
 
