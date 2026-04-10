@@ -11,11 +11,11 @@ SET TELIX=C:\TOOLS\TELIX
 
 REM --- AWE32 CT3900 settings ---
 REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
-REM P330=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
+REM P300=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
 REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
 REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
-SET BLASTER=A220 I5 D1 H5 P330 E620 T6
+SET BLASTER=A220 I5 D1 H5 P300 E620 T6 
 SET MIDI=SYNTH:1 MAP:E MODE:0
 
 REM --- PicoGUS / Gravis UltraSound settings ---
@@ -39,12 +39,12 @@ REM -----------------------------------------------
 REM --- PicoGUS initialization ---
 REM Required: Windows has no PicoGUS driver - hardware must be init before WIN.COM
 REM /mode gus    = Gravis UltraSound emulation (GUS not usable in Windows)
-REM /mpuport 300 = MPU-401 on port 300h - needed for McCake under Windows
+REM /mpuport 330 = MPU-401 on port 330h - needed for McCake under Windows
 REM /mainvol 95  = master output 95% (headroom to prevent clipping)
 REM /gusvol 95   = GUS output 95%
 REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -67,10 +67,10 @@ WIN.COM
 GOTO END
 
 REM -----------------------------------------------
-REM Profile: NOSOFTMPU - NOEMS without SoftMPU
+REM Profile: NORMAL - NOEMS, physical CD-ROM, everyday
 REM Use for: AWEUTIL /EM:GM/GS/MT32 emulation
 REM -----------------------------------------------
-:NOSOFTMPU
+:NORMAL
 REM --- AWE32 CT3900 hardware init (UNISOUND) ---
 REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90 (real OPL3 CT1747)
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
@@ -89,12 +89,12 @@ REM --- SoftMPU NOT loaded - AWEUTIL /EM:* can run without conflict ---
 
 REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
+REM /mpuport 330 = MPU-401 on port 330h (AWE32 uses 300h - must not conflict)
 REM /mainvol 95  = master output 95% (headroom to prevent clipping)
 REM /gusvol 95   = GUS output 95%
 REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -112,14 +112,14 @@ LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile: NOSOFTEMU - EMS without SoftMPU
+REM Profile: NORMEMS - RAM (EMS), physical CD-ROM
 REM Use for: AWEUTIL /EM + EMS memory
 REM -----------------------------------------------
-:NOSOFTEMU
+:NORMEMS
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- SoftMPU NOT loaded ---
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -131,103 +131,11 @@ ECHO.
 LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
-
-REM -----------------------------------------------
-REM Profile: NORMAL - NOEMS with SoftMPU
-REM Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
-REM          AWE32 native games, SC-55, McCake SF2
-REM -----------------------------------------------
-:NORMAL
-REM --- AWE32 CT3900 hardware init (UNISOUND) ---
-REM Initializes: IRQ, DMA, I/O ports, OPL3, mixer
-REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from BLASTER variable
-REM /V70 = master volume 70 (range 0-100)
-REM /VF90 = FM/OPL3 volume 90 - real Yamaha OPL3 chip (CT1747) on CT3900
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-
-REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
-REM UNISOUND does not init EMU8000 - AWEUTIL required for AWE32 wavetable features
-REM /S = init EMU8000 from BLASTER variable (E620 = EMU8000 port)
-REM Required for: AWE32 games, GM/GS/MT-32 MIDI emulation
-REM Files: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
-REM Note: AWEUTIL /EM:* conflicts with SoftMPU - use profile NOSOFTMPU
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-
-REM --- SoftMPU - intelligent mode MPU-401 emulation for MT-32 games ---
-REM Required for: Monkey Island 1, Sierra games, Ultima Underworld
-REM AWE32 supports UART mode only - SoftMPU adds intelligent mode
-REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
-REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
-REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
-REM WARNING: AWEUTIL /EM:* cannot be combined with SoftMPU!
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-
-REM --- PicoGUS initialization ---
-REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /mainvol 95  = master output 95% (headroom to prevent clipping)
-REM /gusvol 95   = GUS output 95%
-REM /wtvol 95    = wavetable header output 95%
-REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  SOUND   : %SOUND%
-ECHO  ULTRASND: %ULTRASND%
-ECHO  ULTRADIR: %ULTRADIR%
-ECHO.
-
-REM --- CD-ROM ---
-REM /Q = quiet mode (no drive letter announcement)
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
-
-REM --- Mouse ---
-REM /R2 = horizontal resolution 2 (movement sensitivity)
-REM COM port is auto-detected by CTMOUSE
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: EMS - RAM with SoftMPU
-REM Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
-REM          Games requiring EMS memory
-REM -----------------------------------------------
-:EMSMODE
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  SOUND   : %SOUND%
-ECHO  ULTRASND: %ULTRASND%
-ECHO  ULTRADIR: %ULTRADIR%
-ECHO.
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: BARE DOS
-REM -----------------------------------------------
-REM -----------------------------------------------
-REM Profile: ISOCD - NOEMS with virtual ISO CD-ROM
-REM Use for: Running games from ISO images on D:\ISOS\
-REM Physical Samsung CD-ROM NOT loaded - saves UMB space
-REM To switch ISO at runtime: ISO D:\ISOS\GAME.ISO
-REM Requires: C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE + SHSUCDX.COM
-REM Download: http://adoxa.altervista.org/shsucdx/ -> SHSUCD r3-7
-REM -----------------------------------------------
 :ISOCD
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:300 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -255,8 +163,8 @@ REM -----------------------------------------------
 :ISOCDEMS
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:300 /SB:220 /IRQ:5
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -273,22 +181,22 @@ GOTO END
 
 REM -----------------------------------------------
 REM Profile: MPU - NOEMS, PicoGUS MPU-401, physical CD-ROM
-REM Use for: GM/MT-32 games via McCake (port 300h), physical disc
-REM In-game MIDI: port 300h, General MIDI or MT-32
+REM Use for: GM/MT-32 games via McCake (port 330h), physical disc
+REM In-game MIDI: port 330h, General MIDI or MT-32
 REM -----------------------------------------------
 :MPU
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- PicoGUS in MPU-401 intelligent mode ---
 REM No SoftMPU needed - PicoGUS handles intelligent mode natively
-REM McCake (WP32) on wavetable header: GM/MT-32 on port 300h
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+REM McCake (WP32) on wavetable header: GM/MT-32 on port 330h
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 330 /mainvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
 ECHO  BLASTER : %BLASTER%
 ECHO  MIDI    : %MIDI%
 ECHO  SOUND   : %SOUND%
-ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
+ECHO  McCake  : port 330h (GM/MT-32 via wavetable header)
 ECHO.
 LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -303,272 +211,46 @@ LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- PicoGUS in MPU-401 intelligent mode ---
 REM No SoftMPU needed - PicoGUS handles intelligent mode natively
-REM McCake (WP32) on wavetable header: GM/MT-32 on port 300h
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+REM McCake (WP32) on wavetable header: GM/MT-32 on port 330h
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 330 /mainvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
 ECHO  BLASTER : %BLASTER%
 ECHO  MIDI    : %MIDI%
 ECHO  SOUND   : %SOUND%
-ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
+ECHO  McCake  : port 330h (GM/MT-32 via wavetable header)
 ECHO.
 LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
-
-REM -----------------------------------------------
-REM Profile: MPUISO - NOEMS, PicoGUS MPU-401, virtual ISO CD-ROM
-REM Use for: GM/MT-32 games via McCake, running from ISO image
-REM Physical Samsung CD-ROM NOT loaded
-REM Switch ISO: ISO D:\ISOS\GAME.ISO
-REM -----------------------------------------------
-:MPUISO
+:ESPNS
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
-REM --- PicoGUS in MPU-401 intelligent mode ---
-REM No SoftMPU needed - PicoGUS handles intelligent mode natively
-REM McCake (WP32) on wavetable header: GM/MT-32 on port 300h
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
-ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  SOUND   : %SOUND%
-ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
-ECHO.
-LH C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE /F:D:\ISOS\DEFAULT.ISO
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: MPUISOEMS - RAM (EMS), PicoGUS MPU-401, virtual ISO CD-ROM
-REM Use for: GM/MT-32 games + DOS extenders, running from ISO image
-REM Physical Samsung CD-ROM NOT loaded
-REM Switch ISO: ISO D:\ISOS\GAME.ISO
-REM -----------------------------------------------
-:MPUISOEMS
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-REM --- PicoGUS in MPU-401 intelligent mode ---
-REM No SoftMPU needed - PicoGUS handles intelligent mode natively
-REM McCake (WP32) on wavetable header: GM/MT-32 on port 300h
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  SOUND   : %SOUND%
-ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
-ECHO.
-LH C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE /F:D:\ISOS\DEFAULT.ISO
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: UBSNM - NOEMS, SoftMPU, USBODE CD-ROM
-REM Use for: MT-32/GUS games + Pi Zero 2W as CD-ROM
-REM Pi Zero 2W must be powered on BEFORE the PC
-REM -----------------------------------------------
-:UBSNM
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT - USBODE]
+ECHO  [SOUND ENVIRONMENT - ESP32-S3 CD-ROM]
 ECHO  BLASTER : %BLASTER%
 ECHO  MIDI    : %MIDI%
 ECHO  ULTRASND: %ULTRASND%
-ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
+ECHO  ESP32CD : drive letter auto-assigned by SHSUCDX
 ECHO.
-REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
-REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
-REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:ESPCD0 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
-
-REM -----------------------------------------------
-REM Profile: UBSNS - NOEMS, No SoftMPU, USBODE CD-ROM
-REM Use for: AWEUTIL /EM emulation + Pi Zero 2W as CD-ROM
-REM -----------------------------------------------
-:UBSNS
+:ESPNES
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
-ECHO  [SOUND ENVIRONMENT - USBODE]
+ECHO  [SOUND ENVIRONMENT - ESP32-S3 CD-ROM]
 ECHO  BLASTER : %BLASTER%
 ECHO  MIDI    : %MIDI%
 ECHO  ULTRASND: %ULTRASND%
-ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
+ECHO  ESP32CD : drive letter auto-assigned by SHSUCDX
 ECHO.
-REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
-REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
-REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:ESPCD0 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
-
-REM -----------------------------------------------
-REM Profile: UBSNMP - NOEMS, PicoGUS MPU-401, USBODE CD-ROM
-REM Use for: GM/MT-32 via McCake (port 300h) + Pi Zero 2W
-REM -----------------------------------------------
-:UBSNMP
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-REM --- PicoGUS in MPU-401 intelligent mode ---
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT - USBODE + MPU-401]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
-ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
-ECHO.
-REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
-REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
-REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: UBSEM - RAM (EMS), SoftMPU, USBODE CD-ROM
-REM Use for: DOS extender games + Pi Zero 2W as CD-ROM
-REM -----------------------------------------------
-:UBSEM
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT - USBODE]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  ULTRASND: %ULTRASND%
-ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
-ECHO.
-REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
-REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
-REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: UBSNES - RAM (EMS), No SoftMPU, USBODE CD-ROM
-REM Use for: AWEUTIL /EM + DOS extenders + Pi Zero 2W
-REM -----------------------------------------------
-:UBSNES
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT - USBODE]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  ULTRASND: %ULTRASND%
-ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
-ECHO.
-REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
-REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
-REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: UBSEMP - RAM (EMS), PicoGUS MPU-401, USBODE CD-ROM
-REM Use for: GM/MT-32 via McCake + DOS extenders + Pi Zero 2W
-REM -----------------------------------------------
-:UBSEMP
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-REM --- PicoGUS in MPU-401 intelligent mode ---
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 300 /mainvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT - USBODE + MPU-401]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  McCake  : port 300h (GM/MT-32 via wavetable header)
-ECHO  USBODE  : drive letter auto-assigned by SHSUCDX
-ECHO.
-REM --- USBODE CD-ROM (Panasonic USB driver + SHSUCDX) ---
-REM USBCD1.SYS loaded in CONFIG.SYS as USBCD0 device
-REM Pi Zero 2W must be booted BEFORE the PC (cold boot only)
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:USBCD0 /Q
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: UBSSTM - NOEMS, USBODE Mode 2 mass storage
-REM Use for: accessing Pi Zero 2W SD card as a DOS drive
-REM USBODE must be in Mode 2 BEFORE booting PC
-REM USBDRIVE.COM assigns drive letter automatically (no SHSUCDX)
-REM NOT for CD emulation - Mode 2 is storage only
-REM -----------------------------------------------
-REM -----------------------------------------------
-REM Profile: UBSSTM - NOEMS, USB mass storage (Bret Johnson DOSUSB)
-REM Use for: USB flash drive or USBODE Mode 2 (Pi SD card) as DOS drive
-REM Drivers: USBUHCIL.COM (TSR) + USBDRIVE.COM from C:\DRIVERS\USBDOS\
-REM Usage after boot:
-REM   USBDRIVE /Devices:1 /Disks:1 /Drives:1
-REM   Drive letter auto-assigned (first free after existing drives)
-REM Hotswap supported - can load/unload without rebooting
-REM NOT for CD emulation - use UBSNM/UBSNS/UBSNMP for that
-REM -----------------------------------------------
-:UBSSTM
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT - USB STORAGE]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  ULTRASND: %ULTRASND%
-ECHO.
-REM --- DOSUSB UHCI TSR (Bret Johnson) - Intel/VIA UHCI only ---
-REM USBUHCIL = lite version (30KB RAM, max 16 devices) - use USBUHCI for more
-LH C:\DRIVERS\USBDOS\USBUHCIL.COM DisableLegacySupport
-ECHO.
-ECHO  USB STORAGE: USBUHCIL loaded.
-ECHO  To mount drive: USBDRIVE /Devices:1 /Disks:1 /Drives:1
-ECHO  Then plug in USB device and wait 3-5 seconds.
-ECHO  To check devices: USBDEVIC
-ECHO.
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: UBSSTEM - RAM (EMS), USB mass storage (Bret Johnson DOSUSB)
-REM Use for: USB flash drive or USBODE Mode 2 + DOS extenders
-REM -----------------------------------------------
-:UBSSTEM
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT - USB STORAGE]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  ULTRASND: %ULTRASND%
-ECHO.
-REM --- DOSUSB UHCI TSR (Bret Johnson) - Intel/VIA UHCI only ---
-LH C:\DRIVERS\USBDOS\USBUHCIL.COM DisableLegacySupport
-ECHO.
-ECHO  USB STORAGE: USBUHCIL loaded.
-ECHO  To mount drive: USBDRIVE /Devices:1 /Disks:1 /Drives:1
-ECHO  Then plug in USB device and wait 3-5 seconds.
-ECHO  To check devices: USBDEVIC
-ECHO.
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
 :BARE
 GOTO END
 
