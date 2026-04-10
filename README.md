@@ -53,6 +53,13 @@
 - [Key Notes](#key-notes)
 - [X16GS Alternative](#dreamblaster-x16gs--alternative-module-currently-under-repair)
 
+**MIDI Synthesizer Reference**
+- [Roland MT-32 original](#roland-mt-32-original)
+- [Roland SC-55 MK2](#roland-sc-55-mk2)
+- [Roland SC-88 Pro](#roland-sc-88-pro)
+- [MT32-pi SF2 (Serdashop)](#mt32-pi-sf2-serdashop-external)
+- [McCake WP32 (interní wavetable)](#mccake-wp32-interní-wavetable)
+
 ---
 
 ## Hardware
