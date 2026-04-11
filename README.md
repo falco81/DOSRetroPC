@@ -250,7 +250,7 @@ JP16=Open    →  port 300h
 
 **Joystick / Gameport:**
 ```
-JP14=Closed  →  enabled  (gameport carries MIDI OUT to SC-55/MT-32 chain)
+JP14=Closed  →  enabled  (gameport/joystick port — MIDI OUT not connected)
 ```
 
 **IDE port — must be DISABLED (conflicts with motherboard IDE):**
@@ -408,7 +408,7 @@ REM 3. Quick OPL3 test — run any AdLib/FM game and listen
 REM    Real OPL3 sounds warmer and more accurate than CQM
 
 REM 4. Quick MIDI test — run a MT-32 game, check music plays
-REM    through MT-32 via gameport on port 330h
+REM    through MT-32 via PicoGUS MIDI OUT → CME WIDI Thru6 BT → MT-32
 ```
 
 If boot shows `DIGN9003` error or UNISOUND fails:
@@ -495,7 +495,7 @@ Plugs directly into the PicoGUS waveblaster header — no external cable or powe
 required (powered from the header or optionally from a floppy connector).
 
 McCake audio routes internally through PicoGUS and comes out via the PicoGUS line out —
-jeden stereo kabel do QX1222USB CH 9+10.
+PicoGUS line out (stereo) → QX1222USB CH 1 (L, PAN left) + CH 2 (R, PAN right).
 
 ### What this adds to the system
 
@@ -571,20 +571,21 @@ Save and exit BIOS. Power off completely before proceeding.
 
 ---
 
-### Step 2 — Install DreamBlaster X16GS onto PicoGUS
+### Step 2 — Install WP32 McCake onto PicoGUS
 
 Do this before inserting PicoGUS into the PC.
 
-The X16GS plugs into the **waveblaster header** on PicoGUS — a double-row
+McCake plugs into the **waveblaster header** on PicoGUS — a double-row
 pin header typically labeled "WAVE" or "DB" near the top edge of the card.
 
 1. Locate pin 1 on the PicoGUS waveblaster header (marked with a dot,
    triangle, or "1" printed on PCB)
-2. Orient X16GS so its pin 1 matches the header pin 1
+2. Orient McCake so its pin 1 matches the header pin 1
 3. Press firmly and evenly — all pins must seat fully
-4. The X16GS should sit flat and parallel to the PicoGUS PCB
+4. McCake should sit flat and parallel to the PicoGUS PCB
 
-The X16GS draws power directly from the header — no separate power cable.
+McCake draws power from the header — no separate power cable required.
+Optionally connect a floppy Molex for additional current headroom.
 
 ---
 
@@ -622,8 +623,8 @@ No jumper needed — set via PGUSINIT.EXE at boot.
    (X16GS is already mounted, it sits above the card — check clearance
    to adjacent slot bracket before pressing down)
 4. Secure the bracket screw
-5. Connect PicoGUS line out → QX1222USB **CH 9+10** (stereo 3.5mm or RCA,
-   depending on PicoGUS output connector)
+5. Connect PicoGUS line out → QX1222USB **CH 1** (L) + **CH 2** (R)
+   (two mono cables or Y-splitter from PicoGUS stereo output)
 6. Do not power on yet
 
 ---
@@ -674,7 +675,7 @@ C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /w
 REM Expected output:
 REM   PicoGUS v2.x -- GUS mode
 REM   GUS port: 240h  IRQ: 7  DMA: 3
-REM   MPU-401: 300h
+REM   MPU-401: 330h
 REM   Wavetable volume: 95
 
 REM 3. Check for conflicts (should show no overlap with AWE32):
@@ -752,7 +753,7 @@ PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 /gusvol 85     GUS audio output volume (0–100)
 
 /wtvol 85      DreamBlaster X16GS wavetable header volume (0–100)
-               Hlasitost upravuj na QX1222USB CH 9+10, ne zde
+               Hlasitost upravuj na QX1222USB CH 1+2, ne zde
 
 /mpudelay 1    Zpomalit odeslani SysEx zprav
                Prevents SysEx buffer overflow on Roland-compatible synthesizers
@@ -868,7 +869,7 @@ Sound Effects : SB  port 220  IRQ 5  DMA 1
 Music         : Gravis UltraSound  port 240  IRQ 7  DMA 3
 ```
 
-QX1222USB: **CH 9+10 (PicoGUS) UP** + CH 11+12 (AWE32) up for effects.
+QX1222USB: **CH 1+2 (PicoGUS) UP** + CH 3+4 (AWE32) up for effects.
 
 #### GM games via McCake SF2 (without SC-55)
 
@@ -876,10 +877,10 @@ QX1222USB: **CH 9+10 (PicoGUS) UP** + CH 11+12 (AWE32) up for effects.
 REM V game setupu:
 Sound Effects : Sound Blaster 16   port 220  IRQ 5  DMA 1
 Music         : General MIDI
-MIDI port     : 300
+MIDI port     : 330
 ```
 
-QX1222USB: **CH 9+10 (PicoGUS/McCake) UP** + CH 11+12 (AWE32) for effects.
+QX1222USB: **CH 1+2 (PicoGUS/McCake) UP** + CH 3+4 (AWE32) for effects.
 
 #### MT-32 games (unchanged — PicoGUS does not affect this)
 
@@ -892,7 +893,7 @@ Music         : Roland MT-32
 MIDI port     : 330
 ```
 
-QX1222USB: **CH 3+4 (MT-32) UP** + CH 11+12 (AWE32) up for effects.
+QX1222USB: **CH 7+8 (MT-32) UP** + CH 3+4 (AWE32) up for effects.
 
 ---
 
@@ -926,7 +927,7 @@ for cases when PicoGUS is not available.
 | IRQ | 5 | 7 |
 | DMA | 1 (8-bit) / 5 (16-bit) | 3 |
 | MPU-401 | 300h (gameport, nepřipojeno) | 330h → WIDI Thru6 BT → MT-32/SC-55/SC-88/MT32-pi + McCake |
-| Audio output | QX1222USB CH 11+12 | QX1222USB CH 9+10 |
+| Audio output | QX1222USB CH 3+4 | QX1222USB CH 1+2 |
 | Role | SB16 efekty, real OPL3 FM, EMU8000 wavetable, AWE32 native | GUS hudba, McCake GM/SF2 synth |
 
 No IRQ, DMA, or port conflicts. Both cards operate fully independently.
@@ -958,12 +959,12 @@ re-initialize the card on the DOS PC.
 - [ ] LPT1 disabled in BIOS Integrated Peripherals
 - [ ] IRQ 7 = Legacy ISA in BIOS PnP/PCI Configuration
 - [ ] DMA 3 = Legacy ISA in BIOS PnP/PCI Configuration
-- [ ] X16GS firmly seated on PicoGUS waveblaster header (pin 1 aligned)
+- [ ] McCake (WP32) firmly seated on PicoGUS waveblaster header (pin 1 aligned)
 - [ ] PicoGUS in ISA slot, bracket screw secured
-- [ ] PicoGUS line out connected to QX1222USB CH 9+10
+- [ ] PicoGUS line out connected to QX1222USB CH 1 (L) + CH 2 (R)
 - [ ] `C:\DRIVERS\PICOGUS\` contains PGUSINIT.EXE, DOSMID.EXE, MIDI\ subdirectory
 - [ ] Manual test: `PGUSINIT /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1` prints GUS port 240 IRQ 7 DMA 3
-- [ ] Manual test: `DOSMID Slot1.mid` plays through headphones on CH 9+10
+- [ ] Manual test: `DOSMID Slot1.mid` plays through headphones on CH 1+2
 - [ ] Manual test: Doom plays GUS music (not SB music)
 - [x] AUTOEXEC.BAT: ULTRASND, ULTRADIR, PGUSINIT active in all profiles
 - [ ] Reboot test: PGUSINIT message visible in boot sequence
@@ -1102,14 +1103,14 @@ REM Download MT32-PI.EXE from https://github.com/gmcn42/mt32-pi-control
 REM Save to C:\DRIVERS\PICOGUS\
 
 REM Test mode switching:
-MT32-PI.EXE -p 300 -g         ← switch to GM/SF2 mode
-MT32-PI.EXE -p 300 -m         ← switch to MT-32 emulation mode
-MT32-PI.EXE -p 300 -r         ← reset (bez restartu Pi)
-MT32-PI.EXE -p 300 -f 0       ← switch to soundfont slot 0
-MT32-PI.EXE -p 300 -f 1       ← switch to soundfont slot 1
+MT32-PI.EXE -p 330 -g         ← switch to GM/SF2 mode
+MT32-PI.EXE -p 330 -m         ← switch to MT-32 emulation mode
+MT32-PI.EXE -p 330 -r         ← reset (bez restartu Pi)
+MT32-PI.EXE -p 330 -f 0       ← switch to soundfont slot 0
+MT32-PI.EXE -p 330 -f 1       ← switch to soundfont slot 1
 
 REM Test playback — launch a game with MPU profile:
-MPU DOOM.EXE                  ← MIDI na port 300h, GM soundfont
+MPU DOOM.EXE                  ← MIDI na port 330h (PicoGUS MPU mode), GM soundfont
 ```
 
 Or use DOSMID via PicoGUS (GUS mode, not McCake):
@@ -1129,9 +1130,9 @@ DOSMID Slot1.mid
 
 **From DOS via MT32-PI.EXE:**
 ```bat
-MT32-PI.EXE -p 300 -f 0       ← slot 0 (GeneralUser GS)
-MT32-PI.EXE -p 300 -f 1       ← slot 1 (SC-55 Patch93)
-MT32-PI.EXE -p 300 -f 2       ← slot 2 (Timbres of Heaven)
+MT32-PI.EXE -p 330 -f 0       ← slot 0 (GeneralUser GS)
+MT32-PI.EXE -p 330 -f 1       ← slot 1 (SC-55 Patch93)
+MT32-PI.EXE -p 330 -f 2       ← slot 2 (Timbres of Heaven)
 ```
 
 **Via MPU.BAT** (automatically switches PicoGUS to MPU-401 mode before the game):
@@ -1148,10 +1149,10 @@ MPU GAME.EXE     ← launches game with McCake on port 330h
 - [ ] McCake fyzicky usazena na PicoGUS waveblaster header (pin 1 aligned)
 - [ ] Drive bay panel installed in 5.25" bay, cable connected to McCake
 - [ ] First boot: OLED display shows status, loading soundfont
-- [ ] Test from DOS: MT32-PI.EXE -p 300 -g reports no error
-- [ ] Playback test: GM game on port 330h plays through McCake (audible on CH 5+6)
+- [ ] Test from DOS: MT32-PI.EXE -p 330 -g reports no error
+- [ ] Playback test: GM game on port 330h plays through McCake (audible on CH 1+2, shared with PicoGUS)
 - [ ] MT32-PI.EXE saved to C:\DRIVERS\PICOGUS\
-- [ ] QX1222USB CH 9+10 has adequate volume (McCake shares output with PicoGUS)
+- [ ] QX1222USB CH 1+2 has adequate volume (McCake shares PicoGUS line out)
 
 ---
 
@@ -1218,7 +1219,7 @@ CME WIDI Thru6 BT podporuje i Bluetooth MIDI (BLE 5, 3ms latency, dosah 20m) —
 ### Mixer Operation — which faders to raise
 
 The QX1222USB has no mute buttons on stereo channels — use the faders.
-AWE32 (CH11+12) is almost always up for sound effects.
+AWE32 (CH 3+4) is almost always up for sound effects.
 Adjust the music source channel depending on the game.
 
 | Game type | CH 1+2 PicoGUS | CH 3+4 AWE32 | CH 5+6 MT32-pi | CH 7+8 MT-32 | CH 9+10 SC-55 | CH 11+12 SC-88 |
@@ -1629,12 +1630,12 @@ Reboot with no media in drives. You should see:
 Microsoft Windows 98 Startup Menu
 ===================================
   1. Windows 98SE
-  2. MS-DOS  SoftMPU         - NOEMS 607KB
-  3. MS-DOS  SoftMPU EMS     - RAM   595KB
-  4. MS-DOS  No SoftMPU      - NOEMS 607KB
-  5. MS-DOS  No SoftMPU EMS  - RAM   595KB
-  6. MS-DOS  Bare
+  2. MS-DOS  NOEMS  - 607KB conventional
+  3. MS-DOS  EMS    - 595KB conventional (DOS extenders)
+  4. MS-DOS  Bare   - no drivers
 ```
+
+Výběr NOEMS nebo EMS otevře podmenu s dalšími profily.
 
 Default: Windows 98SE (10 second countdown)
 
@@ -1643,10 +1644,11 @@ Default: Windows 98SE (10 second countdown)
 | Test | Expected result |
 |---|---|
 | Option 1 (Windows) | Windows 98SE loads, desktop appears |
-| Option 2 (NORMAL) | DOS prompt, SoftMPU loaded, sound card active |
-| Option 3 (EMS) | DOS prompt, SoftMPU loaded, EMS memory available |
-| Option 4 (NOSOFTMPU) | DOS prompt, no SoftMPU, AWEUTIL /EM available |
-| Option 6 (BARE) | Minimal DOS prompt, no drivers |
+| Option 2 (NOEMS podmenu) | Zobrazí podmenu s NOEMS profily |
+| Option 3 (EMS podmenu) | Zobrazí podmenu s EMS profily |
+| NORMAL (z podmenu) | DOS prompt, phys CD-ROM, sound card active |
+| MPU (z podmenu) | DOS prompt, PicoGUS MPU-401, McCake active |
+| Option 4 (BARE) | Minimal DOS prompt, no drivers |
 
 ### Step 29 — Verify drive letters in DOS
 
@@ -1683,7 +1685,7 @@ Configure: port 220, IRQ 5, DMA 1/5, EMU8000 port 620.
 
 In Device Manager → Add hardware → manually add:
 - Sound, video and game controllers
-- MPU-401 Compatible, IRQ 9, port 300h
+- MPU-401 Compatible, IRQ 9, port 330h
 
 (GUS emulation is not supported in Windows — MPU-401 MIDI only.)
 
@@ -1709,7 +1711,7 @@ In Device Manager → Add hardware → manually add:
 | Profile | SoftMPU | EMS | Use for |
 |---|---|---|---|
 | Windows 98SE | — | — | Windows gaming, modern software |
-| NORMAL | Yes | No | MT-32 games, GUS, McCake, everyday DOS |
+| NORMAL | NOEMS | No | Everyday DOS, phys CD, AWEUTIL /S |
 | EMS | Yes | Yes | Tyrian, Magic Carpet, Unreal, DOS extenders |
 | NOSOFTMPU | No | No | AWEUTIL /EM emulation |
 | NOSOFTEMU | No | Yes | AWEUTIL /EM + EMS games |
@@ -1722,17 +1724,15 @@ In Device Manager → Add hardware → manually add:
 | # | Profile | Mode | Conv. RAM | Use for |
 |---|---|---|---|---|
 | 1 | WINDOWS | Win98SE boot | — | Windows 98SE |
-| 2 | NORMAL | NOEMS + SoftMPU | 607 KB | MT-32, GUS, everyday DOS |
-| 3 | EMS | RAM + SoftMPU | 595 KB | Tyrian, Magic Carpet, Unreal (DOS extenders) |
-| 4 | NOSOFTMPU | NOEMS | 607 KB | AWEUTIL /EM:GM/GS/MT32 |
-| 5 | NOSOFTEMU | RAM | 595 KB | AWEUTIL /EM + DOS extenders |
-| 6 | ISOCD | NOEMS | 607 KB | Virtual ISO CD-ROM (SHSUCDHD) |
-| 7 | ISOCDEMS | RAM | 595 KB | Virtual ISO CD-ROM + DOS extenders |
-| 8 | MPU | NOEMS | 607 KB | McCake GM/MT-32 via PicoGUS MPU-401, physical CD |
-| 9 | MPUEMS | RAM | 595 KB | McCake GM/MT-32 + DOS extenders, physical CD |
-| 10 | MPUISO | NOEMS | 607 KB | McCake GM/MT-32, virtual ISO CD-ROM |
-| 11 | MPUISOEMS | RAM | 595 KB | McCake GM/MT-32 + DOS extenders, virtual ISO CD |
-| 12 | BARE | NOEMS | max | Diagnostics, no drivers |
+| 2 | NORMAL (NOEMS podmenu) | NOEMS | 607 KB | Everyday DOS, phys CD, AWEUTIL /S |
+| 3 | ISOCD (NOEMS podmenu) | NOEMS | 607 KB | Virtual ISO CD-ROM |
+| 4 | MPU (NOEMS podmenu) | NOEMS | 607 KB | McCake GM/MT-32, PicoGUS MPU-401, phys CD |
+| 5 | ESPNS (NOEMS podmenu) | NOEMS | 607 KB | AWEUTIL /EM + ESP32 CD-ROM |
+| 6 | NORMEMS (EMS podmenu) | RAM | 595 KB | Everyday DOS + DOS extenders |
+| 7 | ISOCDEMS (EMS podmenu) | RAM | 595 KB | Virtual ISO CD-ROM + extenders |
+| 8 | MPUEMS (EMS podmenu) | RAM | 595 KB | McCake GM/MT-32 + DOS extenders, phys CD |
+| 9 | ESPNES (EMS podmenu) | RAM | 595 KB | AWEUTIL /EM + ESP32 CD-ROM + extenders |
+| 10 | BARE | NOEMS | max | Diagnostics, no drivers |
 
 Default: **WINDOWS** (auto-boot after 10 seconds)
 
@@ -1752,16 +1752,27 @@ Default: **WINDOWS** (auto-boot after 10 seconds)
 
 ; Boot menu - displayed at startup with 10 second countdown
 ; MENUDEFAULT=WINDOWS,10 = auto-boot Windows after 10 seconds if no key pressed
+; Main menu: 4 items
 [MENU]
-MENUITEM=WINDOWS,   Windows 98SE
-MENUITEM=NORMAL,    MS-DOS  SoftMPU         - NOEMS 607KB (MT-32, GUS, everyday)
-MENUITEM=EMS,       MS-DOS  SoftMPU EMS     - RAM   595KB (Tyrian, Magic Carpet, Unreal)
-MENUITEM=NOSOFTMPU, MS-DOS  No SoftMPU      - NOEMS 607KB (AWEUTIL /EM)
-MENUITEM=NOSOFTEMU, MS-DOS  No SoftMPU EMS  - RAM   595KB (AWEUTIL /EM + extenders)
-MENUITEM=ISOCD,     MS-DOS  ISO CD-ROM      - NOEMS 607KB (virtual CD from ISO file)
-MENUITEM=ISOCDEMS,  MS-DOS  ISO CD-ROM EMS  - RAM   595KB (virtual CD + DOS extenders)
-MENUITEM=BARE,      MS-DOS  Bare            - no drivers
+MENUITEM=WINDOWS,  Windows 98SE
+SUBMENU=NOEMS,     MS-DOS  NOEMS  - 607KB conventional
+SUBMENU=EMS,       MS-DOS  EMS    - 595KB conventional (DOS extenders)
+MENUITEM=BARE,     MS-DOS  Bare   - no drivers
 MENUDEFAULT=WINDOWS,10
+
+; NOEMS sub-menu: SoftMPU, No SoftMPU, ISO CD, MPU-401, MPU-401 ISO
+[NOEMS]
+MENUITEM=NORMAL,     Normal CD-ROM         - NOEMS 607KB  (phys CD, everyday)
+MENUITEM=ISOCD,      ISO CD-ROM            - NOEMS 607KB  (virtual CD)
+MENUITEM=MPU,        MPU-401 CD-ROM        - NOEMS 607KB  (McCake, phys CD)
+MENUITEM=ESPNS,      ESP32 No SoftMPU      - NOEMS 607KB  (AWEUTIL /EM + ESP32)
+
+; EMS sub-menu: SoftMPU EMS, No SoftMPU EMS, ISO CD EMS, MPU-401 EMS, MPU-401 ISO EMS
+[EMS]
+MENUITEM=NORMEMS,    Normal CD-ROM EMS     - RAM   595KB  (phys CD + ext)
+MENUITEM=ISOCDEMS,   ISO CD-ROM EMS        - RAM   595KB  (virtual CD + ext)
+MENUITEM=MPUEMS,     MPU-401 CD-ROM EMS    - RAM   595KB  (McCake + ext, phys CD)
+MENUITEM=ESPNES,     ESP32 No SoftMPU EMS  - RAM   595KB  (AWEUTIL /EM + ESP32)
 ;MENUCOLOR=11,1
 
 ; -----------------------------------------------
@@ -1807,71 +1818,22 @@ DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
 ; Samsung CD-ROM driver - needed so SHSUCDX in AUTOEXEC.BAT can load
 ; Windows will replace this with its own 32-bit CD-ROM driver after boot
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
-
-; -----------------------------------------------
-; Profile NORMAL - NOEMS with SoftMPU (607KB conventional)
-; Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday DOS use
-;          AWE32 native games, SC-55, McCake SF2
-; SoftMPU adds intelligent mode MPU-401 emulation for MT-32 games
-; -----------------------------------------------
 [NORMAL]
-
-; EMM386 NOEMS = no EMS page frame
-; Frees 64KB of UMB compared to RAM mode - more space for drivers
-; NOTE: HIGHSCAN must NOT be used - causes freeze on Award BIOS 4.51PG
-DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
-
-; SmartDrive loaded first via INSTALLHIGH to claim largest free UMB block
-; /X = disable write cache (safer for unexpected power loss on SSD)
-; 2048KB read cache, 512KB element size
-INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
-
-; Samsung CD-ROM driver into UMB
-DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
-
-; -----------------------------------------------
-; Profile EMS - RAM with SoftMPU (595KB conventional)
-; Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
-;          Games requiring EMS memory (DOS4GW, DOS/4G extenders)
-; Note: 12KB less conventional memory than NORMAL due to EMS page frame
-; Note: AWEUTIL /EM:* does NOT work with DOS extenders - use /S only
-; -----------------------------------------------
-[EMS]
-
-; EMM386 RAM = EMS + UMB both enabled
-; EMS page frame occupies 64KB of UMB but allows DOS extenders to work
-DEVICE=C:\WINDOWS\EMM386.EXE RAM
-
-; SmartDrive loaded first to claim largest free UMB block
-INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
-
-; Samsung CD-ROM driver into UMB
-DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
-
-; -----------------------------------------------
-; Profile NOSOFTMPU - NOEMS without SoftMPU (607KB conventional)
-; Use for: AWEUTIL /EM:GM/GS/MT32 emulation
-;          AWEUTIL /EM conflicts with SoftMPU - do not combine
-;          GM/GS games via AWEUTIL without external MIDI modules
-; -----------------------------------------------
-[NOSOFTMPU]
 
 ; EMM386 NOEMS - no EMS, maximum UMB space
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
-INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
-; Profile NOSOFTEMU - RAM without SoftMPU (595KB conventional)
-; Use for: AWEUTIL /EM + EMS memory games
-;          Note: AWEUTIL /EM does not work with DOS extenders (DOS4GW)
-;          For DOS extender games without AWEUTIL use profile EMS instead
+; Profile NORMEMS - RAM (EMS), physical CD-ROM (595KB conventional)
+; Use for: DOS extender games, phys CD-ROM
 ; -----------------------------------------------
-[NOSOFTEMU]
+[NORMEMS]
 
 ; EMM386 RAM - EMS enabled for games that need it
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
-INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 
 ; -----------------------------------------------
@@ -1879,13 +1841,13 @@ DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
 ; Use for: Running games from ISO images on D:\ISOS\
 ; Physical Samsung CD-ROM NOT loaded - saves UMB space
 ; SHSUCDHD.EXE + SHSUCDX.COM loaded in AUTOEXEC.BAT
-; Download: http://adoxa.altervista.org/shsucdx/ (SHSUCD r3-7)
+; Download: http://adoxa.altervista.org/shsucdx/ -> SHSUCD r3-7
 ; -----------------------------------------------
 [ISOCD]
 
 ; EMM386 NOEMS - same as NORMAL, no physical CD-ROM driver loaded
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
-INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 
 ; -----------------------------------------------
 ; Profile ISOCDEMS - RAM (EMS) with virtual ISO CD-ROM
@@ -1897,17 +1859,45 @@ INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
 
 ; EMM386 RAM = EMS + UMB both enabled
 DEVICE=C:\WINDOWS\EMM386.EXE RAM
-INSTALLHIGH=C:\DOS\SMARTCDX.EXE /X 2048 512
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
 
 ; -----------------------------------------------
-; Profile BARE - minimal (diagnostics, installation, troubleshooting)
-; No SmartDrive, no CD-ROM, no sound - just basic DOS with XMS
+; Profile MPU - NOEMS, PicoGUS in MPU-401 mode, physical CD-ROM
+; Use for: GM/MT-32 games via McCake (port 300h), physical disc
+; PicoGUS: MPU-401 intelligent mode (McCake on wavetable header)
+; No SoftMPU needed - PicoGUS handles intelligent mode natively
 ; -----------------------------------------------
+[MPU]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+
+; -----------------------------------------------
+; Profile MPUEMS - RAM (EMS), PicoGUS MPU-401 mode, physical CD-ROM
+; Use for: GM/MT-32 games + DOS extenders, physical disc
+; -----------------------------------------------
+[MPUEMS]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\SAMSUNG\SSCDROM.SYS /D:SSCD000
+[ESPNS]
+
+DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI1.SYS /w /v
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:ESPCD0
+[ESPNES]
+
+DEVICE=C:\WINDOWS\EMM386.EXE RAM
+INSTALLHIGH=C:\DRIVERS\SHSUCDX\SMARTCDX.EXE /X 2048 512
+DEVICEHIGH=C:\DRIVERS\USBCD\USBASPI1.SYS /w /v
+DEVICEHIGH=C:\DRIVERS\USBCD\USBCD1.SYS /D:ESPCD0
 [BARE]
 
 ; Minimal EMM386 for XMS access only
 DEVICE=C:\WINDOWS\EMM386.EXE NOEMS
-
 ```
 
 ---
@@ -1928,11 +1918,30 @@ SET TELIX=C:\TOOLS\TELIX
 
 REM --- AWE32 CT3900 settings ---
 REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
-REM P330=MPU-401 port (SC-55/MT-32 chain), E620=EMU8000, T6=SB16/AWE type
+REM P300=MPU-401 port (AWE32 gameport — not connected to MIDI), E620=EMU8000, T6=SB16/AWE type
+REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
+REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
+SET SOUND=C## FAT32 — AUTOEXEC.BAT
+
+```bat
+@ECHO OFF
+PROMPT $P$G
+PATH C:\DOS;C:\NC;C:\TOOLS\NU;C:\DRIVERS\PICOGUS;C:\DRIVERS\SB16;C:\DRIVERS\SCRIPTS
+
+REM --- Environment variables ---
+SET SYMANTEC=C:\SYMANTEC
+SET NU=C:\TOOLS\NU
+SET TEMP=C:\DOS\TMP
+SET TMP=C:\DOS\TMP
+SET TELIX=C:\TOOLS\TELIX
+
+REM --- AWE32 CT3900 settings ---
+REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
+REM P300=MPU-401 port (MT-32/SC-55 chain), E620=EMU8000, T6=SB16/AWE type
 REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
 REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
-SET BLASTER=A220 I5 D1 H5 P300 E620 T6
+SET BLASTER=A220 I5 D1 H5 P300 E620 T6 
 SET MIDI=SYNTH:1 MAP:E MODE:0
 
 REM --- PicoGUS / Gravis UltraSound settings ---
@@ -1972,7 +1981,7 @@ ECHO  ULTRADIR: %ULTRADIR%
 ECHO.
 
 REM --- CD-ROM ---
-REM /M:10 = 10 sector lookahead cache in extended memory
+REM /Q = quiet mode (no drive letter announcement)
 LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 
 REM --- Mouse ---
@@ -1984,10 +1993,10 @@ WIN.COM
 GOTO END
 
 REM -----------------------------------------------
-REM Profile: NOSOFTMPU - NOEMS without SoftMPU
+REM Profile: NORMAL - NOEMS, physical CD-ROM, everyday
 REM Use for: AWEUTIL /EM:GM/GS/MT32 emulation
 REM -----------------------------------------------
-:NOSOFTMPU
+:NORMAL
 REM --- AWE32 CT3900 hardware init (UNISOUND) ---
 REM /V70 = master volume 70, /VF90 = FM/OPL3 volume 90 (real OPL3 CT1747)
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
@@ -2006,7 +2015,7 @@ REM --- SoftMPU NOT loaded - AWEUTIL /EM:* can run without conflict ---
 
 REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
+REM /mpuport 330 = MPU-401 on port 330h (AWE32 uses 300h - must not conflict)
 REM /mainvol 95  = master output 95% (headroom to prevent clipping)
 REM /gusvol 95   = GUS output 95%
 REM /wtvol 95    = wavetable header output 95%
@@ -2029,10 +2038,10 @@ LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
 REM -----------------------------------------------
-REM Profile: NOSOFTEMU - EMS without SoftMPU
+REM Profile: NORMEMS - RAM (EMS), physical CD-ROM
 REM Use for: AWEUTIL /EM + EMS memory
 REM -----------------------------------------------
-:NOSOFTEMU
+:NORMEMS
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- SoftMPU NOT loaded ---
@@ -2048,102 +2057,10 @@ ECHO.
 LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
-
-REM -----------------------------------------------
-REM Profile: NORMAL - NOEMS with SoftMPU
-REM Use for: MT-32 games (Sierra, LucasArts), GUS games, everyday use
-REM          AWE32 native games, SC-55, McCake SF2
-REM -----------------------------------------------
-:NORMAL
-REM --- AWE32 CT3900 hardware init (UNISOUND) ---
-REM Initializes: IRQ, DMA, I/O ports, OPL3, mixer
-REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from BLASTER variable
-REM /V70 = master volume 70 (range 0-100)
-REM /VF90 = FM/OPL3 volume 90 - real Yamaha OPL3 chip (CT1747) on CT3900
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-
-REM --- AWEUTIL - EMU8000 wavetable synthesizer init ---
-REM UNISOUND does not init EMU8000 - AWEUTIL required for AWE32 wavetable features
-REM /S = init EMU8000 from BLASTER variable (E620 = EMU8000 port)
-REM Required for: AWE32 games, GM/GS/MT-32 MIDI emulation
-REM Files: C:\DRIVERS\SB16\AWEUTIL.COM + Synthgm.sbk + Synthgs.sbk + Synthmt.sbk
-REM Note: AWEUTIL /EM:* conflicts with SoftMPU - use profile NOSOFTMPU
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-
-REM --- SoftMPU - intelligent mode MPU-401 emulation for MT-32 games ---
-REM Required for: Monkey Island 1, Sierra games, Ultima Underworld
-REM AWE32 supports UART mode only - SoftMPU adds intelligent mode
-REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
-REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
-REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
-REM WARNING: AWEUTIL /EM:* cannot be combined with SoftMPU!
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-
-REM --- PicoGUS initialization ---
-REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
-REM /mainvol 95  = master output 95% (headroom to prevent clipping)
-REM /gusvol 95   = GUS output 95%
-REM /wtvol 95    = wavetable header output 95%
-REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  SOUND   : %SOUND%
-ECHO  ULTRASND: %ULTRASND%
-ECHO  ULTRADIR: %ULTRADIR%
-ECHO.
-
-REM --- CD-ROM ---
-REM /M:10 = 10 sector lookahead cache in extended memory
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
-
-REM --- Mouse ---
-REM /R2 = horizontal resolution 2 (movement sensitivity)
-REM COM port is auto-detected by CTMOUSE
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: EMS - RAM with SoftMPU
-REM Use for: DOS extender games (Tyrian, Magic Carpet, Unreal)
-REM          Games requiring EMS memory
-REM -----------------------------------------------
-:EMS
-LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
-REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
-C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
-ECHO.
-ECHO  [SOUND ENVIRONMENT]
-ECHO  BLASTER : %BLASTER%
-ECHO  MIDI    : %MIDI%
-ECHO  SOUND   : %SOUND%
-ECHO  ULTRASND: %ULTRASND%
-ECHO  ULTRADIR: %ULTRADIR%
-ECHO.
-LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
-LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
-GOTO END
-
-REM -----------------------------------------------
-REM Profile: BARE DOS
-REM -----------------------------------------------
-REM -----------------------------------------------
-REM Profile: ISOCD - NOEMS with virtual ISO CD-ROM
-REM Use for: Running games from ISO images on D:\ISOS\
-REM Physical Samsung CD-ROM NOT loaded - saves UMB space
-REM To switch ISO at runtime: ISO D:\ISOS\GAME.ISO
-REM Requires: C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE + SHSUCDX.COM
-REM Download: http://adoxa.altervista.org/shsucdx/ -> SHSUCD r3-7
-REM -----------------------------------------------
 :ISOCD
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:300 /SB:220 /IRQ:5
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
@@ -2156,8 +2073,8 @@ ECHO.
 REM --- Virtual ISO CD-ROM ---
 REM SHSUCDHD: mounts ISO file as virtual CD device SHSU-CDH
 REM /F: = default ISO to mount at boot (switch later with ISO.BAT)
-REM SHSUCDX: exposes SHSU-CDH as a drive letter (replaces SHSUCDX)
-REM /Q = quiet, /I = override any existing SHSUCDX
+REM SHSUCDX: exposes SHSU-CDH as a drive letter (replaces MSCDEX)
+REM /Q = quiet, /I = override any existing MSCDEX
 LH C:\DRIVERS\SHSUCDX\SHSUCDHD.EXE /F:D:\ISOS\DEFAULT.ISO
 LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
@@ -2172,7 +2089,7 @@ REM -----------------------------------------------
 :ISOCDEMS
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:300 /SB:220 /IRQ:5
 C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
@@ -2188,43 +2105,87 @@ LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SHSU-CDH /Q
 LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
 GOTO END
 
+REM -----------------------------------------------
+REM Profile: MPU - NOEMS, PicoGUS MPU-401, physical CD-ROM
+REM Use for: GM/MT-32 games via McCake (port 330h), physical disc
+REM In-game MIDI: port 330h, General MIDI or MT-32
+REM -----------------------------------------------
+:MPU
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- PicoGUS in MPU-401 intelligent mode ---
+REM No SoftMPU needed - PicoGUS handles intelligent mode natively
+REM McCake (WP32) on wavetable header: GM/MT-32 on port 330h
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 330 /mainvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  McCake  : port 330h (GM/MT-32 via wavetable header)
+ECHO.
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+
+REM -----------------------------------------------
+REM Profile: MPUEMS - RAM (EMS), PicoGUS MPU-401, physical CD-ROM
+REM Use for: GM/MT-32 games + DOS extenders, physical disc
+REM -----------------------------------------------
+:MPUEMS
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+REM --- PicoGUS in MPU-401 intelligent mode ---
+REM No SoftMPU needed - PicoGUS handles intelligent mode natively
+REM McCake (WP32) on wavetable header: GM/MT-32 on port 330h
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode mpu /mpuport 330 /mainvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - MPU-401 MODE]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  SOUND   : %SOUND%
+ECHO  McCake  : port 330h (GM/MT-32 via wavetable header)
+ECHO.
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:SSCD000 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+:ESPNS
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - ESP32-S3 CD-ROM]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ESP32CD : drive letter auto-assigned by SHSUCDX
+ECHO.
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:ESPCD0 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
+:ESPNES
+LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
+C:\DRIVERS\SB16\AWEUTIL.COM /S
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+ECHO.
+ECHO  [SOUND ENVIRONMENT - ESP32-S3 CD-ROM]
+ECHO  BLASTER : %BLASTER%
+ECHO  MIDI    : %MIDI%
+ECHO  ULTRASND: %ULTRASND%
+ECHO  ESP32CD : drive letter auto-assigned by SHSUCDX
+ECHO.
+LH C:\DRIVERS\SHSUCDX\SHSUCDX.COM /D:ESPCD0 /Q
+LH C:\DRIVERS\CTMOUSE\CTMOUSE.EXE /R2
+GOTO END
 :BARE
 GOTO END
 
 :END
 REM --- Norton Commander ---
 NC
-
-
-
-
-
-
-
-
 ```
 
----
-
-## FAT32 — MSDOS.SYS
-
-> Place on **C:\** — must be >1024 bytes, Hidden+Read-only+System attributes.
-> `BootGUI=0` prevents auto-launch of Windows — boot menu is shown instead.
-
-```ini
-[Options]
-BootGUI=0
-BootMulti=1
-Logo=0
-BootDelay=2
-
-;=================================================================
-; Padding - MSDOS.SYS must be >1024 bytes (Win98 requirement)
-; x x x x x x x x x x x x x x x x x x x x x x x x x x x x
-; x x x x x x x x x x x x x x x x x x x x x x x x x x x x
-; x x x x x x x x x x x x x x x x x x x x x x x x x x x x
-; x x x x x x x x x x x x x x x x x x x x x x x x x x x x
-; x x x x x x x x x x x x x x x x x x x x x x x x x x x x
+---x x x x x x x x x x x x x x x x x x x x x x x x x x x
 ; x x x x x x x x x x x x x x x x x x x x x x x x x x x x
 ; x x x x x x x x x x x x x x x x x x x x x x x x x x x x
 ; x x x x x x x x x x x x x x x x x x x x x x x x x x x x
@@ -2367,7 +2328,7 @@ SET TELIX=C:\TOOLS\TELIX
 
 REM --- AWE32 CT3900 settings ---
 REM A220=SB16 port, I5=IRQ, D1=DMA 8bit, H5=DMA 16bit
-REM P330=MPU-401 port (SC-55/MT-32 chain), E620=EMU8000, T6=SB16/AWE type
+REM P300=MPU-401 port (AWE32 gameport — not connected to MIDI), E620=EMU8000, T6=SB16/AWE type
 REM CT3900 semi-PnP: UNISOUND programs IRQ/DMA from these values
 REM Valid values: IRQ 2/5/7/10, Low DMA 0/1/3, High DMA 5/6/7
 SET SOUND=C:\DRIVERS\SB16
@@ -2487,15 +2448,15 @@ C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- SoftMPU - intelligent mode MPU-401 emulation for MT-32 games ---
 REM Required for: Monkey Island 1, Sierra games, Ultima Underworld
 REM AWE32 supports UART mode only - SoftMPU adds intelligent mode
-REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
+REM /MPU:300 = MPU-401 port (must match P300 in BLASTER — AWE32 MPU at 300h)
 REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
 REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
 REM WARNING: AWEUTIL /EM:* cannot be combined with SoftMPU!
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:300 /SB:220 /IRQ:5
 
 REM --- PicoGUS initialization ---
 REM /mode gus    = Gravis UltraSound emulation
-REM /mpuport 300 = MPU-401 on port 300h (AWE32 uses 330h - must not conflict)
+REM /mpuport 330 = MPU-401 on port 330h (AWE32 MPU at 300h - must not conflict)
 REM /mainvol 95  = master output 95% (headroom to prevent clipping)
 REM /gusvol 95   = GUS output 95%
 REM /wtvol 95    = wavetable header output 95%
@@ -2535,10 +2496,10 @@ REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 
 REM --- SoftMPU - intelligent mode MPU-401 emulation ---
-REM /MPU:330 = MPU-401 port (must match P330 in BLASTER)
+REM /MPU:300 = MPU-401 port (must match P300 in BLASTER — AWE32 MPU at 300h)
 REM /SB:220  = Sound Blaster base port (explicit, prevents autodetect failure)
 REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:300 /SB:220 /IRQ:5
 
 REM --- PicoGUS initialization ---
 REM /mainvol 95 = master output 95% (headroom to prevent clipping)
@@ -3048,27 +3009,27 @@ Without `LH` the TSR would use ~26 KB of conventional memory instead of UMB.
 
 ```bat
 REM MT-32 game (Sierra, LucasArts floppy):
-REM QX1222USB: CH 3+4 (MT-32) UP, CH 11+12 (AWE32) up for effects
+REM QX1222USB: CH 7+8 (MT-32) UP, CH 3+4 (AWE32) up for effects
 REM SoftMPU active from AUTOEXEC, DO NOT run AWEUTIL /EM (conflicts with SoftMPU)
 KQ5.EXE
 
 REM GM/GS game with SC-55 connected:
-REM QX1222USB: CH 5+6 (SC-55) UP, CH 11+12 (AWE32) up for effects
+REM QX1222USB: CH 9+10 (SC-55) UP, CH 3+4 (AWE32) up for effects
 REM Do not run AWEUTIL /EM — SC-55 >> EMU8000, SoftMPU does not interfere here
 MONKEY2.EXE
 
 REM GUS game (Doom, Duke3D, Heretic):
-REM QX1222USB: CH 9+10 (PicoGUS) UP, CH 11+12 (AWE32) up for effects
+REM QX1222USB: CH 1+2 (PicoGUS) UP, CH 3+4 (AWE32) up for effects
 REM Do not run AWEUTIL, GUS is via PicoGUS
 DOOM.EXE
 
 REM AWE32 native game:
-REM QX1222USB: CH 11+12 (AWE32) UP for everything
+REM QX1222USB: CH 3+4 (AWE32) UP for everything
 REM AWEUTIL /S ran at boot, just launch the game
 FIFA95.EXE
 
 REM GM/GS game WITHOUT SC-55, WITHOUT DOS extender:
-REM QX1222USB: CH 9+10 (PicoGUS/X16GS) UP + CH 11+12 (AWE32) for effects
+REM QX1222USB: CH 1+2 (PicoGUS/McCake) UP + CH 3+4 (AWE32) for effects
 REM Prefer X16GS (port 300h) — no SoftMPU conflict
 LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:GS
 game.exe
@@ -3098,7 +3059,7 @@ LH C:\DRIVERS\SB16\AWEUTIL.COM /EM:MT32    ← then load new mode
 REM Profile 3 NORMAL — order in AUTOEXEC:
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S             ← hardware init only, 0 KB memory
-LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:300 /SB:220 /IRQ:5
 
 REM Profile 1 NOSOFTMPU — order in AUTOEXEC:
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
@@ -3133,7 +3094,7 @@ intentional retro sound.
 ---
 
 ### Category 1 — MT-32 games
-**QX1222USB: CH 3+4 (MT-32) UP, CH 11+12 (AWE32) up for effects | Profile: NORMAL**
+**QX1222USB: CH 7+8 (MT-32) UP, CH 3+4 (AWE32) up for effects | Profile: NORMAL**
 
 These games were composed specifically for the Roland MT-32. SC-55 and GM
 emulation do not sound correct — specific MT-32 timbre sets and SysEx
@@ -3198,7 +3159,7 @@ MIDI port     : 330
 ---
 
 ### Category 2 — GM/GS games — SC-55
-**QX1222USB: CH 5+6 (SC-55) UP, CH 11+12 (AWE32) up for effects | Profile: NORMAL**
+**QX1222USB: CH 9+10 (SC-55) UP, CH 3+4 (AWE32) up for effects | Profile: NORMAL**
 
 These games were composed or optimized for the Roland SC-55/SC-88.
 SC-55 sounds more authentic than any emulation — the music was typically
@@ -3275,7 +3236,7 @@ MIDI port     : 330
 ---
 
 ### Category 3 — GUS games
-**QX1222USB: CH 9+10 (PicoGUS) UP, CH 11+12 (AWE32) up for effects | Profile: NORMAL**
+**QX1222USB: CH 1+2 (PicoGUS) UP, CH 3+4 (AWE32) up for effects | Profile: NORMAL**
 
 These games have native Gravis UltraSound support with their own sampled
 patch sets. GUS sounds better in these games than SB16 due to wavetable
@@ -3384,7 +3345,7 @@ fine with GUS.BAT too — ULTRAMID is harmless for those games.
 ---
 
 ### Category 4 — AWE32 native games (EMU8000 wavetable)
-**QX1222USB: CH 11+12 (AWE32) UP for all | Profile: NORMAL | AWEUTIL /S runs from AUTOEXEC**
+**QX1222USB: CH 3+4 (AWE32) UP for all | Profile: NORMAL | AWEUTIL /S runs from AUTOEXEC**
 
 These games access the EMU8000 synthesizer directly. AWEUTIL /S runs from
 AUTOEXEC — no additional steps before launching. If the game offers both GM
@@ -3413,7 +3374,7 @@ Before game: nothing — AWEUTIL /S runs from AUTOEXEC automatically
 ---
 
 ### Category 5 — GM/GS games without external modules
-**QX1222USB: CH 9+10 (PicoGUS/McCake) UP + CH 11+12 (AWE32) for effects | Profile: NORMAL**
+**QX1222USB: CH 1+2 (PicoGUS/McCake) UP + CH 3+4 (AWE32) for effects | Profile: NORMAL**
 
 Use when SC-55 is not connected or you do not want to switch MIDI chain.
 McCake on port 330h via PicoGUS — no preparation needed, always active.
@@ -3439,7 +3400,7 @@ MIDI port     : 300
 ---
 
 ### Category 6 — OPL3 / AdLib / FM games
-**QX1222USB: CH 11+12 (AWE32) UP — real OPL3 CT1747 | Profile: NORMAL**
+**QX1222USB: CH 3+4 (AWE32) UP — real OPL3 CT1747 | Profile: NORMAL**
 
 CT3900 has a **real Yamaha OPL3** chip (CT1747) — unlike AWE64 which used
 CQM emulation. These games sound authentically correct on CT3900.
@@ -3466,7 +3427,7 @@ Port       : 220   IRQ: 5   DMA: 1
 FM Music   : OPL3 / AdLib   port 388 (automatic)
 ```
 
-> Tyrian requires EMS memory — boot into profile 4 (SoftMPU EMS)
+> Tyrian requires EMS memory — boot into EMS podmenu → NORMEMS
 
 ---
 
@@ -4370,18 +4331,18 @@ Utilita `MT32-PI.EXE` od gmcn42 ovládá zařízení přes MIDI SysEx na portu P
 
 ```bat
 REM Port — dle boot profilu: 300h (GUS profily) nebo 330h (MPU profily)
-MT32-PI.EXE -p 300 -g          přepne do SF2/FluidSynth GM módu (výchozí)
-MT32-PI.EXE -p 300 -m          přepne do MT-32 módu (pokud jsou ROM soubory na SD)
-MT32-PI.EXE -p 300 -s 0        soundfont č. 0 (první v adresáři soundfonts/)
-MT32-PI.EXE -p 300 -s 1        soundfont č. 1
-MT32-PI.EXE -p 300 -r          reboot Pi
-MT32-PI.EXE -p 300 --gm-reset  pošle GM reset SysEx
-MT32-PI.EXE -p 300 --gs-reset  pošle GS reset SysEx
-MT32-PI.EXE -p 300 --mt32-reset  pošle MT-32 reset SysEx (jen v MT-32 módu)
-MT32-PI.EXE -p 300 -b old      MT-32 Old romset (model 1987)
-MT32-PI.EXE -p 300 -b new      MT-32 New romset (model 1989+)
-MT32-PI.EXE -p 300 -b cm32l    CM-32L romset
-MT32-PI.EXE -p 300 -t "Hello"  text na display (MT-32 mód)
+MT32-PI.EXE -p 330 -g          přepne do SF2/FluidSynth GM módu (výchozí)
+MT32-PI.EXE -p 330 -m          přepne do MT-32 módu (pokud jsou ROM soubory na SD)
+MT32-PI.EXE -p 330 -s 0        soundfont č. 0 (první v adresáři soundfonts/)
+MT32-PI.EXE -p 330 -s 1        soundfont č. 1
+MT32-PI.EXE -p 330 -r          reboot Pi
+MT32-PI.EXE -p 330 --gm-reset  pošle GM reset SysEx
+MT32-PI.EXE -p 330 --gs-reset  pošle GS reset SysEx
+MT32-PI.EXE -p 330 --mt32-reset  pošle MT-32 reset SysEx (jen v MT-32 módu)
+MT32-PI.EXE -p 330 -b old      MT-32 Old romset (model 1987)
+MT32-PI.EXE -p 330 -b new      MT-32 New romset (model 1989+)
+MT32-PI.EXE -p 330 -b cm32l    CM-32L romset
+MT32-PI.EXE -p 330 -t "Hello"  text na display (MT-32 mód)
 ```
 
 **Download:** `https://github.com/gmcn42/mt32-pi-control`  
@@ -4404,10 +4365,10 @@ Výchozí mód je SF2/GM — pro většinu retro her stačí. Vyber v nastavení
 
 ```bat
 REM Workflow před GM/GS hrou:
-MT32-PI.EXE -p 300 -g --gm-reset
+MT32-PI.EXE -p 330 -g --gm-reset
 
 REM Workflow před MT-32 hrou (jen pokud máš ROM na SD):
-MT32-PI.EXE -p 300 -m --mt32-reset
+MT32-PI.EXE -p 330 -m --mt32-reset
 ```
 
 ---
