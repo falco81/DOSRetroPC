@@ -12,52 +12,52 @@
 - [BIOS Settings](#bios-settings)
 - [IRQ Map](#irq-map)
 - [DMA Map](#dma-map)
-- [AWE32 CT3900 Upgrade Guide](#awe64-ct4380--awe32-ct3900-upgrade-guide)
-- [PicoGUS v2.0 + WP32 McCake](#picogus-v20--wp32-mccake--installation-guide)
-- [Audio Routing](#audio-routing--behringer-qx1222usb)
+- [AWE32 CT3900 Upgrade Guide](#awe64-ct4380-awe32-ct3900-upgrade-guide)
+- [PicoGUS v2.0 + WP32 McCake](#picogus-v20-wp32-mccake-installation-guide)
+- [Audio Routing](#audio-routing-behringer-qx1222usb)
 - [Sound Device Reference](#sound-device-reference)
 
 **FAT32 — MS-DOS 7.1 + Windows 98SE**
-- [Disk Installation](#fat32--disk-installation)
-- [Boot Menu Profiles](#fat32--boot-menu-profiles)
-- [CONFIG.SYS](#fat32--configsys)
-- [AUTOEXEC.BAT](#fat32--autoexecbat)
-- [MSDOS.SYS](#fat32--msdossys)
+- [Disk Installation](#fat32-disk-installation)
+- [Boot Menu Profiles](#fat32-boot-menu-profiles)
+- [CONFIG.SYS](#fat32-configsys)
+- [AUTOEXEC.BAT](#fat32-autoexecbat)
+- [MSDOS.SYS](#step-22-edit-msdossys-to-disable-auto-gui)
 
 **DOS 6.22**
-- [Boot Menu Profiles](#dos-622--boot-menu-profiles)
-- [CONFIG.SYS](#dos-622--configsys)
-- [AUTOEXEC.BAT](#dos-622--autoexecbat)
+- [Boot Menu Profiles](#dos-622-boot-menu-profiles)
+- [CONFIG.SYS](#dos-622-configsys)
+- [AUTOEXEC.BAT](#dos-622-autoexecbat)
 
 **Scripts — C:\DRIVERS\SCRIPTS\**
-- [GUS.BAT](#gusbat--gus-game-launcher)
-- [MPU.BAT](#mpubat--picogus-mpu-401-game-launcher)
-- [ISO.BAT](#isobat--virtual-cd-rom-switcher)
-- [USBMNT.BAT](#usbmntbat--mount-usb-drive)
-- [USBCHCK.BAT](#usbchckbat--check-usb-devices)
-- [USBUMNT.BAT](#usbumntbat--safe-usb-unplug)
+- [GUS.BAT](#gusbat-gus-game-launcher)
+- [MPU.BAT](#mpubat-picogus-mpu-401-game-launcher)
+- [ISO.BAT](#isobat-virtual-cd-rom-switcher)
+- [USBMNT.BAT](#usbmntbat-mount-usb-drive)
+- [USBCHCK.BAT](#usbchckbat-check-usb-devices)
+- [USBUMNT.BAT](#usbumntbat-safe-usb-unplug)
 
 **Peripherals**
-- [USBODE — USB CD-ROM / Storage](#usbode--usb-optical-drive-emulator)
-- [PicoIDE Deluxe](#picoide-deluxe--pending-delivery)
-- [Gotek SFR1M44-U100K](#gotek-sfr1m44-u100k--usb-floppy-emulator)
-- [BLE Keyboard + Mouse Bridge](#ble-keyboard--mouse-bridge)
+- [USBODE — USB CD-ROM / Storage](#usbode-usb-optical-drive-emulator)
+- [PicoIDE Deluxe](#picoide-deluxe-pending-delivery)
+- [Gotek SFR1M44-U100K](#gotek-sfr1m44-u100k-usb-floppy-emulator)
+- [BLE Keyboard + Mouse Bridge](#ble-keyboard-mouse-bridge)
 
 **Reference**
 - [Environment Variables](#environment-variables-reference)
-- [AWEUTIL Reference](#aweutil--emu8000-wavetable-synthesizer)
+- [AWEUTIL Reference](#aweutil-emu8000-wavetable-synthesizer)
 - [Game Setup Guide](#game-setup-guide)
 - [Memory Map](#memory-map-after-optimization)
 - [Driver Locations](#driver-locations)
 - [Video](#video)
 - [Key Notes](#key-notes)
-- [X16GS Alternative](#dreamblaster-x16gs--alternative-module-currently-under-repair)
+- [X16GS Alternative](#dreamblaster-x16gs-alternative-module-currently-under-repair)
 
 **MIDI Synthesizer Reference**
 - [Roland MT-32 original](#roland-mt-32-original)
 - [Roland SC-55 MK2](#roland-sc-55-mk2)
 - [Roland SC-88 Pro](#roland-sc-88-pro)
-- [MT32-pi SF2 (Serdashop)](#mt32-pi-sf2-serdashop-external)
+- [MT32-pi SF2 (Serdashop)](#serdashop-sf2-external-midi-synth)
 - [McCake WP32 (interní wavetable)](#mccake-wp32-interní-wavetable)
 
 ---
