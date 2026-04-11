@@ -75,7 +75,7 @@
 | Super IO | ITE8679/8680 | — | — |
 | Video | ATI Rage 3D Pro (Rage PRO) | PCI | 4 MB DRAM, BIOS BK3.9.0/3.081, VBE 2.0 |
 | 3D Accelerator | 3dfx Voodoo2 | PCI | FBI Rev4, 4 MB FB + 2×4 MB TMU |
-| Sound Card | Creative Sound Blaster AWE32 CT3900 | ISA | DSP 4.16, port 220h, IRQ 5, DMA 1/5, MPU-401 330h, 512 KB DRAM |
+| Sound Card | Creative Sound Blaster AWE32 CT3900 | ISA | DSP 4.16, port 220h, IRQ 5, DMA 1/5, MPU-401 300h, 512 KB DRAM |
 | GUS / MIDI Card | PicoGUS v2.0 | ISA | port 240h, IRQ 7, DMA 3, MPU-401 330h |
 | SF2 / GM Synth | Serdaco WP32 McCake (mt32-pi, CM4) | Waveblaster header | port 330h (via PicoGUS) |
 | McCake Panel | Serdaco MT32Pi Drive Bay Panel 5.25" + OLED | 5.25" bay | **pending delivery** |
@@ -245,7 +245,7 @@ JP17=Closed, JP18=Closed  →  port 220h
 **MPU-401:**
 ```
 JP15=Closed  →  MPU-401 enabled
-JP16=Closed  →  port 330h
+JP16=Open    →  port 300h
 ```
 
 **Joystick / Gameport:**
@@ -382,8 +382,7 @@ No other behavioral difference vs Phase 2 for typical gaming.
 3. Insert CT3900 into the same ISA slot
    (SIMMs already installed in Step 2 — check clearance to adjacent slot)
 4. Secure bracket screw
-5. Connect MT-32/SC-55 MIDI chain to CT3900 gameport
-   (same cable as before — gameport position is identical)
+5. MIDI výstup je nyní na PicoGUS (port 330h) → CME WIDI Thru6 BT splitter
 6. Power on
 
 ---
@@ -437,18 +436,19 @@ IRQ 5, DMA 1/5 are the card defaults and match this system perfectly.
 #### Phase 1 — Initial installation (CT3900 + 2× 1MB Samsung)
 
 - [ ] Jumper JP17+JP18 closed — I/O port 220h
-- [ ] Jumper JP15+JP16 closed — MPU-401 enabled on 330h
+- [ ] Jumper JP15 closed — MPU-401 enabled
+- [ ] Jumper JP16 open — MPU-401 port 300h
 - [ ] Jumper JP14 closed — gameport/joystick enabled
 - [ ] Jumpers JP2+JP3 closed — IDE port disabled
 - [ ] 2× Samsung KM41C1000CJ-6 installed — both slots, identical modules
 - [ ] Jumper JP2 pins 1&2 closed — SIMM enabled
 - [ ] CT3900 in ISA slot, bracket screw secured
-- [ ] MT-32/SC-55 MIDI cable connected to CT3900 gameport
+- [ ] MIDI OUT from PicoGUS connected to CME WIDI Thru6 BT
 - [ ] First boot: no error messages, UNISOUND output visible
-- [ ] `SET BLASTER` shows `A220 I5 D1 H5 P330 E620 T6`
+- [ ] `SET BLASTER` shows `A220 I5 D1 H5 P300 E620 T6`
 - [ ] `MEM /C` shows Extended ~2 MB
 - [ ] AdLib/FM game plays with correct OPL3 sound (warmer than AWE64 CQM)
-- [ ] MT-32 game plays music correctly on port 330h
+- [ ] MT-32 game plays music correctly on port 330h (via PicoGUS → WIDI Thru6 BT)
 
 #### Phase 2 — SIMM swap to 2× 4MB (when eBay modules arrive)
 
@@ -515,7 +515,7 @@ jeden stereo kabel do QX1222USB CH 9+10.
 | IRQ 7 | PicoGUS | LPT1 disabled in BIOS — frees IRQ 7 |
 | DMA 3 | PicoGUS | DMA 1 taken by AWE32 8-bit, DMA 3 is free |
 | Port 240h | GUS base | 220h taken by AWE32 SB16 |
-| Port 300h | MPU-401 | 330h taken by AWE32 MPU-401 (SC-55/MT-32 chain) |
+| Port 330h | MPU-401 | 300h taken by AWE32 MPU-401 (unused/gameport not connected) |
 
 ---
 
@@ -739,15 +739,15 @@ not run.
 ### PGUSINIT.EXE — Full Parameter Reference
 
 ```
-PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1 [/save]
+PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1 [/save]
 
 /mode gus      GUS emulation mode — use this for all DOS gaming
                Other modes exist (sb, adlib, mpu, usb) but are not
-               needed here as AWE32 handles SB16/OPL3 on port 220h/330h
+               needed here as AWE32 handles SB16/OPL3 on port 220h — MPU-401 on 300h (gameport, unused)
 
 /mpuport 330   MPU-401 on port 330h
-               MUST differ from AWE32 MPU-401 on 330h
-               X16GS bank switching and MIDI output use this port
+               AWE32 MPU-401 is on 300h (gameport, not connected to MIDI)
+               PicoGUS MPU-401 on 330h → WIDI Thru6 BT → MT-32/SC-55/SC-88/MT32-pi
 
 /gusvol 85     GUS audio output volume (0–100)
 
@@ -883,8 +883,8 @@ QX1222USB: **CH 9+10 (PicoGUS/McCake) UP** + CH 11+12 (AWE32) for effects.
 
 #### MT-32 games (unchanged — PicoGUS does not affect this)
 
-SoftMPU + AWE32 MPU-401 on 330h continues to handle MT-32 games exactly
-as before. PicoGUS on port 330h does not interfere.
+MT-32 games use port 330h — PicoGUS MPU-401 on 330h → WIDI Thru6 BT → MT-32.
+SoftMPU on AWE32 port 300h provides intelligent mode emulation.
 
 ```bat
 Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
@@ -925,7 +925,7 @@ for cases when PicoGUS is not available.
 | Base port | 220h (SB16) | 240h (GUS) |
 | IRQ | 5 | 7 |
 | DMA | 1 (8-bit) / 5 (16-bit) | 3 |
-| MPU-401 | 300h → MT-32 chain   | 330h → McCake SF2 |
+| MPU-401 | 300h (gameport, nepřipojeno) | 330h → WIDI Thru6 BT → MT-32/SC-55/SC-88/MT32-pi + McCake |
 | Audio output | QX1222USB CH 11+12 | QX1222USB CH 9+10 |
 | Role | SB16 efekty, real OPL3 FM, EMU8000 wavetable, AWE32 native | GUS hudba, McCake GM/SF2 synth |
 
@@ -962,7 +962,7 @@ re-initialize the card on the DOS PC.
 - [ ] PicoGUS in ISA slot, bracket screw secured
 - [ ] PicoGUS line out connected to QX1222USB CH 9+10
 - [ ] `C:\DRIVERS\PICOGUS\` contains PGUSINIT.EXE, DOSMID.EXE, MIDI\ subdirectory
-- [ ] Manual test: `PGUSINIT /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1` prints GUS port 240 IRQ 7 DMA 3
+- [ ] Manual test: `PGUSINIT /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1` prints GUS port 240 IRQ 7 DMA 3
 - [ ] Manual test: `DOSMID Slot1.mid` plays through headphones on CH 9+10
 - [ ] Manual test: Doom plays GUS music (not SB music)
 - [x] AUTOEXEC.BAT: ULTRASND, ULTRADIR, PGUSINIT active in all profiles
@@ -2884,7 +2884,7 @@ SET BLASTER=A220 I5 D1 H5 P300 E620 T6
   I5    = IRQ 5
   D1    = DMA 1 (8-bit)
   H5    = DMA 5 (16-bit)
-  P330  = MPU-401 port 330h (MT-32 / SC-55 chain)
+  P300  = MPU-401 port 300h (AWE32 gameport — nepřipojeno k MIDI)
   E620  = AWE32 EMU8000 port 620h
   T6    = card type SB16/AWE
 
@@ -3529,7 +3529,7 @@ QUAKE2.EXE +set vid_ref gl
 |---|---|---|
 | MT-32 (+ SC-55 after it) | **330h** | MT-32 games, GM games with SC-55 |
 | McCake (WP32) via PicoGUS | **330h** | GM games via SF2 soundfont (without SC-55) |
-| EMU8000 AWEUTIL emulation | **330h** | AWEUTIL /EM:GM, AWE32 native games |
+| EMU8000 AWEUTIL emulation | **300h** | AWEUTIL /EM:GM, AWE32 native games |
 
 ### Switching SC-55 mode
 
@@ -4037,10 +4037,10 @@ With Variant A (RS232 bridge) MSD reports serial mouse on COM1/COM2, IRQ 3 or 4.
 - **CT3900 is semi-PnP**: I/O address and MPU-401 = jumpers; IRQ and DMA = software (UNISOUND)
 - IRQ/DMA change: update BLASTER in AUTOEXEC.BAT, UNISOUND programs card at boot (IRQ: 2/5/7/10, Low DMA: 0/1/3, High DMA: 5/6/7)
 - **AWEUTIL /EM:* conflicts with SoftMPU** — use profile 1 (NOSOFTMPU) for AWEUTIL emulation
-- AWE32 MPU-401 → port 330h → SC-55 → MT-32 chain
-- PicoGUS MPU-401 → port 330h → McCake (WP32) — SF2 soundfonty, GM hry
+- AWE32 MPU-401 → port 300h → gameport (nepřipojeno k MIDI)
+- PicoGUS MPU-401 → port 330h → CME WIDI Thru6 BT → MT-32 / SC-55 MK2 / SC-88 Pro / MT32-pi SF2 + McCake (WP32) wavetable
 - LPT1 disabled in BIOS to free IRQ 7 for PicoGUS
-- SC-55 must be first in MIDI chain, MT-32 on SC-55 MIDI THRU
+- MIDI chain: PicoGUS → WIDI Thru6 BT (splitter) → MT-32 / SC-55 MK2 / SC-88 Pro / MT32-pi SF2 (paralelně)
 - CTMOUSE /R2 = horizontal resolution 2; mouse is a modern BLE mouse via ESP32 bridge (PS/2 IRQ 12 or RS232 IRQ 3/4)
 - ULTRADIR must point to C:\DRIVERS\PICOGUS root (not MIDI subfolder)
 - CT3900 IDE port must be DISABLED (JP2+JP3 closed) — conflicts with motherboard IDE
