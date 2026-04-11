@@ -101,47 +101,148 @@
 
 ---
 
+---
+
 ## BIOS Settings
 
-### Integrated Peripherals
+> Award Modular BIOS v4.51PG · ROM ID: 2A59IO09 · Date: 09/18/97
+> DEL při bootu pro vstup do setupu.
 
-| Setting | Value | Reason |
+---
+
+### BIOS Features Setup
+
+| Položka | Nastavení | Popis |
 |---|---|---|
-| Serial Port 1 (COM1) | Enabled, 3F8h | unused but harmless |
-| Serial Port 2 (COM2) | Enabled, 2F8h | serial mouse |
-| Parallel Port (LPT1) | **Disabled** | frees IRQ 7 for PicoGUS |
-| IDE Primary | Enabled | hard drives |
-| IDE Secondary | Enabled | CD-ROM |
-| Floppy Controller | Enabled | floppy drive |
+| Virus Warning | Disabled | Ochrana boot sektoru — vypnuto, jinak blokuje instalaci OS a bootloadery |
+| CPU Internal Cache | Enabled | L1 cache procesoru — musí být zapnuto |
+| External Cache | Enabled | L2 cache (512 KB Dual-Bank) — musí být zapnuto |
+| Quick Power On Self Test | Enabled | Zkrácený POST — rychlejší boot |
+| Boot Sequence | C, CDROM, A | Pořadí bootování — C: první, pak CD-ROM, pak A: |
+| Swap Floppy Drive | Disabled | Prohození A:/B: — vypnuto, Gotek je A:, fyzická mechanika B: |
+| Boot Up Floppy Seek | Disabled | Test floppy při bootu — vypnuto, ušetří ~2s |
+| Boot Up NumLock Status | On | NumLock zapnutý při startu |
+| Boot Up System Speed | High | Rychlost systému při bootu — vždy High |
+| Typematic Rate Setting | Disabled | Vlastní rychlost opakování kláves — vypnuto (systémová výchozí) |
+| Security Option | Setup | Heslo jen pro vstup do BIOSu, ne pro boot |
+| PCI/VGA Palette Snoop | Enabled | Nutné pro 3dfx Voodoo2 — bez tohoto jsou barvy v DOS špatně |
+| OS Select For DRAM >64MB | Non-OS2 | Non-OS2 pro Windows/DOS — OS2 jen pro IBM OS/2 |
+| Report No FDD For WIN95 | No | Hlásit floppy Windows 95/98 — No (mechaniky jsou přítomny) |
+| Video BIOS Shadow | Enabled | Zkopíruje ATI Rage Video BIOS do RAM — zrychlí BIOS volání videa |
+| C8000-DFFFF Shadow | Disabled | Shadow dalších ROM oblastí — vypnuto, uvolní UMB pro DOS drivery |
+
+---
+
+### Chipset Features Setup
+
+| Položka | Nastavení | Popis |
+|---|---|---|
+| Auto Configuration | Disabled | Vypnuto — umožňuje ruční nastavení paměťových timingů |
+| DRAM Timing | 60ns | Rychlost DRAM — odpovídá nainstalovaným 60ns SDRAM modulům |
+| DRAM Leadoff Timing | 10/6/3 | První přístup do paměti — nejrychlejší dostupná hodnota |
+| DRAM Read Burst (EDO/FP) | x222/x333 | Rychlost burst čtení — nejrychlejší nastavení |
+| DRAM Write Burst Timing | x222 | Rychlost burst zápisu — nejrychlejší nastavení |
+| Fast EDO Lead Off | Enabled | Zrychlení EDO — nemá vliv na SDRAM, neškodí |
+| Refresh RAS# Assertion | 4 Clks | Délka refresh cyklu — 4 takty je standard |
+| Fast RAS To CAS Delay | 2 | Zpoždění RAS→CAS — 2 je nejrychlejší stabilní hodnota |
+| DRAM Page Idle Timer | 2 Clks | Jak dlouho držet stránku otevřenou — 2 takty, nejrychlejší |
+| DRAM Enhanced Paging | Enabled | Vylepšené page-mode přístupy — zapnuto pro výkon |
+| Fast MA to RAS# Delay | 1 Clks | Zpoždění adres→RAS — 1 takt, nejrychlejší |
+| SDRAM CAS Lat/RAS-to-CAS | 2/2 | CAS latence a RAS-to-CAS delay — 2/2 nejrychlejší, 60ns SDRAM to unese |
+| SDRAM Speculative Read | Disabled | Intel 430TX errata — MUSÍ být Disabled, jinak nestabilita paměti |
+| System BIOS Cacheable | Disabled | Cache systémového BIOSu — vypnuto kvůli kompatibilitě s K6-III+ |
+| Video BIOS Cacheable | Enabled | Cache Video BIOSu do L2 — zrychlí grafické BIOS volání |
+| 8 Bit I/O Recovery Time | 1 | Zotavení 8-bit ISA sběrnice — 1 takt, minimum |
+| 16 Bit I/O Recovery Time | 2 | Zotavení 16-bit ISA sběrnice — 2 takty, minimum |
+| Memory Hole At 15M-16M | Disabled | Díra v paměti pro ISA karty — nepotřebné, vypnuto |
+| PCI 2.1 Compliance | Enabled | PCI 2.1 standard — zapnuto pro správnou funkci PCI karet |
+
+---
+
+### Power Management Setup
+
+| Položka | Nastavení | Popis |
+|---|---|---|
+| Power Management | Min Saving | Minimální úspora — nutné pro správný Win98SE shutdown na Rhino 15 |
+| PM Control by APM | Yes | Řízení spotřeby přes APM — zapnuto pro Win98SE |
+| Video Off Method | V/H SYNC+Blank | Metoda vypnutí monitoru při idle |
+| Video Off After | Standby | Monitor se vypne při přechodu do Standby |
+| MODEM Use IRQ | 3 | IRQ pro wake-up z modemu — bez efektu (Resume by Ring Disabled) |
+| Doze Mode | Disabled | První stupeň úspory — vypnuto, Min Saving má velmi dlouhé timeouty |
+| Standby Mode | Disabled | Druhý stupeň úspory — vypnuto |
+| Suspend Mode | Disabled | Třetí stupeň úspory — vypnuto |
+| HDD Power Down | Disabled | Automatické vypnutí disku — vypnuto |
+| Throttle Duty Cycle | 62.5% | Škrcení CPU v Doze módu — bez efektu (Doze Disabled) |
+| ZZ Active in Suspend | Disabled | CPU ZZ signál v Suspend — vypnuto |
+| VGA Active Monitor | Disabled | Monitor jako wake-up zdroj — vypnuto |
+| Soft-Off by PWR-BTTN | Instant-Off | Vypínač — okamžité vypnutí |
+| CPUFAN Off In Suspend | Enabled | Vypnutí CPU ventilátoru v Suspend — zapnuto |
+| Resume by Ring | Disabled | Wake-up přes modem — vypnuto |
+| IRQ 8 Break Suspend | Disabled | RTC jako wake-up — vypnuto |
+| **Reload Global Timer Events** | | Události které resetují časovač úspory: |
+| IRQ[3-7,9-15],NMI | Enabled | Jakýkoliv IRQ (myš, klávesnice, zvuk) resetuje časovač |
+| Primary IDE 0 | Enabled | Disková aktivita resetuje časovač |
+| Primary IDE 1 | Disabled | |
+| Secondary IDE 0 | Enabled | CD-ROM aktivita resetuje časovač |
+| Secondary IDE 1 | Disabled | |
+| Floppy Disk | Disabled | |
+| Serial Port | Enabled | Serial mouse aktivita resetuje časovač |
+| Parallel Port | Disabled | LPT vypnuto |
+
+---
 
 ### PnP/PCI Configuration
 
-| IRQ | Setting | Reason |
+| Položka | Nastavení | Popis |
 |---|---|---|
-| IRQ 3 | **Legacy ISA** | COM2 — serial mouse |
-| IRQ 4 | Legacy ISA | COM1 |
-| IRQ 5 | **Legacy ISA** | AWE32 CT3900 |
-| IRQ 7 | **Legacy ISA** | PicoGUS v2.0 |
-| IRQ 10 | PnP | free |
-| IRQ 11 | PnP | PIIX4 USB |
-| IRQ 12 | PnP | PS/2 Mouse |
-| IRQ 14 | Legacy ISA | Primary IDE |
-| IRQ 15 | Legacy ISA | Secondary IDE |
-
-| DMA | Setting | Reason |
-|---|---|---|
-| DMA 1 | **Legacy ISA** | AWE32 CT3900 (8-bit) |
-| DMA 3 | **Legacy ISA** | PicoGUS v2.0 (8-bit) |
-| DMA 5 | **Legacy ISA** | AWE32 CT3900 (16-bit) |
-| DMA 6 | PnP | free |
-| DMA 7 | PnP | free |
-
-> IRQ 6 and DMA 2 are hardwired to floppy — do not appear in PnP/PCI Configuration.
+| PNP OS Installed | No | OS neřídí PnP — BIOS přiděluje zdroje (správné pro DOS + Win98SE) |
+| Resources Controlled By | Manual | Ruční přidělení IRQ a DMA — nutné pro ISA karty AWE32 a PicoGUS |
+| Reset Configuration Data | Disabled | Neresetovat PnP data při bootu |
+| IRQ-3 | Legacy ISA | COM2 — serial mouse |
+| IRQ-4 | PCI/ISA PnP | COM1 — volný |
+| IRQ-5 | Legacy ISA | AWE32 CT3900 |
+| IRQ-7 | Legacy ISA | PicoGUS v2.0 (LPT1 vypnut v Integrated Peripherals) |
+| IRQ-9 | PCI/ISA PnP | Volný |
+| IRQ-10 | PCI/ISA PnP | Volný — pro PCI karty |
+| IRQ-11 | Legacy ISA | PIIX4 USB Host Controller |
+| IRQ-12 | Legacy ISA | PS/2 myš |
+| IRQ-14 | PCI/ISA PnP | Primary IDE |
+| IRQ-15 | PCI/ISA PnP | Secondary IDE |
+| DMA-0 | PCI/ISA PnP | Volný |
+| DMA-1 | Legacy ISA | AWE32 CT3900 (8-bit) |
+| DMA-3 | Legacy ISA | PicoGUS v2.0 |
+| DMA-5 | Legacy ISA | AWE32 CT3900 (16-bit) |
+| DMA-6 | PCI/ISA PnP | Volný |
+| DMA-7 | PCI/ISA PnP | Volný |
+| PCI IDE IRQ Map To | PCI-AUTO | Automatické mapování PCI IDE IRQ |
+| Primary IDE INT# | A | PCI interrupt pro primary IDE |
+| Secondary IDE INT# | B | PCI interrupt pro secondary IDE |
+| Used MEM Base Addr | N/A | Žádná ISA karta nepotřebuje vyhrazený paměťový region |
 
 ---
 
+### Integrated Peripherals
 
----
+| Položka | Nastavení | Popis |
+|---|---|---|
+| IDE HDD Block Mode | Enabled | Přenos více sektorů najednou — zrychlí disk, vždy zapnout |
+| IDE Primary Master PIO | Auto | PIO mód pro SSD (přes JM20330 adaptér) — Auto |
+| IDE Primary Slave PIO | Auto | Slave není připojen |
+| IDE Secondary Master PIO | Auto | CD-ROM LG GH22NS40 |
+| IDE Secondary Slave PIO | Auto | Slave není připojen |
+| IDE Primary Master UDMA | Disabled | JM20330 adaptér má problémy s UDMA na PIIX4 — Disabled vynutí MWDMA/2 |
+| IDE Primary Slave UDMA | Auto | Slave není připojen |
+| IDE Secondary Master UDMA | Auto | CD-ROM — Auto |
+| IDE Secondary Slave UDMA | Auto | Slave není připojen |
+| On-Chip Primary PCI IDE | Enabled | Primární IDE řadič — zapnuto |
+| On-Chip Secondary PCI IDE | Enabled | Sekundární IDE řadič — zapnuto |
+| KBC Input Clock | 8 MHz | Takt klávesnicového řadiče — 8 MHz standard |
+| Onboard FDC Controller | Enabled | Floppy řadič — zapnuto (Gotek + fyzická mechanika) |
+| Onboard Serial Port 1 | 3F8/IRQ4 | COM1 — standardní adresa |
+| Onboard Serial Port 2 | 2F8/IRQ3 | COM2 — standardní adresa, serial mouse |
+| UR2 Mode | Standard | Režim druhého serial portu — Standard (ne IrDA) |
+| Onboard Parallel Port | Disabled | LPT1 vypnuto — uvolní IRQ7 pro PicoGUS |
+| USB Keyboard Support | Enabled | USB klávesnice přes BIOS emulaci — zapnuto |
 
 ## IRQ Map
 
