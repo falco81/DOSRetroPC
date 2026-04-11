@@ -501,7 +501,7 @@ jeden stereo kabel do QX1222USB CH 9+10.
 
 | Before | After |
 |---|---|
-| GM games require SC-55 or AWEUTIL /EM (conflicts with SoftMPU) | McCake on port 300h — GM via SF2, no conflict |
+| GM games require SC-55 or AWEUTIL /EM (conflicts with SoftMPU) | McCake on port 330h — GM via SF2, no conflict |
 | GUS games (Doom, Duke3D) use SB music only | Native Gravis UltraSound music, superior quality |
 | AWEUTIL /EM:GS wastes ~26 KB UMB | McCake uses 0 KB extra memory |
 | AWEUTIL /EM:GS does not work with DOS extenders | McCake works with all games regardless of memory model |
@@ -669,7 +669,7 @@ SET ULTRASND=240,3,3,7,7
 SET ULTRADIR=C:\DRIVERS\PICOGUS
 
 REM 2. Initialize PicoGUS:
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 
 REM Expected output:
 REM   PicoGUS v2.x -- GUS mode
@@ -708,7 +708,7 @@ PicoGUS is installed. These lines are active in AUTOEXEC.BAT:
 ```bat
 SET ULTRASND=240,3,3,7,7
 SET ULTRADIR=C:\DRIVERS\PICOGUS
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ```
 
 ULTRASND and ULTRADIR are in the [COMMON] section — loaded in every profile.
@@ -723,7 +723,7 @@ Reboot and verify that the PGUSINIT output is visible during the boot sequence.
 After confirming everything works across a full reboot:
 
 ```bat
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1 /save
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1 /save
 ```
 
 This writes the settings to the Pico's flash memory so they survive power
@@ -745,7 +745,7 @@ PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
                Other modes exist (sb, adlib, mpu, usb) but are not
                needed here as AWE32 handles SB16/OPL3 on port 220h/330h
 
-/mpuport 300   MPU-401 on port 300h
+/mpuport 330   MPU-401 on port 330h
                MUST differ from AWE32 MPU-401 on 330h
                X16GS bank switching and MIDI output use this port
 
@@ -884,7 +884,7 @@ QX1222USB: **CH 9+10 (PicoGUS/McCake) UP** + CH 11+12 (AWE32) for effects.
 #### MT-32 games (unchanged — PicoGUS does not affect this)
 
 SoftMPU + AWE32 MPU-401 on 330h continues to handle MT-32 games exactly
-as before. PicoGUS on port 300h does not interfere.
+as before. PicoGUS on port 330h does not interfere.
 
 ```bat
 Sound Effects : Sound Blaster   port 220  IRQ 5  DMA 1
@@ -901,7 +901,7 @@ QX1222USB: **CH 3+4 (MT-32) UP** + CH 11+12 (AWE32) up for effects.
 Before PicoGUS, AWEUTIL /EM:GS was the only GM/GS option without a physical SC-55.
 After installation, McCake is the preferred route.
 
-| | McCake SF2 (port 300h) | AWEUTIL /EM:GS (port 330h) |
+| | McCake SF2 (port 330h) | AWEUTIL /EM:GS (port 300h) |
 |---|---|---|
 | Sound quality | Very good (depends on SF2) | Good (EMU8000 + Synthgs.sbk) |
 | Extra memory | **0 KB** | ~26 KB UMB |
@@ -925,7 +925,7 @@ for cases when PicoGUS is not available.
 | Base port | 220h (SB16) | 240h (GUS) |
 | IRQ | 5 | 7 |
 | DMA | 1 (8-bit) / 5 (16-bit) | 3 |
-| MPU-401 | 330h → SC-55 → MT-32 | 300h → McCake SF2 |
+| MPU-401 | 300h → MT-32 chain   | 330h → McCake SF2 |
 | Audio output | QX1222USB CH 11+12 | QX1222USB CH 9+10 |
 | Role | SB16 efekty, real OPL3 FM, EMU8000 wavetable, AWE32 native | GUS hudba, McCake GM/SF2 synth |
 
@@ -1095,7 +1095,7 @@ Mount the drive bay panel in a free **5.25" bay**.
 
 ### Krok 5 — Test z DOSu
 
-McCake responds on port 300h (PicoGUS MPU-401 header). Test:
+McCake responds on port 330h (PicoGUS MPU-401 header). Test:
 
 ```bat
 REM Download MT32-PI.EXE from https://github.com/gmcn42/mt32-pi-control
@@ -1136,7 +1136,7 @@ MT32-PI.EXE -p 300 -f 2       ← slot 2 (Timbres of Heaven)
 
 **Via MPU.BAT** (automatically switches PicoGUS to MPU-401 mode before the game):
 ```bat
-MPU GAME.EXE     ← launches game with McCake on port 300h
+MPU GAME.EXE     ← launches game with McCake on port 330h
 ```
 
 ---
@@ -1149,7 +1149,7 @@ MPU GAME.EXE     ← launches game with McCake on port 300h
 - [ ] Drive bay panel installed in 5.25" bay, cable connected to McCake
 - [ ] First boot: OLED display shows status, loading soundfont
 - [ ] Test from DOS: MT32-PI.EXE -p 300 -g reports no error
-- [ ] Playback test: GM game on port 300h plays through McCake (audible on CH 9+10)
+- [ ] Playback test: GM game on port 330h plays through McCake (audible on CH 5+6)
 - [ ] MT32-PI.EXE saved to C:\DRIVERS\PICOGUS\
 - [ ] QX1222USB CH 9+10 has adequate volume (McCake shares output with PicoGUS)
 
@@ -1198,7 +1198,7 @@ Second PC (XP) ─────────────────────�
 ### MIDI Hardware Chain
 
 ```
-PicoGUS MIDI OUT (port 300h / 330h)
+PicoGUS MIDI OUT (port 330h)
         │
         ▼
   CME WIDI Thru6 BT
@@ -1736,7 +1736,7 @@ In Device Manager → Add hardware → manually add:
 
 Default: **WINDOWS** (auto-boot after 10 seconds)
 
-**MPU profiles note:** PicoGUS switches to MPU-401 intelligent mode — no SoftMPU needed. McCake (WP32) on wavetable header provides GM/MT-32 on port 300h. Configure in-game MIDI: port 300h, General MIDI or MT-32.
+**MPU profiles note:** PicoGUS switches to MPU-401 intelligent mode — no SoftMPU needed. McCake (WP32) on wavetable header provides GM/MT-32 on port 330h. Configure in-game MIDI: port 330h, General MIDI or MT-32.
 
 
 ---
@@ -1956,12 +1956,12 @@ REM -----------------------------------------------
 REM --- PicoGUS initialization ---
 REM Required: Windows has no PicoGUS driver - hardware must be init before WIN.COM
 REM /mode gus    = Gravis UltraSound emulation (GUS not usable in Windows)
-REM /mpuport 300 = MPU-401 on port 300h - needed for McCake under Windows
+REM /mpuport 330 = MPU-401 on port 330h - needed for McCake under Windows
 REM /mainvol 95  = master output 95% (headroom to prevent clipping)
 REM /gusvol 95   = GUS output 95%
 REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2011,7 +2011,7 @@ REM /mainvol 95  = master output 95% (headroom to prevent clipping)
 REM /gusvol 95   = GUS output 95%
 REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2036,7 +2036,7 @@ REM -----------------------------------------------
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 REM --- SoftMPU NOT loaded ---
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2086,7 +2086,7 @@ REM /mainvol 95  = master output 95% (headroom to prevent clipping)
 REM /gusvol 95   = GUS output 95%
 REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2116,7 +2116,7 @@ LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 REM Note: AWEUTIL /EM:* does NOT work with DOS extenders (DOS4GW) - only /S init
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2144,7 +2144,7 @@ REM -----------------------------------------------
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2173,7 +2173,7 @@ REM -----------------------------------------------
 LH C:\DRIVERS\UNISOUND\UNISOUND.COM /V70 /VF90
 C:\DRIVERS\SB16\AWEUTIL.COM /S
 LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:330 /SB:220 /IRQ:5
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2409,7 +2409,7 @@ REM /mainvol 95 = master output 95% (headroom to prevent clipping)
 REM /gusvol 95  = GUS output 95%
 REM /wtvol 95   = wavetable header output 95%
 REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2446,7 +2446,7 @@ REM /mainvol 95 = master output 95% (headroom to prevent clipping)
 REM /gusvol 95  = GUS output 95%
 REM /wtvol 95   = wavetable header output 95%
 REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2500,7 +2500,7 @@ REM /mainvol 95  = master output 95% (headroom to prevent clipping)
 REM /gusvol 95   = GUS output 95%
 REM /wtvol 95    = wavetable header output 95%
 REM /mpudelay 1  = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2545,7 +2545,7 @@ REM /mainvol 95 = master output 95% (headroom to prevent clipping)
 REM /gusvol 95  = GUS output 95%
 REM /wtvol 95   = wavetable header output 95%
 REM /mpudelay 1 = slow down SysEx for Roland-compatible synthesizers
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ECHO.
 ECHO  [SOUND ENVIRONMENT]
 ECHO  BLASTER : %BLASTER%
@@ -2646,7 +2646,7 @@ ECHO.
 ## MPU.BAT — PicoGUS MPU-401 Game Launcher
 
 Switches PicoGUS from GUS mode → MPU-401 intelligent mode before game.
-McCake (WP32) on wavetable header provides GM/MT-32 emulation on port 300h.
+McCake (WP32) on wavetable header provides GM/MT-32 emulation on port 330h.
 Restores GUS mode after game exits.
 
 ```bat
@@ -2684,7 +2684,7 @@ IF "%1"=="" GOTO USAGE
 
 REM --- Switch PicoGUS to MPU-401 intelligent mode ---
 REM /mode mpu    = MPU-401 intelligent mode (McCake GM/MT-32 via wavetable)
-REM /mpuport 300 = MPU-401 port 300h (McCake on wavetable header)
+REM /mpuport 330 = MPU-401 port 330h (McCake on wavetable header)
 REM /mainvol 95  = master volume
 REM /wtvol 95    = wavetable header volume (McCake output)
 REM /mpudelay 1  = SysEx delay for Roland compatibility
@@ -3416,7 +3416,7 @@ Before game: nothing — AWEUTIL /S runs from AUTOEXEC automatically
 **QX1222USB: CH 9+10 (PicoGUS/McCake) UP + CH 11+12 (AWE32) for effects | Profile: NORMAL**
 
 Use when SC-55 is not connected or you do not want to switch MIDI chain.
-McCake on port 300h via PicoGUS — no preparation needed, always active.
+McCake on port 330h via PicoGUS — no preparation needed, always active.
 
 | Game | Year | Setup | SoftMPU | EMS |
 |---|---|---|---|---|
@@ -3528,7 +3528,7 @@ QUAKE2.EXE +set vid_ref gl
 | Target device | Port | When to use |
 |---|---|---|
 | MT-32 (+ SC-55 after it) | **330h** | MT-32 games, GM games with SC-55 |
-| McCake (WP32) via PicoGUS | **300h** | GM games via SF2 soundfont (without SC-55) |
+| McCake (WP32) via PicoGUS | **330h** | GM games via SF2 soundfont (without SC-55) |
 | EMU8000 AWEUTIL emulation | **330h** | AWEUTIL /EM:GM, AWE32 native games |
 
 ### Switching SC-55 mode
@@ -3862,7 +3862,7 @@ Controller: 00-07-2 VID=8086h PID=7112h (0000h-0000h) UHCI
 |---|---|---|---|
 | `UBSNM` | NOEMS 607 KB | SoftMPU + GUS | Everyday use, MT-32 games |
 | `UBSNS` | NOEMS 607 KB | No SoftMPU | AWEUTIL /EM emulation |
-| `UBSNMP` | NOEMS 607 KB | MPU-401 | McCake GM/MT-32 via port 300h |
+| `UBSNMP` | NOEMS 607 KB | MPU-401 | McCake GM/MT-32 via port 330h |
 | `UBSEM` | EMS 595 KB | SoftMPU + GUS | DOS extender games |
 | `UBSNES` | EMS 595 KB | No SoftMPU | AWEUTIL /EM + DOS extenders |
 | `UBSEMP` | EMS 595 KB | MPU-401 | McCake + DOS extenders |
@@ -4038,7 +4038,7 @@ With Variant A (RS232 bridge) MSD reports serial mouse on COM1/COM2, IRQ 3 or 4.
 - IRQ/DMA change: update BLASTER in AUTOEXEC.BAT, UNISOUND programs card at boot (IRQ: 2/5/7/10, Low DMA: 0/1/3, High DMA: 5/6/7)
 - **AWEUTIL /EM:* conflicts with SoftMPU** — use profile 1 (NOSOFTMPU) for AWEUTIL emulation
 - AWE32 MPU-401 → port 330h → SC-55 → MT-32 chain
-- PicoGUS MPU-401 → port 300h → McCake (WP32) — SF2 soundfonty, GM hry
+- PicoGUS MPU-401 → port 330h → McCake (WP32) — SF2 soundfonty, GM hry
 - LPT1 disabled in BIOS to free IRQ 7 for PicoGUS
 - SC-55 must be first in MIDI chain, MT-32 on SC-55 MIDI THRU
 - CTMOUSE /R2 = horizontal resolution 2; mouse is a modern BLE mouse via ESP32 bridge (PS/2 IRQ 12 or RS232 IRQ 3/4)
@@ -4475,7 +4475,7 @@ BANKPREV.BAT  Previous bank
 ### pgusinit settings for X16GS
 
 ```bat
-C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 300 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
+C:\DRIVERS\PICOGUS\PGUSINIT.EXE /mode gus /mpuport 330 /mainvol 95 /gusvol 95 /wtvol 95 /mpudelay 1
 ```
 
 ### Reporting the defect to Serdaco
