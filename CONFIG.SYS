@@ -16,17 +16,17 @@ MENUDEFAULT=WINDOWS,10
 
 ; NOEMS sub-menu: SoftMPU, No SoftMPU, ISO CD, MPU-401, MPU-401 ISO
 [NOEMS]
-MENUITEM=NORMAL,     Normal CD-ROM         - NOEMS 607KB  (phys CD, everyday)
+MENUITEM=NORMAL,     Normal CD-ROM         - NOEMS 607KB  (phys CD)
+MENUITEM=MPU,        MPU-401 CD-ROM        - NOEMS 607KB  (MPU-401 IRQ, phys CD)
 MENUITEM=ISOCD,      ISO CD-ROM            - NOEMS 607KB  (virtual CD)
-MENUITEM=MPU,        MPU-401 CD-ROM        - NOEMS 607KB  (McCake, phys CD)
-MENUITEM=ESPNS,      ESP32 No SoftMPU      - NOEMS 607KB  (AWEUTIL /EM + ESP32)
+MENUITEM=ESPNS,      ESP32 No SoftMPU      - NOEMS 607KB  (ESP32 CD)
 
 ; EMS sub-menu: SoftMPU EMS, No SoftMPU EMS, ISO CD EMS, MPU-401 EMS, MPU-401 ISO EMS
 [EMS]
-MENUITEM=NORMEMS,    Normal CD-ROM EMS     - RAM   595KB  (phys CD + ext)
-MENUITEM=ISOCDEMS,   ISO CD-ROM EMS        - RAM   595KB  (virtual CD + ext)
-MENUITEM=MPUEMS,     MPU-401 CD-ROM EMS    - RAM   595KB  (McCake + ext, phys CD)
-MENUITEM=ESPNES,     ESP32 No SoftMPU EMS  - RAM   595KB  (AWEUTIL /EM + ESP32)
+MENUITEM=NORMEMS,    Normal CD-ROM EMS     - RAM   595KB  (phys CD + EMS)
+MENUITEM=MPUEMS,     MPU-401 CD-ROM EMS    - RAM   595KB  (MPU-401 IRQ, phys CD + EMS)
+MENUITEM=ISOCDEMS,   ISO CD-ROM EMS        - RAM   595KB  (virtual CD + EMS)
+MENUITEM=ESPNES,     ESP32 No SoftMPU EMS  - RAM   595KB  (ESP32 CD + EMS)
 ;MENUCOLOR=11,1
 
 ; -----------------------------------------------
