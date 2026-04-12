@@ -30,7 +30,7 @@ REM /MPU:300 = MPU-401 port (must match P300 in BLASTER = AWE32 MPU)
 REM /SB:220  = Sound Blaster base port
 REM /IRQ:5   = Sound Blaster IRQ for intelligent mode timing
 ECHO  [SoftMPU] Loading intelligent mode MPU-401...
-LH C:\DRIVERS\MPUAWE\MPUAWE.EXE /MPU:300 /SB:220 /IRQ:5
+LH C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /MPU:300 /SB:220 /IRQ:5
 ECHO.
 
 REM --- Launch game ---
@@ -39,7 +39,7 @@ REM --- Launch game ---
 REM --- Unload SoftMPU after game exits ---
 ECHO.
 ECHO  [SoftMPU] Unloading...
-C:\DRIVERS\MPUAWE\MPUAWE.EXE /UNLOAD
+C:\DRIVERS\SOFTMPU\SOFTMPU.EXE /UNLOAD
 GOTO END
 
 :USAGE
