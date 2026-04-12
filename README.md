@@ -58,7 +58,7 @@
 - [Roland SC-55 MK2](#roland-sc-55-mk2)
 - [Roland SC-88 Pro](#roland-sc-88-pro)
 - [MT32-pi SF2 (Serdashop)](#serdashop-sf2-external-midi-synth)
-- [McCake WP32 (interní wavetable)](#mccake-wp32-interní-wavetable)
+- [McCake WP32 (internal wavetable)](#mccake-wp32-internal-wavetable)
 
 ---
 
@@ -84,14 +84,14 @@
 | PicoIDE Deluxe | polpo PicoIDE (RP2350) | IDE | **pending delivery** — will be added alongside LG drive |
 | NIC | 3Com 3C905C-TX EtherLink XL 10/100 | **PCI** | — |
 | Floppy A: | Gotek SFR1M44-U100K (USB floppy emulator) | 3.5" floppy konektor | 2 buttons + LED numeric display, FlashFloppy firmware |
-| Floppy B: | Physical 3.5" 1.44 MB drive | 3.5" floppy connector | instalováno |
+| Floppy B: | Physical 3.5" 1.44 MB drive | 3.5" floppy connector | installed |
 | Mouse + Keyboard | Modern BLE mouse + BLE keyboard via ESP32 BLE bridge | PS/2 or RS232 | see BLE Bridge section |
 | Monitor | Fujitsu-Siemens (w9/2009) | VGA | 38×30 cm, H: 30–83 kHz, V: 56–75 Hz |
 | MIDI module 1 | Roland MT-32 original | MIDI splitter (from PicoGUS) | CH 7+8 on mixer |
 | MIDI module 2 | Roland SC-55 MK2 original | MIDI splitter (from PicoGUS) | CH 9+10 on mixer |
 | MIDI module 3 | Roland SC-88 Pro original | MIDI splitter (from PicoGUS) | CH 11+12 on mixer |
 | GM Synth (ext.) | MT32-pi (SF2) — Serdashop | MIDI splitter (from PicoGUS) | CH 5+6 on mixer |
-| MIDI Splitter | CME WIDI Thru6 BT | MIDI (1-in / 5-out wired + BT) | napájení USB-C |
+| MIDI Splitter | CME WIDI Thru6 BT | MIDI (1-in / 5-out wired + BT) | USB-C powered |
 | Mixer | Behringer XENYX QX1222USB | USB | — |
 | Headphones | Audio-Technica ATH-M50x | QX1222USB Phones jack | — |
 | Second PC | Windows XP PC | QX1222USB 2-TR input | — |
@@ -106,143 +106,143 @@
 ## BIOS Settings
 
 > Award Modular BIOS v4.51PG · ROM ID: 2A59IO09 · Date: 09/18/97
-> DEL při bootu pro vstup do setupu.
+> Press DEL during POST to enter setup.
 
 ---
 
 ### BIOS Features Setup
 
-| Položka | Nastavení | Popis |
+| Setting | Value | Description |
 |---|---|---|
 | Virus Warning | Disabled | Ochrana boot sektoru — vypnuto, jinak blokuje instalaci OS a bootloadery |
-| CPU Internal Cache | Enabled | L1 cache procesoru — musí být zapnuto |
-| External Cache | Enabled | L2 cache (512 KB Dual-Bank) — musí být zapnuto |
-| Quick Power On Self Test | Enabled | Zkrácený POST — rychlejší boot |
-| Boot Sequence | C, CDROM, A | Pořadí bootování — C: první, pak CD-ROM, pak A: |
-| Swap Floppy Drive | Disabled | Prohození A:/B: — vypnuto, Gotek je A:, fyzická mechanika B: |
-| Boot Up Floppy Seek | Disabled | Test floppy při bootu — vypnuto, ušetří ~2s |
-| Boot Up NumLock Status | On | NumLock zapnutý při startu |
-| Boot Up System Speed | High | Rychlost systému při bootu — vždy High |
-| Typematic Rate Setting | Disabled | Vlastní rychlost opakování kláves — vypnuto (systémová výchozí) |
+| CPU Internal Cache | Enabled | Processor L1 cache — must be enabled |
+| External Cache | Enabled | L2 cache (512 KB Dual-Bank) — must be enabled |
+| Quick Power On Self Test | Enabled | Abbreviated POST — faster boot |
+| Boot Sequence | C, CDROM, A | Boot order — C: first, then CD-ROM, then A: |
+| Swap Floppy Drive | Disabled | Swap A:/B: — disabled, Gotek is A:, physical drive is B: |
+| Boot Up Floppy Seek | Disabled | Floppy seek at boot — disabled, saves ~2s |
+| Boot Up NumLock Status | On | NumLock enabled at startup |
+| Boot Up System Speed | High | System speed at boot — always High |
+| Typematic Rate Setting | Disabled | Custom key repeat rate — disabled (system default) |
 | Security Option | Setup | Heslo jen pro vstup do BIOSu, ne pro boot |
-| PCI/VGA Palette Snoop | Enabled | Nutné pro 3dfx Voodoo2 — bez tohoto jsou barvy v DOS špatně |
+| PCI/VGA Palette Snoop | Enabled | Required for 3dfx Voodoo2 — without this colours are wrong in DOS |
 | OS Select For DRAM >64MB | Non-OS2 | Non-OS2 pro Windows/DOS — OS2 jen pro IBM OS/2 |
-| Report No FDD For WIN95 | No | Hlásit floppy Windows 95/98 — No (mechaniky jsou přítomny) |
-| Video BIOS Shadow | Enabled | Zkopíruje ATI Rage Video BIOS do RAM — zrychlí BIOS volání videa |
-| C8000-DFFFF Shadow | Disabled | Shadow dalších ROM oblastí — vypnuto, uvolní UMB pro DOS drivery |
+| Report No FDD For WIN95 | No | Report no floppy to Windows 95/98 — No (drives are present) |
+| Video BIOS Shadow | Enabled | Copies ATI Rage Video BIOS to RAM — speeds up video BIOS calls |
+| C8000-DFFFF Shadow | Disabled | Shadow additional ROM regions — disabled, frees UMB for DOS drivers |
 
 ---
 
 ### Chipset Features Setup
 
-| Položka | Nastavení | Popis |
+| Setting | Value | Description |
 |---|---|---|
-| Auto Configuration | Disabled | Vypnuto — umožňuje ruční nastavení paměťových timingů |
-| DRAM Timing | 60ns | Rychlost DRAM — odpovídá nainstalovaným 60ns SDRAM modulům |
-| DRAM Leadoff Timing | 10/6/3 | První přístup do paměti — nejrychlejší dostupná hodnota |
-| DRAM Read Burst (EDO/FP) | x222/x333 | Rychlost burst čtení — nejrychlejší nastavení |
-| DRAM Write Burst Timing | x222 | Rychlost burst zápisu — nejrychlejší nastavení |
-| Fast EDO Lead Off | Enabled | Zrychlení EDO — nemá vliv na SDRAM, neškodí |
-| Refresh RAS# Assertion | 4 Clks | Délka refresh cyklu — 4 takty je standard |
-| Fast RAS To CAS Delay | 2 | Zpoždění RAS→CAS — 2 je nejrychlejší stabilní hodnota |
-| DRAM Page Idle Timer | 2 Clks | Jak dlouho držet stránku otevřenou — 2 takty, nejrychlejší |
-| DRAM Enhanced Paging | Enabled | Vylepšené page-mode přístupy — zapnuto pro výkon |
-| Fast MA to RAS# Delay | 1 Clks | Zpoždění adres→RAS — 1 takt, nejrychlejší |
-| SDRAM CAS Lat/RAS-to-CAS | 2/2 | CAS latence a RAS-to-CAS delay — 2/2 nejrychlejší, 60ns SDRAM to unese |
-| SDRAM Speculative Read | Disabled | Intel 430TX errata — MUSÍ být Disabled, jinak nestabilita paměti |
-| System BIOS Cacheable | Disabled | Cache systémového BIOSu — vypnuto kvůli kompatibilitě s K6-III+ |
-| Video BIOS Cacheable | Enabled | Cache Video BIOSu do L2 — zrychlí grafické BIOS volání |
-| 8 Bit I/O Recovery Time | 1 | Zotavení 8-bit ISA sběrnice — 1 takt, minimum |
-| 16 Bit I/O Recovery Time | 2 | Zotavení 16-bit ISA sběrnice — 2 takty, minimum |
-| Memory Hole At 15M-16M | Disabled | Díra v paměti pro ISA karty — nepotřebné, vypnuto |
-| PCI 2.1 Compliance | Enabled | PCI 2.1 standard — zapnuto pro správnou funkci PCI karet |
+| Auto Configuration | Disabled | Disabled — allows manual memory timing configuration |
+| DRAM Timing | 60ns | DRAM speed — matches the installed 60ns SDRAM modules |
+| DRAM Leadoff Timing | 10/6/3 | First memory access timing — fastest available value |
+| DRAM Read Burst (EDO/FP) | x222/x333 | Burst read speed — fastest setting |
+| DRAM Write Burst Timing | x222 | Burst write speed — fastest setting |
+| Fast EDO Lead Off | Enabled | EDO acceleration — no effect on SDRAM, harmless |
+| Refresh RAS# Assertion | 4 Clks | Refresh cycle length — 4 clocks is standard |
+| Fast RAS To CAS Delay | 2 | RAS→CAS delay — 2 is the fastest stable value |
+| DRAM Page Idle Timer | 2 Clks | How long to keep page open — 2 clocks, fastest |
+| DRAM Enhanced Paging | Enabled | Enhanced page-mode accesses — enabled for performance |
+| Fast MA to RAS# Delay | 1 Clks | Address→RAS delay — 1 clock, fastest |
+| SDRAM CAS Lat/RAS-to-CAS | 2/2 | CAS latency and RAS-to-CAS delay — 2/2 fastest, 60ns SDRAM can handle it |
+| SDRAM Speculative Read | Disabled | Intel 430TX errata — MUST be Disabled, otherwise memory instability |
+| System BIOS Cacheable | Disabled | System BIOS cache — disabled for K6-III+ compatibility |
+| Video BIOS Cacheable | Enabled | Video BIOS cache into L2 — speeds up graphics BIOS calls |
+| 8 Bit I/O Recovery Time | 1 | 8-bit ISA bus recovery — 1 clock, minimum |
+| 16 Bit I/O Recovery Time | 2 | 16-bit ISA bus recovery — 2 clocks, minimum |
+| Memory Hole At 15M-16M | Disabled | Memory hole for ISA cards — not needed, disabled |
+| PCI 2.1 Compliance | Enabled | PCI 2.1 standard — enabled for correct PCI card operation |
 
 ---
 
 ### Power Management Setup
 
-| Položka | Nastavení | Popis |
+| Setting | Value | Description |
 |---|---|---|
-| Power Management | Min Saving | Minimální úspora — nutné pro správný Win98SE shutdown na Rhino 15 |
-| PM Control by APM | Yes | Řízení spotřeby přes APM — zapnuto pro Win98SE |
-| Video Off Method | V/H SYNC+Blank | Metoda vypnutí monitoru při idle |
-| Video Off After | Standby | Monitor se vypne při přechodu do Standby |
+| Power Management | Min Saving | Minimum power saving — required for correct Win98SE shutdown on Rhino 15 |
+| PM Control by APM | Yes | Power management via APM — enabled for Win98SE |
+| Video Off Method | V/H SYNC+Blank | Monitor blanking method during idle |
+| Video Off After | Standby | Monitor blanks when entering Standby |
 | MODEM Use IRQ | 3 | IRQ pro wake-up z modemu — bez efektu (Resume by Ring Disabled) |
-| Doze Mode | Disabled | První stupeň úspory — vypnuto, Min Saving má velmi dlouhé timeouty |
-| Standby Mode | Disabled | Druhý stupeň úspory — vypnuto |
-| Suspend Mode | Disabled | Třetí stupeň úspory — vypnuto |
-| HDD Power Down | Disabled | Automatické vypnutí disku — vypnuto |
-| Throttle Duty Cycle | 62.5% | Škrcení CPU v Doze módu — bez efektu (Doze Disabled) |
-| ZZ Active in Suspend | Disabled | CPU ZZ signál v Suspend — vypnuto |
+| Doze Mode | Disabled | First power saving stage — disabled, Min Saving has very long timeouts |
+| Standby Mode | Disabled | Second power saving stage — disabled |
+| Suspend Mode | Disabled | Third power saving stage — disabled |
+| HDD Power Down | Disabled | Automatic hard drive spindown — disabled |
+| Throttle Duty Cycle | 62.5% | CPU throttling in Doze mode — no effect (Doze disabled) |
+| ZZ Active in Suspend | Disabled | CPU ZZ signal in Suspend — disabled |
 | VGA Active Monitor | Disabled | Monitor jako wake-up zdroj — vypnuto |
-| Soft-Off by PWR-BTTN | Instant-Off | Vypínač — okamžité vypnutí |
-| CPUFAN Off In Suspend | Enabled | Vypnutí CPU ventilátoru v Suspend — zapnuto |
-| Resume by Ring | Disabled | Wake-up přes modem — vypnuto |
+| Soft-Off by PWR-BTTN | Instant-Off | Power button — instant power off |
+| CPUFAN Off In Suspend | Enabled | CPU fan off in Suspend — enabled |
+| Resume by Ring | Disabled | Wake-up via modem ring — disabled |
 | IRQ 8 Break Suspend | Disabled | RTC jako wake-up — vypnuto |
-| **Reload Global Timer Events** | | Události které resetují časovač úspory: |
-| IRQ[3-7,9-15],NMI | Enabled | Jakýkoliv IRQ (myš, klávesnice, zvuk) resetuje časovač |
-| Primary IDE 0 | Enabled | Disková aktivita resetuje časovač |
+| **Reload Global Timer Events** | | Events that reset the power saving timer: |
+| IRQ[3-7,9-15],NMI | Enabled | Any IRQ (mouse, keyboard, sound) resets the timer |
+| Primary IDE 0 | Enabled | Disk activity resets the timer |
 | Primary IDE 1 | Disabled | |
-| Secondary IDE 0 | Enabled | CD-ROM aktivita resetuje časovač |
+| Secondary IDE 0 | Enabled | CD-ROM activity resets the timer |
 | Secondary IDE 1 | Disabled | |
 | Floppy Disk | Disabled | |
-| Serial Port | Enabled | Serial mouse aktivita resetuje časovač |
+| Serial Port | Enabled | Serial mouse activity resets the timer |
 | Parallel Port | Disabled | LPT vypnuto |
 
 ---
 
 ### PnP/PCI Configuration
 
-| Položka | Nastavení | Popis |
+| Setting | Value | Description |
 |---|---|---|
-| PNP OS Installed | No | OS neřídí PnP — BIOS přiděluje zdroje (správné pro DOS + Win98SE) |
-| Resources Controlled By | Manual | Ruční přidělení IRQ a DMA — nutné pro ISA karty AWE32 a PicoGUS |
-| Reset Configuration Data | Disabled | Neresetovat PnP data při bootu |
+| PNP OS Installed | No | OS does not manage PnP — BIOS assigns resources (correct for DOS + Win98SE) |
+| Resources Controlled By | Manual | Manual IRQ and DMA assignment — required for AWE32 and PicoGUS ISA cards |
+| Reset Configuration Data | Disabled | Do not reset PnP data at boot |
 | IRQ-3 | Legacy ISA | COM2 — serial mouse |
-| IRQ-4 | PCI/ISA PnP | COM1 — volný |
+| IRQ-4 | PCI/ISA PnP | COM1 — free |
 | IRQ-5 | Legacy ISA | AWE32 CT3900 |
 | IRQ-7 | Legacy ISA | PicoGUS v2.0 (LPT1 vypnut v Integrated Peripherals) |
-| IRQ-9 | PCI/ISA PnP | Volný |
-| IRQ-10 | PCI/ISA PnP | Volný — pro PCI karty |
+| IRQ-9 | PCI/ISA PnP | Free |
+| IRQ-10 | PCI/ISA PnP | Free — available for PCI cards |
 | IRQ-11 | Legacy ISA | PIIX4 USB Host Controller |
-| IRQ-12 | Legacy ISA | PS/2 myš |
+| IRQ-12 | Legacy ISA | PS/2 mouse |
 | IRQ-14 | PCI/ISA PnP | Primary IDE |
 | IRQ-15 | PCI/ISA PnP | Secondary IDE |
-| DMA-0 | PCI/ISA PnP | Volný |
+| DMA-0 | PCI/ISA PnP | Free |
 | DMA-1 | Legacy ISA | AWE32 CT3900 (8-bit) |
 | DMA-3 | Legacy ISA | PicoGUS v2.0 |
 | DMA-5 | Legacy ISA | AWE32 CT3900 (16-bit) |
-| DMA-6 | PCI/ISA PnP | Volný |
-| DMA-7 | PCI/ISA PnP | Volný |
-| PCI IDE IRQ Map To | PCI-AUTO | Automatické mapování PCI IDE IRQ |
+| DMA-6 | PCI/ISA PnP | Free |
+| DMA-7 | PCI/ISA PnP | Free |
+| PCI IDE IRQ Map To | PCI-AUTO | Automatic PCI IDE IRQ mapping |
 | Primary IDE INT# | A | PCI interrupt pro primary IDE |
 | Secondary IDE INT# | B | PCI interrupt pro secondary IDE |
-| Used MEM Base Addr | N/A | Žádná ISA karta nepotřebuje vyhrazený paměťový region |
+| Used MEM Base Addr | N/A | No ISA card requires a reserved memory region |
 
 ---
 
 ### Integrated Peripherals
 
-| Položka | Nastavení | Popis |
+| Setting | Value | Description |
 |---|---|---|
-| IDE HDD Block Mode | Enabled | Přenos více sektorů najednou — zrychlí disk, vždy zapnout |
-| IDE Primary Master PIO | Auto | PIO mód pro SSD (přes JM20330 adaptér) — Auto |
-| IDE Primary Slave PIO | Auto | Slave není připojen |
+| IDE HDD Block Mode | Enabled | Transfer multiple sectors at once — speeds up disk, always enable |
+| IDE Primary Master PIO | Auto | PIO mode for SSD (via JM20330 adapter) — Auto |
+| IDE Primary Slave PIO | Auto | No slave connected |
 | IDE Secondary Master PIO | Auto | CD-ROM LG GH22NS40 |
-| IDE Secondary Slave PIO | Auto | Slave není připojen |
-| IDE Primary Master UDMA | Disabled | JM20330 adaptér má problémy s UDMA na PIIX4 — Disabled vynutí MWDMA/2 |
-| IDE Primary Slave UDMA | Auto | Slave není připojen |
+| IDE Secondary Slave PIO | Auto | No slave connected |
+| IDE Primary Master UDMA | Disabled | JM20330 adapter has UDMA issues on PIIX4 — Disabled forces MWDMA/2 |
+| IDE Primary Slave UDMA | Auto | No slave connected |
 | IDE Secondary Master UDMA | Auto | CD-ROM — Auto |
-| IDE Secondary Slave UDMA | Auto | Slave není připojen |
-| On-Chip Primary PCI IDE | Enabled | Primární IDE řadič — zapnuto |
-| On-Chip Secondary PCI IDE | Enabled | Sekundární IDE řadič — zapnuto |
-| KBC Input Clock | 8 MHz | Takt klávesnicového řadiče — 8 MHz standard |
-| Onboard FDC Controller | Enabled | Floppy řadič — zapnuto (Gotek + fyzická mechanika) |
-| Onboard Serial Port 1 | 3F8/IRQ4 | COM1 — standardní adresa |
-| Onboard Serial Port 2 | 2F8/IRQ3 | COM2 — standardní adresa, serial mouse |
-| UR2 Mode | Standard | Režim druhého serial portu — Standard (ne IrDA) |
-| Onboard Parallel Port | Disabled | LPT1 vypnuto — uvolní IRQ7 pro PicoGUS |
-| USB Keyboard Support | Enabled | USB klávesnice přes BIOS emulaci — zapnuto |
+| IDE Secondary Slave UDMA | Auto | No slave connected |
+| On-Chip Primary PCI IDE | Enabled | Primary IDE controller — enabled |
+| On-Chip Secondary PCI IDE | Enabled | Secondary IDE controller — enabled |
+| KBC Input Clock | 8 MHz | Keyboard controller clock — 8 MHz standard |
+| Onboard FDC Controller | Enabled | Floppy controller — enabled (Gotek + physical drive) |
+| Onboard Serial Port 1 | 3F8/IRQ4 | COM1 — standard address |
+| Onboard Serial Port 2 | 2F8/IRQ3 | COM2 — standard address, serial mouse |
+| UR2 Mode | Standard | Second serial port mode — Standard (not IrDA) |
+| Onboard Parallel Port | Disabled | LPT1 disabled — frees IRQ7 for PicoGUS |
+| USB Keyboard Support | Enabled | USB keyboard via BIOS emulation — enabled |
 
 ## IRQ Map
 
@@ -483,7 +483,7 @@ No other behavioral difference vs Phase 2 for typical gaming.
 3. Insert CT3900 into the same ISA slot
    (SIMMs already installed in Step 2 — check clearance to adjacent slot)
 4. Secure bracket screw
-5. MIDI výstup je nyní na PicoGUS (port 330h) → CME WIDI Thru6 BT splitter
+5. MIDI output is now on PicoGUS (port 330h) → CME WIDI Thru6 BT splitter
 6. Power on
 
 ---
@@ -1027,7 +1027,7 @@ for cases when PicoGUS is not available.
 | Base port | 220h (SB16) | 240h (GUS) |
 | IRQ | 5 | 7 |
 | DMA | 1 (8-bit) / 5 (16-bit) | 3 |
-| MPU-401 | 300h (gameport, nepřipojeno) | 330h → WIDI Thru6 BT → MT-32/SC-55/SC-88/MT32-pi + McCake |
+| MPU-401 | 300h (gameport, not connected) | 330h → WIDI Thru6 BT → MT-32/SC-55/SC-88/MT32-pi + McCake |
 | Audio output | QX1222USB CH 3+4 | QX1222USB CH 1+2 |
 | Role | SB16 efekty, real OPL3 FM, EMU8000 wavetable, AWE32 native | GUS hudba, McCake GM/SF2 synth |
 
@@ -1304,7 +1304,7 @@ PicoGUS MIDI OUT (port 330h)
         │
         ▼
   CME WIDI Thru6 BT
-  (2-in / 6-out, Bluetooth 5, 32-bit, USB-C napájení)
+  (2-in / 6-out, Bluetooth 5, 32-bit, USB-C powered)
     ┌───┼───┬───────┐
     │   │   │       │
     ▼   ▼   ▼       ▼
@@ -1313,9 +1313,9 @@ PicoGUS MIDI OUT (port 330h)
  CH 5+6  CH 7+8  CH 9+10   CH 11+12
 ```
 
-AWE32 nemá MIDI výstup připojený — gameport není použit pro MIDI.
-McCake (WP32) — interní wavetable na PicoGUS wavetable headeru, aktivní v MPU profilech.
-CME WIDI Thru6 BT podporuje i Bluetooth MIDI (BLE 5, 3ms latency, dosah 20m) — lze připojit iOS/Android/PC bezdrátově.
+AWE32 MIDI output is not connected — gameport is not used for MIDI.
+McCake (WP32) — internal wavetable on PicoGUS wavetable header, active in MPU profiles.
+CME WIDI Thru6 BT also supports Bluetooth MIDI (BLE 5, 3ms latency, 20m range) — connect iOS/Android/PC wirelessly.
 
 ### Mixer Operation — which faders to raise
 
@@ -1343,7 +1343,7 @@ Adjust the music source channel depending on the game.
 | Device | Port | IRQ | DMA | Type |
 |---|---|---|---|---|
 | AWE32 SB16 | 220h | 5 | 1 / 5 | Sound effects, real OPL3 |
-| AWE32 MPU-401 | 300h | 5 | — | nepřipojeno — gameport nepoužit |
+| AWE32 MPU-401 | 300h | 5 | — | not connected — gameport unused |
 | PicoGUS GUS | 240h | 7 | 3 | GUS music |
 | PicoGUS MPU-401 | 330h | 7 | — | McCake (wavetable) + MIDI splitter → MT-32/SC-55/SC-88/MT32-pi |
 
@@ -1736,7 +1736,7 @@ Microsoft Windows 98 Startup Menu
   4. MS-DOS  Bare   - no drivers
 ```
 
-Výběr NOEMS nebo EMS otevře podmenu s dalšími profily.
+Selecting NOEMS or EMS opens a submenu with additional profiles.
 
 Default: Windows 98SE (10 second countdown)
 
@@ -1745,8 +1745,8 @@ Default: Windows 98SE (10 second countdown)
 | Test | Expected result |
 |---|---|
 | Option 1 (Windows) | Windows 98SE loads, desktop appears |
-| Option 2 (NOEMS podmenu) | Zobrazí podmenu s NOEMS profily |
-| Option 3 (EMS podmenu) | Zobrazí podmenu s EMS profily |
+| Option 2 (NOEMS submenu) | Opens submenu with NOEMS profiles |
+| Option 3 (EMS submenu) | Opens submenu with EMS profiles |
 | NORMAL (z podmenu) | DOS prompt, phys CD-ROM, sound card active |
 | MPU (z podmenu) | DOS prompt, PicoGUS MPU-401, McCake active |
 | Option 4 (BARE) | Minimal DOS prompt, no drivers |
@@ -2927,7 +2927,7 @@ SET BLASTER=A220 I5 D1 H5 P300 E620 T6
   I5    = IRQ 5
   D1    = DMA 1 (8-bit)
   H5    = DMA 5 (16-bit)
-  P300  = MPU-401 port 300h (AWE32 gameport — nepřipojeno k MIDI)
+  P300  = MPU-401 port 300h (AWE32 gameport — not connected to MIDI)
   E620  = AWE32 EMU8000 port 620h
   T6    = card type SB16/AWE
 
@@ -3606,11 +3606,11 @@ SMARTCDX.EXE (patched SmartDrive) + SHSUCDX.COM instead of MSCDEX — saves ~25 
 | NOEMS / ISO CD-ROM (ISOCD) | **614 KB** | 134 KB | 69 KB | 48 KB | ✓ |
 | NOEMS / MPU-401 CD-ROM (MPU) | **608 KB** | 134 KB | 49 KB | 35 KB | SHSUCDX 6 KB v konv. |
 | NOEMS / MPU-401 ISO (MPUISO) | **614 KB** | 134 KB | 77 KB | 56 KB | ✓ best NOEMS |
-| EMS / SoftMPU EMS (EMSMODE) | 583 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB full, SOFTMPU in conv. |
+| EMS / SoftMPU EMS (EMSMODE) | 583 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB full, SoftMPU in conv. mem |
 | EMS / No SoftMPU EMS (NOSOFTEMU) | 591 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB full |
-| EMS / ISO CD-ROM EMS (ISOCDEMS) | **614 KB** | 70 KB | 5 KB | 4 KB | ✓ bez phys CD driveru |
+| EMS / ISO CD-ROM EMS (ISOCDEMS) | **614 KB** | 70 KB | 5 KB | 4 KB | ✓ no phys CD driver |
 | EMS / MPU-401 EMS (MPUEMS) | 591 KB | 70 KB | 2 KB | 1 KB | ⚠ UMB full |
-| EMS / MPU-401 ISO EMS (MPUISOEMS) | **614 KB** | 70 KB | 13 KB | 12 KB | ✓ bez phys CD driveru |
+| EMS / MPU-401 ISO EMS (MPUISOEMS) | **614 KB** | 70 KB | 13 KB | 12 KB | ✓ no phys CD driver |
 | Bare | 614 KB | 134 KB | 109 KB | 63 KB | — |
 
 **Note on EMS profiles with physical CD (EMSMODE, NOSOFTEMU, MPUEMS):** EMS page frame takes 64 KB of UMB — only 70 KB total remains. SSCDROM.SYS (28 KB) + SMARTCDX.EXE (29 KB) + SHSUCDX.COM (6 KB) = 63 KB → UMB almost full, 1–2 KB free. These profiles work but have no headroom. ISO variants (ISOCDEMS, MPUISOEMS) are better because SSCDROM.SYS is not loaded.
@@ -4080,10 +4080,10 @@ With Variant A (RS232 bridge) MSD reports serial mouse on COM1/COM2, IRQ 3 or 4.
 - **CT3900 is semi-PnP**: I/O address and MPU-401 = jumpers; IRQ and DMA = software (UNISOUND)
 - IRQ/DMA change: update BLASTER in AUTOEXEC.BAT, UNISOUND programs card at boot (IRQ: 2/5/7/10, Low DMA: 0/1/3, High DMA: 5/6/7)
 - **AWEUTIL /EM:* conflicts with SoftMPU** — use profile 1 (NOSOFTMPU) for AWEUTIL emulation
-- AWE32 MPU-401 → port 300h → gameport (nepřipojeno k MIDI)
+- AWE32 MPU-401 → port 300h → gameport (not connected to MIDI)
 - PicoGUS MPU-401 → port 330h → CME WIDI Thru6 BT → MT-32 / SC-55 MK2 / SC-88 Pro / MT32-pi SF2 + McCake (WP32) wavetable
 - LPT1 disabled in BIOS to free IRQ 7 for PicoGUS
-- MIDI chain: PicoGUS → WIDI Thru6 BT (splitter) → MT-32 / SC-55 MK2 / SC-88 Pro / MT32-pi SF2 (paralelně)
+- MIDI chain: PicoGUS → WIDI Thru6 BT (splitter) → MT-32 / SC-55 MK2 / SC-88 Pro / MT32-pi SF2 (parallel)
 - CTMOUSE /R2 = horizontal resolution 2; mouse is a modern BLE mouse via ESP32 bridge (PS/2 IRQ 12 or RS232 IRQ 3/4)
 - ULTRADIR must point to C:\DRIVERS\PICOGUS root (not MIDI subfolder)
 - CT3900 IDE port must be DISABLED (JP2+JP3 closed) — conflicts with motherboard IDE
@@ -4215,8 +4215,8 @@ DIR E:\     REM CD-ROM
 ```
 Device Manager → Disk controllers →
   Intel 82371AB/EB PCI Bus Master IDE Controller
-    ├─ Primary IDE channel  → Vlastnosti → DMA: Enabled ✓
-    └─ Secondary IDE channel → Vlastnosti → DMA: Enabled ✓
+    ├─ Primary IDE channel  → Properties → DMA: Enabled ✓
+    └─ Secondary IDE channel → Properties → DMA: Enabled ✓
 ```
 
 **Verify from DOS after reboot (HWINFO):**
@@ -4256,229 +4256,229 @@ If SCANREG /RESTORE does not work — boot from Win98SE CD or boot disk and rest
 
 # MIDI Synthesizer Reference
 
-> Všechny moduly jsou připojeny přes **CME WIDI Thru6 BT** (MIDI splitter) na MIDI OUT z PicoGUS.
-> Každý modul přijímá všechny kanály současně — hru přepínáš výběrem správného kanálu v nastavení hry.
+> All modules are connected via **CME WIDI Thru6 BT** (MIDI splitter) to the PicoGUS MIDI OUT.
+> Every module receives all channels simultaneously — select the correct channel in the game sound setup.
 
 ---
 
 ## Roland MT-32 (original)
 
-**Typ:** LA syntezátor (Linear Arithmetic), 1987  
-**Polyfonie:** 32 hlasů, 8 partů + rytmus  
-**Kanály:** MIDI 2–9 (part 1–8), kanál 10 = rytmus  
-**Výstup:** CH 7+8 na mixpultu
+**Type:** LA synthesizer (Linear Arithmetic), 1987  
+**Polyphony:** 32 voices, 8 parts + rhythm  
+**Channels:** MIDI 2–9 (part 1–8), channel 10 = rhythm  
+**Output:** CH 7+8 on mixer
 
-### Ovládání panelu
+### Panel Controls
 
-| Tlačítko | Funkce |
+| Button | Function |
 |---|---|
-| PART 1–8 | Výběr partu (zobrazí nastavení) |
-| RHYTHM PART | Výběr rytmické sady |
-| MASTER VOLUME | Zobrazí hlasitost — otočit SELECT/VOLUME |
-| SOUND GROUP + MASTER VOLUME | Nastaví reverb (0–10) |
-| SOUND GROUP + PART | Nastaví timbr partu |
+| PART 1–8 | Select part (shows settings) |
+| RHYTHM PART | Select rhythm set |
+| MASTER VOLUME | Shows volume — turn SELECT/VOLUME to adjust |
+| SOUND GROUP + MASTER VOLUME | Set reverb (0–10) |
+| SOUND GROUP + PART | Set part timbre |
 
-### Speciální módy / reset
+### Special Modes / Reset
 
 ```
-Factory reset (vymaže user timbry):
-  Drž MASTER VOLUME → stiskni RHYTHM PART → stiskni PART 1
+Factory reset (erases user timbres):
+  Hold MASTER VOLUME → press RHYTHM PART → press PART 1
 
-ROM Play (demo přehrávání, 5 skladeb):
-  Drž MASTER VOLUME při zapnutí → PART (1–5) vybere skladbu → VOLUME spustí
-  SOUND GROUP zastaví → vypnout/zapnout pro exit
+ROM Play (demo playback, 5 songs):
+  Hold MASTER VOLUME at power-on → PART (1–5) selects song → VOLUME plays
+  SOUND GROUP stops → power off/on to exit
 
-Reverb nastavení:
-  Drž MASTER VOLUME → stiskni SOUND GROUP → SELECT/VOLUME mění mód (0–10)
+Reverb settings:
+  Hold MASTER VOLUME → press SOUND GROUP → SELECT/VOLUME changes mode (0–10)
 ```
 
-### Použití ve hrách
+### Game Usage
 
-Hry zasílají MT-32 reset SysEx při startu (`F0 41 10 16 12 7F 01 F7`) — MT-32 se inicializuje automaticky. Před hrou není třeba nic nastavovat. Pokud MT-32 vydává šum nebo špatné zvuky — proveď factory reset.
+Games send an MT-32 reset SysEx at startup (`F0 41 10 16 12 7F 01 F7`) — the MT-32 initialises automatically. No manual setup needed before launching a game. If the MT-32 produces noise or wrong sounds, perform a factory reset.
 
 ---
 
 ## Roland SC-55 MK2
 
 **Typ:** GS Sound Canvas, GM + GS standard  
-**Polyfonie:** 28 hlasů  
-**Kanály:** 1–16, kanál 10 = perkuse  
-**Výstup:** CH 9+10 na mixpultu
+**Polyphony:** 28 voices  
+**Channels:** 1–16, channel 10 = percussion  
+**Output:** CH 9+10 on mixer
 
-### Ovládání panelu
+### Panel Controls
 
-| Tlačítko | Funkce |
+| Button | Function |
 |---|---|
-| INSTRUMENT ◄ / ► | Přepíná zobrazený part / nástroj |
-| MIDI CH ◄ / ► | Mění MIDI kanál pro zobrazení |
-| KEY SHIFT ◄ / ► | Transpozice |
-| PART ◄ / ► | Přepíná party |
-| ALL | Zobrazuje celkové info / potvrzuje akci |
-| MUTE | Ztlumí aktuální part |
+| INSTRUMENT ◄ / ► | Cycles through displayed part / instrument |
+| MIDI CH ◄ / ► | Changes MIDI channel for display |
+| KEY SHIFT ◄ / ► | Transpose |
+| PART ◄ / ► | Cycles through parts |
+| ALL | Shows overall info / confirms action |
+| MUTE | Mutes current part |
 
-### Speciální módy / reset
+### Special Modes / Reset
 
 ```
-Factory reset (vymaže user data):
-  Standby → drž INSTRUMENT ◄ + INSTRUMENT ► → stiskni POWER
-  Zobrazí "Init All, Sure?" → stiskni ALL → provede reset
+Factory reset (erases user data):
+  Standby → hold INSTRUMENT ◄ + INSTRUMENT ► → press POWER
+  Display shows "Init All, Sure?" → press ALL → executes reset
 
-MT-32 emulační mód:
-  Drž INSTRUMENT ◄ při zapínání → stiskni ALL
+MT-32 emulation mode:
+  Hold INSTRUMENT ◄ while powering on → press ALL
 
-GS mód (výchozí):
-  Drž INSTRUMENT ► při zapínání → stiskni ALL
+GS mode (default):
+  Hold INSTRUMENT ► while powering on → press ALL
 
-Zjištění verze firmware:
-  Standby → drž INSTRUMENT ◄ + INSTRUMENT ► → stiskni MIDI CH ◄ + MIDI CH ►
-  Na LCD se zobrazí verze CPU ROM a Control ROM
+Firmware version check:
+  Standby → hold INSTRUMENT ◄ + INSTRUMENT ► → press MIDI CH ◄ + MIDI CH ►
+  LCD shows CPU ROM and Control ROM version numbers
 ```
 
-### Použití ve hrách
+### Game Usage
 
-Hry posílají GS Reset SysEx (`F0 41 10 42 12 40 00 7F 00 41 F7`) — SC-55 MK2 se inicializuje automaticky. V nastavení hry vyber **Sound Canvas**, **Roland GS**, nebo **General MIDI**. SC-55 MK2 má rozšířenou sadu nástrojů oproti původnímu SC-55.
+Games send a GS Reset SysEx (`F0 41 10 42 12 40 00 7F 00 41 F7`) — the SC-55 MK2 initialises automatically. Select **Sound Canvas**, **Roland GS**, or **General MIDI** in the game sound setup. The SC-55 MK2 has an extended instrument set compared to the original SC-55.
 
 ---
 
 ## Roland SC-88 Pro
 
 **Typ:** GS Sound Canvas Pro, GM + GS + SC-88 Map + SC-55 Map  
-**Polyfonie:** 64 hlasů, 2× 16 kanálů (Part A + Part B)  
-**Kanály:** Part A = MIDI IN A, Part B = MIDI IN B  
-**Výstup:** CH 11+12 na mixpultu
+**Polyphony:** 64 voices, 2× 16 channels (Part A + Part B)  
+**Channels:** Part A = MIDI IN A, Part B = MIDI IN B  
+**Output:** CH 11+12 on mixer
 
-### Ovládání panelu
+### Panel Controls
 
-| Tlačítko / kombinace | Funkce |
+| Button / Combination | Function |
 |---|---|
-| SC-55 Map | Přepne instrument mapu na SC-55 MK2 kompatibilní |
-| SC-88 Map | Přepne instrument mapu na SC-88 |
-| SELECT + ALL | Aktivuje **compatibility mode** (ALL bliká) — pak použij mapu |
-| SELECT + PART ► | GM mód |
-| SELECT + INSTRUMENT ◄ | CM-64 mód |
-| SELECT + INSTRUMENT ► | GS mód |
+| SC-55 Map | Switches instrument map to SC-55 MK2 compatible |
+| SC-88 Map | Switches instrument map to SC-88 |
+| SELECT + ALL | Activates **compatibility mode** (ALL blinks) — then select map |
+| SELECT + PART ► | GM mode |
+| SELECT + INSTRUMENT ◄ | CM-64 mode |
+| SELECT + INSTRUMENT ► | GS mode |
 | SELECT + INSTRUMENT ◄ + INSTRUMENT ► | Factory reset |
 
-### ⚠ Důležité — mapování
+### ⚠ Important — Map Switching
 
-Pouhé stisknutí SC-55 Map **NEMĚNÍ GM patche**. Jen mění mapping doplňkových nástrojů. Pro správnou SC-55 kompatibilitu:
+Pressing SC-55 Map alone does **NOT change GM patches**. It only changes the mapping of additional instruments. For correct SC-55 compatibility:
 
 ```
-1. Drž SELECT → stiskni ALL  → ALL bliká (compatibility mode)
-2. Stiskni SC-55 Map nebo SC-88 Map
+1. Hold SELECT → press ALL → ALL blinks (compatibility mode)
+2. Press SC-55 Map or SC-88 Map
 ```
 
-Přepnutí mapy za běhu MIDI souboru způsobí reset parametrů → špatné zvuky. Přepínej vždy před spuštěním hry/souboru.
+Switching map during MIDI playback causes a parameter reset → wrong sounds. Always switch before launching the game or file.
 
-### Speciální módy / reset
+### Special Modes / Reset
 
 ```
 Factory reset:
-  Drž SELECT → stiskni INSTRUMENT ◄ + INSTRUMENT ► → stiskni ALL
+  Hold SELECT → press INSTRUMENT ◄ + INSTRUMENT ► → press ALL
 
-GM reset (z panelu):
-  Drž SELECT → stiskni PART ►
+GM reset (from panel):
+  Hold SELECT → press PART ►
 
-GS reset (z panelu):
-  Drž SELECT → stiskni INSTRUMENT ►
+GS reset (from panel):
+  Hold SELECT → press INSTRUMENT ►
 
-CM-64 mód:
-  Drž SELECT → stiskni INSTRUMENT ◄
+CM-64 mode:
+  Hold SELECT → press INSTRUMENT ◄
 ```
 
-### Použití ve hrách
+### Game Usage
 
-SC-88 Pro má 2 MIDI vstupy (Part A + Part B = 32 kanálů celkem). V retro hrách stačí Part A (standardní MIDI port). Pro hry vyžadující SC-88 Pro specifické zvuky — mód ponech na výchozím GS (neresetuj na SC-55 Map).
+The SC-88 Pro has 2 MIDI inputs (Part A + Part B = 32 channels total). For retro games Part A (standard MIDI port) is sufficient. For games requiring SC-88 Pro specific sounds — leave the mode at default GS (do not switch to SC-55 Map).
 
 ---
 
 ## Serdashop SF2 (external MIDI synth)
 
-**Zařízení:** [Serdashop SF2](https://www.serdashop.com/SF2) — standalone MIDI synthesizer v krabičce  
-**Hardware:** Raspberry Pi Zero 2W, 512 MB RAM, DAC PCM5xxx, 81×75×26 mm, 74 g  
-**Software:** mt32-pi (baremetal, FluidSynth) — SF2 soundfonty, volitelně MT-32 emuláce  
-**Polyfonie:** 128 hlasů, 16 MIDI kanálů  
-**Latence:** 3.9 ms (měřeno osciloskopem, woodblock, buffer 32)  
-**Výstup:** 3.5mm stereo line out → CH 5+6 na mixpultu  
-**Napájení:** USB-C, 5V 2A (doporučeno originální Raspberry Pi napájení)  
+**Device:** [Serdashop SF2](https://www.serdashop.com/SF2) — standalone MIDI synthesizer in a case  
+**Hardware:** Raspberry Pi Zero 2W, 512 MB RAM, PCM5xxx DAC, 81×75×26 mm, 74 g  
+**Software:** mt32-pi (baremetal, FluidSynth) — SF2 soundfonts, optional MT-32 emulation  
+**Polyphony:** 128 voices, 16 MIDI channels  
+**Latency:** 3.9 ms (measured with oscilloscope, woodblock, buffer 32)  
+**Output:** 3.5mm stereo line out → CH 5+6 on mixer  
+**Power:** USB-C, 5V 2A (official Raspberry Pi power supply recommended)  
 **SD karta:** microSD, SF2 soubory do `soundfonts/`, max. 400 MB per soundfont
 
-### Přepínání soundfontů — tlačítko na zařízení
+### Switching Soundfonts — physical button
 
-SF2 má fyzické tlačítko pro přepínání mezi soundfonty uloženými na SD kartě. Stisk přepne na další SF2 v adresáři.
+The SF2 unit has a physical button to cycle through soundfonts stored on the SD card. Each press advances to the next SF2 in the directory.
 
-### Ovládání — MT32-PI.EXE z DOSu
+### Control — MT32-PI.EXE from DOS
 
-Utilita `MT32-PI.EXE` od gmcn42 ovládá zařízení přes MIDI SysEx na portu PicoGUS:
+The `MT32-PI.EXE` utility by gmcn42 controls the device via MIDI SysEx on the PicoGUS port:
 
 ```bat
 REM Port — dle boot profilu: 300h (GUS profily) nebo 330h (MPU profily)
-MT32-PI.EXE -p 330 -g          přepne do SF2/FluidSynth GM módu (výchozí)
-MT32-PI.EXE -p 330 -m          přepne do MT-32 módu (pokud jsou ROM soubory na SD)
-MT32-PI.EXE -p 330 -s 0        soundfont č. 0 (první v adresáři soundfonts/)
-MT32-PI.EXE -p 330 -s 1        soundfont č. 1
+MT32-PI.EXE -p 330 -g          switch to SF2/FluidSynth GM mode (default)
+MT32-PI.EXE -p 330 -m          switch to MT-32 emulation mode (if ROM files are on SD)
+MT32-PI.EXE -p 330 -s 0        select soundfont #0 (first in soundfonts/ directory)
+MT32-PI.EXE -p 330 -s 1        select soundfont #1
 MT32-PI.EXE -p 330 -r          reboot Pi
-MT32-PI.EXE -p 330 --gm-reset  pošle GM reset SysEx
-MT32-PI.EXE -p 330 --gs-reset  pošle GS reset SysEx
-MT32-PI.EXE -p 330 --mt32-reset  pošle MT-32 reset SysEx (jen v MT-32 módu)
+MT32-PI.EXE -p 330 --gm-reset  send GM reset SysEx
+MT32-PI.EXE -p 330 --gs-reset  send GS reset SysEx
+MT32-PI.EXE -p 330 --mt32-reset  send MT-32 reset SysEx (MT-32 mode only)
 MT32-PI.EXE -p 330 -b old      MT-32 Old romset (model 1987)
 MT32-PI.EXE -p 330 -b new      MT-32 New romset (model 1989+)
 MT32-PI.EXE -p 330 -b cm32l    CM-32L romset
-MT32-PI.EXE -p 330 -t "Hello"  text na display (MT-32 mód)
+MT32-PI.EXE -p 330 -t "Hello"  send text to display (MT-32 mode)
 ```
 
 **Download:** `https://github.com/gmcn42/mt32-pi-control`  
-**Umístění:** `C:\DRIVERS\MT32PI\MT32-PI.EXE`
+**Location:** `C:\DRIVERS\MT32PI\MT32-PI.EXE`
 
-### Soundfonty — doporučené
+### Recommended Soundfonts
 
-Stažení SD obsahu: `https://serdaco.com/downloads/SF2`  
-Předinstalováno: **GeneralUser GS** (S. Christian Collins)
+SD card content download: `https://serdaco.com/downloads/SF2`  
+Pre-installed: **GeneralUser GS** (S. Christian Collins)
 
-| Soundfont | Velikost | Zaměření |
+| Soundfont | Size | Focus |
 |---|---|---|
-| GeneralUser GS (předinstalovaný) | ~31 MB | GM/GS, retro hry |
-| Roland SC-55 v3.7 (EmperorGrieferus) | ~120 MB | SC-55 emuláce |
-| Arachno | ~148 MB | moderní GM |
+| GeneralUser GS (pre-installed) | ~31 MB | GM/GS, retro games |
+| Roland SC-55 v3.7 (EmperorGrieferus) | ~120 MB | SC-55 emulation |
+| Arachno | ~148 MB | modern GM |
 
-### Použití ve hrách
+### Game Usage
 
-Výchozí mód je SF2/GM — pro většinu retro her stačí. Vyber v nastavení hry **General MIDI** nebo **Roland GS** na portu PicoGUS.
+Default mode is SF2/GM — sufficient for most retro games. Select **General MIDI** or **Roland GS** on the PicoGUS port in the game sound setup.
 
 ```bat
-REM Workflow před GM/GS hrou:
+REM Workflow before a GM/GS game:
 MT32-PI.EXE -p 330 -g --gm-reset
 
-REM Workflow před MT-32 hrou (jen pokud máš ROM na SD):
+REM Workflow before an MT-32 game (only if ROM files are on SD):
 MT32-PI.EXE -p 330 -m --mt32-reset
 ```
 
 ---
 
-## McCake WP32 (interní wavetable)
+## McCake WP32 (internal wavetable)
 
-**Zařízení:** Serdaco WP32 McCake (mt32-pi, CM4)  
-**Umístění:** Wavetable header na PicoGUS v2.0  
+**Device:** Serdaco WP32 McCake (mt32-pi, CM4)  
+**Location:** Wavetable header on PicoGUS v2.0  
 **Port:** 330h (v MPU profilech)  
-**Aktivní v profilech:** MPU, MPUEMS  
-**Výstup:** přes PicoGUS → CH 1+2 na mixpultu (sdílí s GUS)
+**Active in profiles:** MPU, MPUEMS  
+**Output:** via PicoGUS → CH 1+2 on mixer (shared with GUS)
 
-### Ovládání z DOSu
+### Control from DOS
 
-Stejná utilita `MT32-PI.EXE` jako pro externí MT32-pi SF2, jen na jiném portu:
+Same `MT32-PI.EXE` utility as for the external MT32-pi SF2, just on a different port:
 
 ```bat
-MT32-PI.EXE -p 330 -m     MT-32 mód
-MT32-PI.EXE -p 330 -g     SF2/GM mód
-MT32-PI.EXE -p 330 -s 0   soundfont č. 0
+MT32-PI.EXE -p 330 -m     MT-32 mode
+MT32-PI.EXE -p 330 -g     SF2/GM mode
+MT32-PI.EXE -p 330 -s 0   soundfont #0
 MT32-PI.EXE -p 330 -r     reboot McCake
 ```
 
-Panel (Serdaco MT32Pi Drive Bay Panel 5.25") je příslušenství k McCake — **dosud nedoručen**. Po instalaci přidá fyzická tlačítka pro přepínání módů a OLED displej.
+The panel (Serdaco MT32Pi Drive Bay Panel 5.25") is an accessory for McCake — **not yet delivered**. Once installed it adds physical buttons for mode switching and an OLED display.
 
-### Použití ve hrách
+### Game Usage
 
-Aktivní pouze v profilech **MPU** a **MPUEMS**. PicoGUS běží v MPU-401 intelligent mode, McCake odpovídá na portu 330h. V nastavení hry vyber General MIDI nebo MT-32 na MIDI portu 330h. SoftMPU není potřeba — PicoGUS zvládá intelligent mode nativně.
+Active only in profiles **MPU** and **MPUEMS**. PicoGUS runs in MPU-401 intelligent mode, McCake responds on port 330h. Select General MIDI or MT-32 on MIDI port 330h in the game sound setup. SoftMPU is not needed — PicoGUS handles intelligent mode natively.
 
 
 ## DreamBlaster X16GS — Alternative (module currently under repair)
