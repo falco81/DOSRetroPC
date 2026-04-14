@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOS & Windows Games — Ideal MIDI Synthesizer Reference</title>
+<style>
+:root {
+  --bg: #0f0f0f;
+  --bg2: #181818;
+  --bg3: #222;
+  --border: #333;
+  --border2: #444;
+  --text: #e8e8e8;
+  --muted: #888;
+  --accent: #c8a84b;
+  --mt32-bg: #2a1f00; --mt32: #f5c26b; --mt32-border: #8a6200;
+  --mt32old-bg: #1e1500; --mt32old: #ffa830; --mt32old-border: #7a5000;
+  --sc55-bg: #00162a; --sc55: #5db8f5; --sc55-border: #006090;
+  --sc88-bg: #1a0a2e; --sc88: #c49fff; --sc88-border: #5a2090;
+  --sc88p-bg: #0e0520; --sc88p: #a882ff; --sc88p-border: #3d0a80;
+  --opl2-bg: #001a00; --opl2: #6dcc6d; --opl2-border: #006000;
+  --opl3-bg: #002a00; --opl3: #88ee88; --opl3-border: #007a00;
+  --awe-bg: #200a14; --awe: #f07090; --awe-border: #801030;
+  --gus-bg: #141400; --gus: #d4c44a; --gus-border: #605800;
+  --xg-bg: #200000; --xg: #ff7070; --xg-border: #800000;
+  --cm32-bg: #2a1000; --cm32: #ffa070; --cm32-border: #904020;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; }
+#top-panel { flex-shrink: 0; }
+#table-wrap { flex: 1; overflow-y: auto; overflow-x: auto; }
+header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 16px 24px 12px; }
+header h1 { font-size: 20px; font-weight: 600; color: var(--accent); margin-bottom: 3px; }
+header p { font-size: 11px; color: var(--muted); }
+.controls { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 10px 24px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+.search-wrap input { width: 100%; background: var(--bg3); border: 1px solid var(--border2); color: var(--text); border-radius: 6px; padding: 7px 32px 7px 10px; font-size: 13px; outline: none; transition: border .15s; }
+.search-wrap input:focus { border-color: var(--accent); }
+.search-wrap .clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0; display: none; }
+.filter-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.fb { background: var(--bg3); border: 1px solid var(--border2); color: var(--muted); border-radius: 20px; padding: 4px 12px; font-size: 11px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.fb:hover { border-color: var(--border); color: var(--text); }
+.fb.active { font-weight: 600; }
+.fb.all.active { background: #2a2a2a; border-color: var(--accent); color: var(--accent); }
+.fb.mt32.active { background: var(--mt32-bg); border-color: var(--mt32-border); color: var(--mt32); }
+.fb.mt32old.active { background: var(--mt32old-bg); border-color: var(--mt32old-border); color: var(--mt32old); }
+.fb.sc55.active { background: var(--sc55-bg); border-color: var(--sc55-border); color: var(--sc55); }
+.fb.sc88.active { background: var(--sc88-bg); border-color: var(--sc88-border); color: var(--sc88); }
+.fb.sc88p.active { background: var(--sc88p-bg); border-color: var(--sc88p-border); color: var(--sc88p); }
+.fb.opl2.active { background: var(--opl2-bg); border-color: var(--opl2-border); color: var(--opl2); }
+.fb.opl3.active { background: var(--opl3-bg); border-color: var(--opl3-border); color: var(--opl3); }
+.fb.awe.active { background: var(--awe-bg); border-color: var(--awe-border); color: var(--awe); }
+.fb.gus.active { background: var(--gus-bg); border-color: var(--gus-border); color: var(--gus); }
+.fb.xg.active { background: var(--xg-bg); border-color: var(--xg-border); color: var(--xg); }
+.fb.cm32.active { background: var(--cm32-bg); border-color: var(--cm32-border); color: var(--cm32); }
+.stat-bar { padding: 6px 24px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.stat-bar strong { color: var(--text); }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--bg2); color: var(--muted); font-size: 11px; font-weight: 500; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; white-space: nowrap; position: sticky; top: 0; z-index: 10; }
+th:hover { color: var(--text); }
+th .arrow { font-size: 10px; margin-left: 4px; color: var(--accent); }
+td { padding: 9px 12px; border-bottom: 1px solid #1e1e1e; vertical-align: top; }
+tr:hover td { background: rgba(255,255,255,.025); }
+.badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 12px; white-space: nowrap; letter-spacing: .3px; }
+.badge.mt32 { background: var(--mt32-bg); color: var(--mt32); border: 1px solid var(--mt32-border); }
+.badge.mt32old { background: var(--mt32old-bg); color: var(--mt32old); border: 1px solid var(--mt32old-border); }
+.badge.sc55 { background: var(--sc55-bg); color: var(--sc55); border: 1px solid var(--sc55-border); }
+.badge.sc88 { background: var(--sc88-bg); color: var(--sc88); border: 1px solid var(--sc88-border); }
+.badge.sc88p { background: var(--sc88p-bg); color: var(--sc88p); border: 1px solid var(--sc88p-border); }
+.badge.opl2 { background: var(--opl2-bg); color: var(--opl2); border: 1px solid var(--opl2-border); }
+.badge.opl3 { background: var(--opl3-bg); color: var(--opl3); border: 1px solid var(--opl3-border); }
+.badge.awe { background: var(--awe-bg); color: var(--awe); border: 1px solid var(--awe-border); }
+.badge.gus { background: var(--gus-bg); color: var(--gus); border: 1px solid var(--gus-border); }
+.badge.xg { background: var(--xg-bg); color: var(--xg); border: 1px solid var(--xg-border); }
+.badge.cm32 { background: var(--cm32-bg); color: var(--cm32); border: 1px solid var(--cm32-border); }
+.game-name { font-weight: 500; color: var(--text); }
+.note { font-size: 11px; color: #aaa; margin-top: 2px; }
+.src-link { font-size: 10px; color: var(--muted); margin-top: 2px; font-style: italic; }
+.plat { font-size: 11px; color: var(--muted); }
+.year-cell { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.no-results { text-align: center; padding: 60px 24px; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 24px; background: var(--bg); border-bottom: 1px solid var(--border); }
+.leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.disc { font-size: 9px; color: var(--muted); padding: 8px 24px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); line-height: 1.6; }
+.disc strong { color: var(--text); }
+.highlight { background: rgba(200,168,75,.25); }
+mark { background: rgba(200,168,75,.35); color: inherit; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div id="top-panel">
+<header>
+  <h1>DOS &amp; Windows Games — Ideal MIDI Synthesizer Reference</h1>
+  <p>Compiled exclusively from verified community sources. Last updated April 2026 &nbsp;|&nbsp; Fully offline — no internet required.</p>
+</header>
+
+<div class="disc">
+  <strong>Data sources:</strong> dosdays.co.uk/topics/mt32_game_compat.php &nbsp;·&nbsp; vogonswiki.com/index.php/List_of_MT-32-compatible_computer_games &nbsp;·&nbsp; vogonswiki.com/index.php/List_of_games_by_MIDI_standard &nbsp;·&nbsp; blog.johnnovak.net/2023/03/05/grand-ms-dos-gaming-general-midi-showdown &nbsp;·&nbsp; sc55.duke4.net &nbsp;·&nbsp; vgmpf.com &nbsp;·&nbsp; VOGONS forum threads t=96039, t=40249, t=77567, t=54000, t=47024, t=36909, t=48421 &nbsp;·&nbsp; wiki.sierrahelp.com/index.php/MT-32_Compatible_Games
+  <br><strong>Note:</strong> No single complete database exists. This document compiles the best available verified information. Entries without confirmed composer/hardware testimony are marked accordingly. "Ideal" means the device the composer used or the community has verified sounds closest to original intent.
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <input type="search" id="q" placeholder="Search games, notes, sources..." oninput="onSearch()">
+    <button class="clear" id="clr" onclick="clearSearch()">X</button>
+  </div>
+  <div class="filter-group" id="filters">
+    <button class="fb all active" onclick="setF(this,'all')">All</button>
+    <button class="fb mt32" onclick="setF(this,'mt32')">MT-32</button>
+    <button class="fb mt32old" onclick="setF(this,'mt32old')">MT-32 Old</button>
+    <button class="fb cm32" onclick="setF(this,'cm32')">CM-32L / CM-64</button>
+    <button class="fb sc55" onclick="setF(this,'sc55')">SC-55 / GM</button>
+    <button class="fb sc88" onclick="setF(this,'sc88')">SC-88</button>
+    <button class="fb sc88p" onclick="setF(this,'sc88p')">SC-88 Pro</button>
+    <button class="fb opl2" onclick="setF(this,'opl2')">OPL2</button>
+    <button class="fb opl3" onclick="setF(this,'opl3')">OPL3</button>
+    <button class="fb awe" onclick="setF(this,'awe')">AWE32/64</button>
+    <button class="fb gus" onclick="setF(this,'gus')">Gravis UltraSound</button>
+    <button class="fb xg" onclick="setF(this,'xg')">Yamaha XG</button>
+  </div>
+</div>
+
+<div class="stat-bar" id="statbar"></div>
+</div>
+
+<div id="table-wrap">
+<table>
+<thead>
+<tr>
+  <th onclick="sortBy('name')" style="min-width:200px">Game <span class="arrow" id="arr-name"></span></th>
+  <th onclick="sortBy('year')" style="min-width:60px">Year <span class="arrow" id="arr-year"></span></th>
+  <th onclick="sortBy('plat')" style="min-width:90px">Platform <span class="arrow" id="arr-plat"></span></th>
+  <th onclick="sortBy('synth')" style="min-width:160px">Ideal Synth <span class="arrow" id="arr-synth"></span></th>
+  <th style="min-width:320px">Notes &amp; Source</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+<div class="no-results" id="nores" style="display:none">No games found matching your search.</div>
+</div>
+
+<script>
+const GAMES = [
+  // ── MT-32 (generic / New firmware preferred) ──────────────────────────────
+  {name:"4D Sports Boxing",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 New",note:"UART mode works. Composed on MT-32 New firmware.",src:"dosdays.co.uk"},
+  {name:"A-10 Tank Killer v1.5",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"v1.5 added Sound Blaster support. Requires SoftMPU or true MPU-401 intelligent mode.",src:"dosdays.co.uk"},
+  {name:"A-Train",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Works with ACK-mode cards (Ensoniq, MediaTrix).",src:"dosdays.co.uk"},
+  {name:"Aces Over Europe",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 New",note:"MT-32 Old plays many instruments incorrectly; MT-32 New required.",src:"dosdays.co.uk"},
+  {name:"Beneath a Steel Sky",year:1994,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Revolution Software. Requires MPU-401 intelligent mode.",src:"dosdays.co.uk"},
+  {name:"Betrayal at Krondor",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"1994 CD version has Redbook audio which is NOT a recording of the SC-55 soundtrack.",src:"dosdays.co.uk / VOGONS t=40249"},
+  {name:"Budokan",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"EA Sports title with MT-32 support.",src:"dosdays.co.uk"},
+  {name:"Castle of Dr. Brain",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra On-Line. Requires intelligent mode.",src:"dosdays.co.uk / vogonswiki"},
+  {name:"Centurion: Defender of Rome",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"EA title.",src:"dosdays.co.uk"},
+  {name:"Civilization",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Default instrument set only — no custom patches. SC-55 MT-32 mode works acceptably.",src:"dosdays.co.uk / VOGONS t=40249"},
+  {name:"Codename: Iceman",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra On-Line. Custom patches loaded via SysEx.",src:"dosdays.co.uk"},
+  {name:"Colonel's Bequest",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra On-Line.",src:"dosdays.co.uk"},
+  {name:"Companions of Xanth",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Legend Entertainment.",src:"dosdays.co.uk"},
+  {name:"Conquests of Camelot",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra On-Line. Excellent MT-32 showcase according to community.",src:"dosdays.co.uk / VOGONS t=77567"},
+  {name:"Conquests of the Longbow",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra. MT-32 primary; unofficial GM patch available.",src:"VOGONS t=40249"},
+  {name:"Cruise for a Corpse",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Delphine Software.",src:"dosdays.co.uk"},
+  {name:"Dark Sun: Shattered Lands",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"SSI / Strategic Simulations.",src:"VOGONS t=36909"},
+  {name:"Day of the Tentacle",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 + SB",note:"LucasArts iMUSE engine. Custom MT-32 patches. Use Sound Blaster for voice (CD version).",src:"dosdays.co.uk"},
+  {name:"Demoniak",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"MT-32 support confirmed by VOGONS community via testing.",src:"VOGONS t=40249"},
+  {name:"Dune: The Dune Adventure",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Cryo Interactive. MT-32 version sounds noticeably worse than FM according to some; OPL may be preferred subjectively.",src:"VOGONS t=40249"},
+  {name:"Elvira: Mistress of the Dark",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Horror Soft.",src:"vgmpf.com"},
+  {name:"Elvira II: The Jaws of Cerberus",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Horror Soft.",src:"vgmpf.com"},
+  {name:"Eric the Unready",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Legend Entertainment.",src:"dosdays.co.uk"},
+  {name:"F-117A Nighthawk Stealth Fighter",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"MicroProse.",src:"dosdays.co.uk"},
+  {name:"Flashback",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Delphine Software.",src:"dosdays.co.uk"},
+  {name:"Freddy Pharkas Frontier Pharmacist",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra. CD version adds voice. MT-32 recommended per community.",src:"dosdays.co.uk / VOGONS t=77567"},
+  {name:"Future Wars",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Delphine Software.",src:"vgmpf.com / dosdays.co.uk"},
+  {name:"Gateway",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Legend Entertainment.",src:"dosdays.co.uk"},
+  {name:"Gateway II: Homeworld",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Legend Entertainment.",src:"dosdays.co.uk"},
+  {name:"Gods",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Bitmap Brothers / Renegade.",src:"dosdays.co.uk"},
+  {name:"Heart of China",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Dynamix.",src:"dosdays.co.uk"},
+  {name:"Hired Guns",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"DMA Design / Psygnosis.",src:"dosdays.co.uk"},
+  {name:"Hoyle's Book of Games I",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra.",src:"dosdays.co.uk"},
+  {name:"Hoyle's Book of Games II",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra.",src:"dosdays.co.uk"},
+  {name:"Immortal, The",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Electronic Arts.",src:"dosdays.co.uk"},
+  {name:"Indiana Jones and the Fate of Atlantis",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 + SB",note:"LucasArts iMUSE. Custom patches. SB for voice in CD version.",src:"dosdays.co.uk / VOGONS t=40249"},
+  {name:"It Came from the Desert",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Cinemaware.",src:"dosdays.co.uk"},
+  {name:"Jones in the Fast Lane",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra.",src:"dosdays.co.uk"},
+  {name:"Jurassic Park (Ocean)",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Ocean Software.",src:"VOGONS t=18-1"},
+  {name:"King's Quest IV",year:1988,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra AGI version. One of the first DOS games with MT-32 support.",src:"dosdays.co.uk / vgmpf.com"},
+  {name:"King's Quest V",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra. Extensive custom patches. Community showcase title for MT-32. MT-32 Old bugs deliberately exploited.",src:"dosdays.co.uk / VOGONS t=77567"},
+  {name:"Lakers vs. Celtics and the NBA Playoffs",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"EA Sports.",src:"dosdays.co.uk"},
+  {name:"Laser Squad",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"",src:"dosdays.co.uk"},
+  {name:"Legend of Kyrandia: Fables and Fiends",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Westwood Studios.",src:"dosdays.co.uk / vgmpf.com"},
+  {name:"Legend of Kyrandia 2: Hand of Fate",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Westwood Studios. Community confirms MT-32.",src:"dosdays.co.uk"},
+  {name:"Leisure Suit Larry 2",year:1988,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra.",src:"dosdays.co.uk"},
+  {name:"Leisure Suit Larry 3",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra. LSL3 is community favourite for MT-32 quality.",src:"dosdays.co.uk / VOGONS t=77567"},
+  {name:"Leisure Suit Larry 5",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra.",src:"dosdays.co.uk"},
+  {name:"Lemmings 2: The Tribes",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"DMA Design / Psygnosis.",src:"VOGONS t=19-1"},
+  {name:"Lethal Weapon",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 New",note:"May have issues on MT-32 Old.",src:"dosdays.co.uk"},
+  {name:"LineWars II",year:1994,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"",src:"dosdays.co.uk"},
+  {name:"Loom",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"LucasArts. EGA/floppy version only. CD version has no MIDI. Requires optional Roland upgrade card.",src:"dosdays.co.uk / vogonswiki"},
+  {name:"Lord of the Rings Vol. I & II",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Interplay. Community tested; MT-32 confirmed. May sound better on OPL by some accounts.",src:"VOGONS t=40249"},
+  {name:"Lure of the Temptress",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 New",note:"Revolution Software. Does NOT work correctly on MT-32 Old. Needs CM-32L or MT-32 New.",src:"VOGONS t=16-1"},
+  {name:"Martian Memorandum",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Access Software.",src:"vogonswiki"},
+  {name:"Might and Magic III: Isles of Terra",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"New World Computing.",src:"dosdays.co.uk"},
+  {name:"Mixed-up Mother Goose (1991/92)",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra.",src:"dosdays.co.uk / vogonswiki"},
+  {name:"Monkey Island 2: LeChuck's Revenge",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"LucasArts iMUSE. Custom MT-32 patches. Among best MT-32 soundtracks.",src:"dosdays.co.uk"},
+  {name:"Mortal Kombat",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Acclaim. MT-32 New version, may cause issues on Old.",src:"vogonswiki"},
+  {name:"One Step Beyond",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Magnetic Fields.",src:"dosdays.co.uk"},
+  {name:"Operation Stealth",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Delphine Software / US Gold.",src:"vgmpf.com"},
+  {name:"Police Quest 2: The Vengeance",year:1988,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra.",src:"dosdays.co.uk"},
+  {name:"Police Quest 3: The Kindred",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra. Includes voice with CD-ROM.",src:"dosdays.co.uk"},
+  {name:"Populous",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Bullfrog Productions.",src:"dosdays.co.uk"},
+  {name:"Prince of Persia",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Version 1.3 and above. UART mode works. Jordan Mechner.",src:"dosdays.co.uk / vgmpf.com"},
+  {name:"Princess Maker",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Gainax.",src:"dosdays.co.uk"},
+  {name:"Princess Maker 2",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Gainax.",src:"dosdays.co.uk"},
+  {name:"Quest for Glory I (VGA remake)",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra. Also supports GM via unofficial AWESOL.ZIP patch.",src:"dosdays.co.uk / VOGONS t=77567"},
+  {name:"Quest for Glory II",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra AGI.",src:"dosdays.co.uk"},
+  {name:"Race Drivin'",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Mindscape / Hard Drivin'.",src:"dosdays.co.uk"},
+  {name:"Rex Nebular and the Cosmic Gender Bender",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"MicroProse.",src:"dosdays.co.uk"},
+  {name:"Sabre Team",year:1994,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"",src:"dosdays.co.uk"},
+  {name:"Secret of Monkey Island",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"LucasArts. EGA/floppy versions only. CD version has no MIDI. Uses MT-32 default instrument set (no custom patches) — SC-55 MT-32 mode acceptable.",src:"dosdays.co.uk / en.wikipedia.org/wiki/Roland_SC-55"},
+  {name:"Sensible Soccer",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Renegade / Sensible Software.",src:"dosdays.co.uk"},
+  {name:"Shadoworlds",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Krisalis.",src:"dosdays.co.uk"},
+  {name:"Silpheed",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Game Arts. Community-acclaimed MT-32 showcase; often cited as reason to own an MT-32.",src:"VOGONS t=77567"},
+  {name:"Simon the Sorcerer",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Adventure Soft.",src:"dosdays.co.uk"},
+  {name:"Simon the Sorcerer II",year:1995,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 + GM",note:"Adventure Soft. Ships with two MIDI sets: MT-32 and GM. Setup bug causes GM files to play when MT-32 selected — see community fix.",src:"VOGONS t=40249"},
+  {name:"Ski or Die",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Electronic Arts.",src:"vgmpf.com"},
+  {name:"Sorcerian",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Falcom / Sierra.",src:"dosdays.co.uk"},
+  {name:"Space Quest I: Sarien Encounter (VGA)",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra VGA remake. Requires port 330h/IRQ2/9.",src:"dosdays.co.uk / VOGONS t=40249"},
+  {name:"Space Quest III: Pirates of Pestulon",year:1989,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Sierra. Custom patches. SC-55 MT-32 emulation fails on intro (demonstrates SC-55 limitation) per Wikipedia.",src:"dosdays.co.uk / en.wikipedia.org/wiki/Roland_SC-55"},
+  {name:"Space Quest IV: Time Rippers",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 + GM",note:"Sierra. MT-32 primary; GM support added. Sierra's last fully MT-32-native title.",src:"dosdays.co.uk / VOGONS t=47024"},
+  {name:"Spacewrecked: 14 Billion Light Years",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Gremlin Graphics.",src:"dosdays.co.uk"},
+  {name:"Spellcasting 101",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Legend Entertainment.",src:"dosdays.co.uk"},
+  {name:"Spellcasting 201",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Legend Entertainment.",src:"dosdays.co.uk"},
+  {name:"Spellcasting 301",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Legend Entertainment.",src:"dosdays.co.uk"},
+  {name:"Star Control 1",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Accolade / TW Industries. Later sequel uses GM.",src:"vogonswiki"},
+  {name:"Star Wars: TIE Fighter",year:1994,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 + GM",note:"LucasArts. MT-32 + GM both supported. SB required for SFX separately.",src:"dosdays.co.uk / VOGONS t=47024"},
+  {name:"Star Wars: X-Wing",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 + GM",note:"LucasArts. MT-32 + GM supported.",src:"dosdays.co.uk / VOGONS t=47024"},
+  {name:"Strike Commander",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 + GM",note:"Origin Systems. Supports both MT-32 and GM — one of the transitional titles.",src:"VOGONS t=6-1"},
+  {name:"Superhero League of Hoboken",year:1994,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Event Horizon.",src:"dosdays.co.uk"},
+  {name:"Team Suzuki",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"",src:"dosdays.co.uk"},
+  {name:"TFX Tactical Fighter Experiment",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 / CM-32L",note:"Digital Image Design. Community-praised GM/MT-32 soundtrack. CM-32L provides extra SFX not in plain MT-32.",src:"dosdays.co.uk / VOGONS t=86834"},
+  {name:"Timequest",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Legend Entertainment.",src:"dosdays.co.uk"},
+  {name:"Ultima VI: The False Prophet",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Origin Systems. Default instrument set only. SC-55 MT-32 emulation is acceptable here per Wikipedia.",src:"dosdays.co.uk / en.wikipedia.org/wiki/Roland_SC-55"},
+  {name:"Ultima VII: The Black Gate",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Origin Systems.",src:"vgmpf.com / dosdays.co.uk"},
+  {name:"Ultima VII: Serpent Isle",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Origin Systems.",src:"dosdays.co.uk"},
+  {name:"Ultima Underworld: The Stygian Abyss",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 / CM-32L",note:"Blue Sky Productions. Default patches. CM-32L/CM-64 adds water sound effects unavailable on plain MT-32. Community showcase title.",src:"VOGONS t=77567"},
+  {name:"Utopia",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Gremlin Graphics.",src:"dosdays.co.uk"},
+  {name:"Waxworks",year:1992,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Adventure Soft.",src:"vgmpf.com"},
+  {name:"Wing Commander",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 New",note:"Origin Systems. MT-32 only. MT-32 Old causes buffer overflow crashes. MT-32 New (or CM-32L) required.",src:"dosdays.co.uk / VOGONS t=16-1"},
+  {name:"Wing Commander II",year:1991,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Origin Systems. MT-32 only.",src:"dosdays.co.uk"},
+  {name:"Wonderland",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Magnetic Scrolls. Default patches.",src:"vogonswiki / VOGONS t=40249"},
+  {name:"Zeliard",year:1990,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Game Arts / Sierra. Version 1.0 to 1.208.",src:"dosdays.co.uk"},
+
+  // ── MT-32 Old specifically required ──────────────────────────────────────
+  {name:"Adventures of Willy Beamish",year:1991,plat:"DOS",synth:"mt32old",badge:"mt32old",label:"MT-32 Old (ideal)",note:"Floppy version. Deliberately exploits MT-32 Old firmware bugs for certain sounds. Sounds different/wrong on New.",src:"dosdays.co.uk"},
+  {name:"Conquests of the Longbow",year:1991,plat:"DOS",synth:"mt32old",badge:"mt32old",label:"MT-32 Old (ideal)",note:"Sierra. Some tracks exploit Old firmware quirks. GM patch available.",src:"VOGONS t=40249"},
+  {name:"Eco Quest: The Search for Cetus",year:1991,plat:"DOS",synth:"mt32old",badge:"mt32old",label:"MT-32 / LA",note:"Sierra. Vogons wiki lists as LA (Linear Arithmetic) device. GM accessible via AWESOL.ZIP fan patch.",src:"vogonswiki.com"},
+  {name:"Laura Bow 2: Dagger of Amon Ra",year:1992,plat:"DOS",synth:"mt32old",badge:"mt32old",label:"MT-32 / LA",note:"Sierra. Vogons wiki: LA device. Some community members prefer the GM version.",src:"vogonswiki.com"},
+  {name:"Space Quest IV: Time Rippers",year:1991,plat:"DOS",synth:"mt32old",badge:"mt32old",label:"MT-32 Old",note:"Sierra. Exploits MT-32 Old bug to produce electric shock sound not reproducible on later units.",src:"VOGONS hardforum t=1821058"},
+
+  // ── CM-32L / CM-64 specifically ──────────────────────────────────────────
+  {name:"TFX Tactical Fighter Experiment",year:1993,plat:"DOS",synth:"cm32",badge:"cm32",label:"CM-32L (SFX)",note:"CM-32L provides additional SFX beyond what MT-32 offers. Community-confirmed.",src:"VOGONS t=86834"},
+  {name:"Ultima Underworld: The Stygian Abyss",year:1992,plat:"DOS",synth:"cm32",badge:"cm32",label:"CM-32L / CM-64",note:"CM-32L/CM-64 adds water sound effects not in plain MT-32. Music itself is identical.",src:"VOGONS t=77567"},
+  {name:"Wing Commander",year:1990,plat:"DOS",synth:"cm32",badge:"cm32",label:"CM-32L (ideal)",note:"CM-32L preferred over MT-32 New — avoids all buffer overflow issues and provides extra sounds.",src:"VOGONS hardforum t=1821058"},
+  {name:"Another World",year:1991,plat:"DOS",synth:"cm32",badge:"cm32",label:"CM-32L (SFX)",note:"Delphine. Uses CM-32L for sound effects — confirmed on real CM-64 hardware. Community recording available on YouTube.",src:"VOGONS t=19-1"},
+
+  // ── SC-55 / General MIDI ──────────────────────────────────────────────────
+  {name:"Betrayal at Krondor (CD)",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"CD version Redbook uses SC-55, Proteus-1 samples and an unknown drum kit. Confirmed by VOGONS community.",src:"VOGONS t=40249"},
+  {name:"Blood",year:1997,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sends GS reset. Exhibits CTF issues on some SC-55 ROM versions.",src:"VOGONS t=56482"},
+  {name:"Command & Conquer",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Westwood Studios. GM soundtrack.",src:"VOGONS community"},
+  {name:"Crusader: No Remorse",year:1995,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Origin Systems.",src:"VOGONS community"},
+  {name:"Crusader: No Regret",year:1996,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Origin Systems.",src:"VOGONS community"},
+  {name:"Daggerfall (Elder Scrolls II)",year:1996,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Bethesda. String samples notably different between SC-55 hardware and Sound Canvas VA. Tested by John Novak.",src:"blog.johnnovak.net"},
+  {name:"Descent",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Parallax Software. Community suggests SC-88 native mode may sound better; SC-55 composition not formally confirmed. SC-55 standard.",src:"VOGONS t=35135"},
+  {name:"Descent II",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Parallax Software.",src:"VOGONS community"},
+  {name:"Doom",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"id Software. Bobby Prince composer. SC-55-specific cymbal choke behavior in E1M1 documented by VOGONS community. SC-55 music pack available at sc55.duke4.net.",src:"sc55.duke4.net / blog.johnnovak.net / VOGONS t=93026"},
+  {name:"Doom II: Hell on Earth",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"id Software. SC-55 music pack available at sc55.duke4.net.",src:"sc55.duke4.net"},
+  {name:"Duke Nukem 3D",year:1996,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Robert Prince tracks: SC-55 (confirmed). Lee Jackson tracks: RAP-10 / SC-7 (SC-55 equivalent). Final shipped game is 100% GM/SC-55. SC-88 version of Grabbab exists but is not in the game.",src:"VOGONS t=54000 / t=96039"},
+  {name:"Dune II: The Building of a Dynasty",year:1992,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GS",note:"Westwood Studios. Sends GS reset; uses GS reverb and chorus. Vogons wiki confirmed. Some GS variation tones used.",src:"vogonswiki.com"},
+  {name:"Final Doom: Plutonia Experiment",year:1996,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"SC-55 music pack available at sc55.duke4.net.",src:"sc55.duke4.net"},
+  {name:"Final Doom: TNT Evilution",year:1996,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"SC-55 music pack available at sc55.duke4.net.",src:"sc55.duke4.net"},
+  {name:"Hexen: Beyond Heretic",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Raven Software.",src:"VOGONS community"},
+  {name:"Hocus Pocus",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"SC-55 music pack available at sc55.duke4.net.",src:"sc55.duke4.net"},
+  {name:"King's Quest VI: Heir Today, Gone Tomorrow",year:1992,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra's first GM-primary title. Vogons wiki: sends GS reset + extra percussion (*disabled, needs driver fix). Composed end of 1992.",src:"vogonswiki.com / VOGONS t=40249"},
+  {name:"Lands of Lore: Throne of Chaos",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 + SB",note:"Westwood Studios. SC-55 for music + Sound Blaster for SFX simultaneously.",src:"VOGONS t=36909"},
+  {name:"Leisure Suit Larry 6: Shape Up or Slip Out!",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra. John Novak GM Showdown: SC-55 tested.",src:"blog.johnnovak.net"},
+  {name:"Might and Magic IV: Clouds of Xeen",year:1992,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 (CTF req.)",note:"New World Computing. Vogons wiki: No reset sent + extra instrument banks + CTF. Requires original SC-55 (ROM 1.xx) for CTF behavior.",src:"vogonswiki.com"},
+  {name:"Might and Magic V: Darkside of Xeen",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"New World Computing.",src:"VOGONS community"},
+  {name:"Quest for Glory III: Wages of War",year:1992,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra's first GM-native title (mid-1992). Marks Sierra's switch from MT-32 to GM.",src:"VOGONS t=40249"},
+  {name:"Quest for Glory IV: Shadows of Darkness (CD)",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra.",src:"VOGONS t=36909"},
+  {name:"Quake",year:1996,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"id Software. CD audio is primary; MIDI playback optional via Miles Sound System.",src:"VOGONS community"},
+  {name:"Realms of Arkania: Blade of Destiny",year:1992,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sir-Tech. John Novak GM Showdown: tested with SC-55.",src:"blog.johnnovak.net"},
+  {name:"Realms of Arkania: Star Trail",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sir-Tech. Redbook audio on CD does NOT use SC-55 recording; MIDI version uses SC-55. Confirmed by VOGONS community research.",src:"VOGONS t=40249"},
+  {name:"Rise of the Triad",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Lee Jackson: RAP-10 (SC-55 equivalent). SC-55 music pack available at sc55.duke4.net.",src:"sc55.duke4.net / VOGONS t=96039"},
+  {name:"Sam & Max Hit the Road",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"LucasArts. Composed for General MIDI. Community prefers SC-55 over MT-32 for this title specifically.",src:"VOGONS t=47024"},
+  {name:"Screamer",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"",src:"dosdays.co.uk"},
+  {name:"Stonekeep",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GS",note:"Interplay. Definitively uses GS instruments when 'Roland GS' option selected in setup.",src:"VOGONS t=99851"},
+  {name:"System Shock",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Looking Glass Studios. CD version. Mentioned in VOGONS GM discussions.",src:"VOGONS community"},
+  {name:"Ultimate Doom",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"id Software. SC-55 music pack available at sc55.duke4.net.",src:"sc55.duke4.net"},
+  {name:"Warcraft II: Tides of Darkness",year:1995,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Blizzard. FMV intro closer to SC-88; in-game music nearly identical on SC-55. Composer Glenn Stafford released official MIDI files. John Novak showdown includes this title.",src:"blog.johnnovak.net / VOGONS t=96039"},
+  {name:"Wing Commander III: Heart of the Tiger",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GS",note:"Origin. Uses GS features: reverb and chorus.",src:"VOGONS t=35-1"},
+  {name:"Wing Commander IV: The Price of Freedom",year:1996,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GS",note:"Origin. Uses GS features.",src:"VOGONS t=35-1"},
+  {name:"Wing Commander: Privateer",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GS",note:"Origin. Vogons wiki: composed for SC-55, sends GS reset. GS variation tone 'Bubble' found in Refinery track.",src:"vogonswiki.com / VOGONS t=99851"},
+  {name:"Ultima VIII: Pagan",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GS",note:"Origin. Uses GS features: reverb and chorus.",src:"VOGONS t=35-1"},
+  {name:"Bioforge",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Origin Systems. Full speech + MIDI — recommended as GM showcase.",src:"VOGONS t=36909"},
+  {name:"X-COM: UFO Defense",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Microprose. Community recommends SC-55.",src:"VOGONS t=107138"},
+  {name:"X-COM: Terror from the Deep",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Microprose.",src:"VOGONS community"},
+  {name:"Hexen II",year:1997,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Raven Software.",src:"VOGONS community"},
+  {name:"Age of Empires",year:1997,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Ensemble Studios. Community noted as having a great MIDI soundtrack.",src:"VOGONS t=86834"},
+  {name:"Diablo",year:1996,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Blizzard. MIDI support alongside CD audio.",src:"VOGONS community"},
+  {name:"Warcraft: Orcs & Humans",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Blizzard.",src:"VOGONS community"},
+  {name:"Comanche 2",year:1995,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"NovaLogic.",src:"dosdays.co.uk"},
+
+  // ── SC-88 natively ────────────────────────────────────────────────────────
+  {name:"Age of Empires II: The Age of Kings (demo)",year:1999,plat:"Windows",synth:"sc88",badge:"sc88",label:"SC-88",note:"DEMO ONLY. Full game uses CD audio. The demo's MIDI files contain SC-88-native GS variation tones. Confirmed by spiffythedog via MIDI file analysis.",src:"VOGONS t=96039 (spiffythedog)"},
+  {name:"Age of Empires II: The Conquerors (demo)",year:2000,plat:"Windows",synth:"sc88",badge:"sc88",label:"SC-88",note:"DEMO ONLY. Contains SC-88-native MIDI files. Full game uses CD audio.",src:"VOGONS t=96039 (spiffythedog)"},
+  {name:"Brave Soul",year:2003,plat:"Windows",synth:"sc88",badge:"sc88",label:"SC-88",note:"Crowd / Peach Princess (JastUSA). Officially translated ARPG. Contains two complete MIDI sets: standard GM and GS set specifically for SC-88. GS set NOT compatible with SC-55.",src:"VOGONS t=96039"},
+  {name:"Star Wars: Dark Forces",year:1995,plat:"DOS",synth:"sc88",badge:"sc88",label:"SC-88",note:"LucasArts. Vogons wiki states SC-88 was original synth; note cutoffs occur on other Roland devices (SC-55 etc.).",src:"VOGONS t=96039 (Joseph_Joestar citing vogonswiki)"},
+  {name:"Shadow Warrior (shareware MIDI)",year:1997,plat:"DOS",synth:"sc88",badge:"sc88",label:"SC-88",note:"3D Realms / Lee Jackson. MIDI version of shareware only. CD release of full game uses CD audio. Lee Jackson confirmed SC-88 use. SC-88 Pro in SC-88 mode very close to CD audio.",src:"VOGONS t=96039 (spiffythedog)"},
+
+  // ── SC-88 Pro natively ────────────────────────────────────────────────────
+  {name:"Touhou Koumakyou: Embodiment of Scarlet Devil",year:2002,plat:"Windows",synth:"sc88p",badge:"sc88p",label:"SC-88 Pro",note:"ZUN / Team Shanghai Alice. Doujin title. Natively composed and designed for SC-88 Pro.",src:"VOGONS t=96039 (spiffythedog)"},
+  {name:"Touhou Youyoumu: Perfect Cherry Blossom",year:2003,plat:"Windows",synth:"sc88p",badge:"sc88p",label:"SC-88 Pro",note:"ZUN / Team Shanghai Alice. Doujin title. Natively composed and designed for SC-88 Pro.",src:"VOGONS t=96039 (spiffythedog)"},
+  {name:"Montezuma's Return",year:1997,plat:"DOS/Win",synth:"sc88p",badge:"sc88p",label:"SC-88 Pro (drum kits)",note:"Utopia Technologies. Uses SC-88 Pro-specific drum kits. CTF issues on earlier SC-55 models.",src:"vogonswiki.com (List_of_MT-32-compatible)"},
+
+  // ── OPL2 only ─────────────────────────────────────────────────────────────
+  {name:"Wolfenstein 3D",year:1992,plat:"DOS",synth:"opl2",badge:"opl2",label:"OPL2 / AdLib",note:"id Software. No MIDI support at all. AdLib/Sound Blaster OPL2 only.",src:"VOGONS community"},
+  {name:"Blake Stone: Aliens of Gold",year:1993,plat:"DOS",synth:"opl2",badge:"opl2",label:"OPL2 / FM",note:"JAM Productions. FM synthesis only.",src:"VOGONS community"},
+  {name:"Commander Keen series",year:1991,plat:"DOS",synth:"opl2",badge:"opl2",label:"OPL2 / FM",note:"id Software. PC speaker or AdLib only.",src:"VOGONS community"},
+  {name:"Jazz Jackrabbit",year:1994,plat:"DOS",synth:"opl2",badge:"opl2",label:"OPL2 / FM",note:"Epic MegaGames. Proprietary sound engine, FM synthesis.",src:"VOGONS community"},
+  {name:"Duke Nukem I & II",year:1991,plat:"DOS",synth:"opl2",badge:"opl2",label:"OPL2 / FM",note:"Apogee. FM only; no MIDI support.",src:"VOGONS community"},
+  {name:"Bio Menace",year:1993,plat:"DOS",synth:"opl2",badge:"opl2",label:"OPL2 / FM",note:"Apogee. FM only.",src:"VOGONS community"},
+
+  // ── OPL3 primary ─────────────────────────────────────────────────────────
+  {name:"Heretic",year:1994,plat:"DOS",synth:"opl3",badge:"opl3",label:"OPL3 / AWE32",note:"Raven Software. Kevin Schilder composer CONFIRMED AWE32. GM version causes polyphony drops on SC-55. OPL3 version is better balanced than GM. FM is the authentic experience.",src:"VOGONS t=48421 (MusicallyInspired citing composer)"},
+  {name:"Doom (FM version)",year:1993,plat:"DOS",synth:"opl3",badge:"opl3",label:"OPL2 / OPL3",note:"id Software. OPL2 version iconic. Distinct from SC-55 version. Both are valid; OPL has its own nostalgic character.",src:"VOGONS community / sc55.duke4.net"},
+  {name:"Doom II (FM version)",year:1994,plat:"DOS",synth:"opl3",badge:"opl3",label:"OPL2 / OPL3",note:"id Software. FM version.",src:"VOGONS community"},
+
+  // ── AWE32 / AWE64 primarily ───────────────────────────────────────────────
+  {name:"Heretic",year:1994,plat:"DOS",synth:"awe",badge:"awe",label:"AWE32 (ideal)",note:"Raven Software. Composer Kevin Schilder confirmed AWE32. Polyphony issues on SC-55 for certain tracks. AWE32 is the only device that plays as intended.",src:"VOGONS t=48421 (MusicallyInspired citing composer confirmation)"},
+  {name:"Zone Raiders",year:1995,plat:"DOS",synth:"awe",badge:"awe",label:"AWE32",note:"Mindscape. AWE32-optimised game, soundtrack relies on AWE32 drum kit CTF behavior. Confirmed by spiffythedog via MIDI analysis.",src:"VOGONS t=37047 (spiffythedog)"},
+
+  // ── Gravis UltraSound ─────────────────────────────────────────────────────
+  {name:"Descent (GUS version)",year:1994,plat:"DOS",synth:"gus",badge:"gus",label:"Gravis UltraSound",note:"Parallax Software. GUS support included. GUS provides high-quality wavetable playback but different from SC-55.",src:"VOGONS community"},
+  {name:"Doom (GUS version)",year:1993,plat:"DOS",synth:"gus",badge:"gus",label:"Gravis UltraSound",note:"id Software. GUS support: loads GUS patches for wavetable playback distinct from both OPL and SC-55.",src:"VOGONS community"},
+  {name:"Quake (GUS version)",year:1996,plat:"DOS",synth:"gus",badge:"gus",label:"Gravis UltraSound",note:"id Software. GUS support provided.",src:"VOGONS community"},
+  {name:"Duke Nukem 3D (GUS version)",year:1996,plat:"DOS",synth:"gus",badge:"gus",label:"Gravis UltraSound",note:"3D Realms. GUS supported alongside SC-55/GM.",src:"VOGONS community"},
+
+  // ── Yamaha XG ─────────────────────────────────────────────────────────────
+  {name:"Final Fantasy VII (PC)",year:1998,plat:"Windows",synth:"xg",badge:"xg",label:"Yamaha XG",note:"Square. Nobuo Uematsu composed on Yamaha XG. YMF724/744-based cards or MU-series modules required for authentic playback. Notably different from SC-55.",src:"VOGONS t=59197 / hardforum"},
+  {name:"Final Fantasy VIII (PC)",year:2000,plat:"Windows",synth:"xg",badge:"xg",label:"Yamaha XG",note:"Square. Nobuo Uematsu. XG native.",src:"VOGONS community"},
+
+  // ── Additional verified GM titles ─────────────────────────────────────────
+  {name:"Daggerfall: Elder Scrolls II",year:1996,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Bethesda. String samples compared across modules by John Novak — SC-55 hardware vs SC-VA differ in string quality.",src:"blog.johnnovak.net"},
+  {name:"Donkey Kong Country (PC MIDI)",year:1995,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Nintendo / Rare. MIDI version of PC port.",src:"VOGONS community"},
+  {name:"Master of Orion",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32 (probable)",note:"MicroProse. Manual states Roland MT-32 only; GM option present but greyed out. Online consensus: MT-32. Composer David Govett switched to Sound Canvas around 1992/3.",src:"VOGONS t=40249"},
+  {name:"EcoQuest 2: Lost Secret of the Rainforest",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra. GM era title. AWESOL.ZIP patch available.",src:"VOGONS t=18-1"},
+  {name:"King's Quest VII: The Princeless Bride",year:1994,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra.",src:"VOGONS community"},
+  {name:"Phantasmagoria",year:1995,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra.",src:"VOGONS community"},
+  {name:"Gabriel Knight: Sins of the Fathers",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra. GM era title.",src:"VOGONS community"},
+  {name:"Gabriel Knight 2: The Beast Within",year:1995,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra. FMV + MIDI.",src:"VOGONS community"},
+  {name:"Police Quest: SWAT",year:1995,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra.",src:"VOGONS community"},
+  {name:"Leisure Suit Larry 7: Love for Sail!",year:1996,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra.",src:"VOGONS community"},
+  {name:"Space Quest 6: The Spinal Frontier",year:1995,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra.",src:"VOGONS community"},
+  {name:"Quest for Glory V: Dragon Fire",year:1998,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Sierra.",src:"VOGONS community"},
+  {name:"Comanche: Maximum Overkill",year:1992,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"NovaLogic.",src:"VOGONS community"},
+  {name:"Tie Fighter: Collector's CD-ROM",year:1994,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"LucasArts. CD version drops MT-32 in favour of GM; original floppy had MT-32.",src:"VOGONS community"},
+  {name:"Dark Forces II: Jedi Knight",year:1997,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"LucasArts.",src:"VOGONS community"},
+  {name:"Mechwarrior 2",year:1995,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Activision. GM soundtrack.",src:"VOGONS community"},
+  {name:"Baldur's Gate",year:1998,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"BioWare / Black Isle. Ambient GM soundtrack.",src:"VOGONS community"},
+  {name:"Fallout",year:1997,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Interplay / Black Isle. Mark Morgan composer.",src:"VOGONS community"},
+  {name:"Fallout 2",year:1998,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Interplay / Black Isle. Mark Morgan composer.",src:"VOGONS community"},
+  {name:"Outlaws",year:1997,plat:"Windows",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"LucasArts.",src:"VOGONS community"},
+  {name:"Settlers II",year:1996,plat:"DOS/Win",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Blue Byte. Vogons wiki: Listed in false MT-32 section — actually sends GM data.",src:"vogonswiki.com"},
+  {name:"Alone in the Dark",year:1992,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Infogrames. GM support.",src:"VOGONS community"},
+  {name:"Alone in the Dark 2",year:1993,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"Infogrames.",src:"VOGONS community"},
+  {name:"Full Throttle",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"SC-55 / GM",note:"LucasArts. Note: The Dig and Full Throttle have no MIDI support per VOGONS — iMUSE uses digital audio only. Listed here for clarification.",src:"VOGONS t=36909"},
+  {name:"The Dig",year:1995,plat:"DOS",synth:"sc55",badge:"sc55",label:"Digital Audio Only",note:"LucasArts. No MIDI support — uses digital audio only. Included for clarification.",src:"VOGONS t=36909"},
+  {name:"Innocent Until Caught",year:1993,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"Divide By Zero.",src:"dosdays.co.uk"},
+  {name:"Inferno (1994)",year:1994,plat:"DOS",synth:"mt32",badge:"mt32",label:"MT-32",note:"",src:"dosdays.co.uk"},
+];
+
+// Remove duplicates by name
+const seen = new Set();
+const UNIQUE = GAMES.filter(g => {
+  const k = g.name + g.synth;
+  if(seen.has(k)) return false;
+  seen.add(k);
+  return true;
+});
+
+let currentFilter = 'all';
+let sortKey = 'name';
+let sortAsc = true;
+let currentQuery = '';
+
+function getFiltered() {
+  const q = currentQuery.toLowerCase();
+  return UNIQUE.filter(g => {
+    const matchF = currentFilter === 'all' || g.synth === currentFilter;
+    const matchQ = !q ||
+      g.name.toLowerCase().includes(q) ||
+      g.note.toLowerCase().includes(q) ||
+      g.src.toLowerCase().includes(q) ||
+      g.label.toLowerCase().includes(q) ||
+      String(g.year).includes(q) ||
+      g.plat.toLowerCase().includes(q);
+    return matchF && matchQ;
+  }).sort((a, b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (typeof av === 'string') av = av.toLowerCase(), bv = bv.toLowerCase();
+    return sortAsc ? (av > bv ? 1 : av < bv ? -1 : 0) : (av < bv ? 1 : av > bv ? -1 : 0);
+  });
+}
+
+function hl(text, q) {
+  if (!q) return text;
+  const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+function render() {
+  const rows = getFiltered();
+  const q = currentQuery.toLowerCase();
+  const tbody = document.getElementById('tbody');
+  const nores = document.getElementById('nores');
+
+  const counts = {};
+  UNIQUE.forEach(g => { counts[g.synth] = (counts[g.synth]||0)+1; });
+
+  document.getElementById('statbar').innerHTML =
+    `<span>Showing <strong>${rows.length}</strong> of <strong>${UNIQUE.length}</strong> entries</span>` +
+    `<span>MT-32: <strong>${(counts.mt32||0)+(counts.mt32old||0)}</strong></span>` +
+    `<span>CM-32L: <strong>${counts.cm32||0}</strong></span>` +
+    `<span>SC-55/GM: <strong>${counts.sc55||0}</strong></span>` +
+    `<span>SC-88: <strong>${counts.sc88||0}</strong></span>` +
+    `<span>SC-88Pro: <strong>${counts.sc88p||0}</strong></span>` +
+    `<span>OPL: <strong>${(counts.opl2||0)+(counts.opl3||0)}</strong></span>`;
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    nores.style.display = 'block';
+    return;
+  }
+  nores.style.display = 'none';
+
+  tbody.innerHTML = rows.map(g => `<tr>
+    <td><div class="game-name">${hl(g.name, q)}</div></td>
+    <td class="year-cell">${g.year}</td>
+    <td class="plat">${g.plat}</td>
+    <td><span class="badge ${g.badge}">${g.label}</span></td>
+    <td>
+      <div class="note">${hl(g.note, q)}</div>
+      <div class="src-link">Source: ${hl(g.src, q)}</div>
+    </td>
+  </tr>`).join('');
+}
+
+function setF(btn, f) {
+  currentFilter = f;
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function sortBy(k) {
+  if (sortKey === k) sortAsc = !sortAsc;
+  else { sortKey = k; sortAsc = true; }
+  document.querySelectorAll('.arrow').forEach(a => a.textContent = '');
+  const el = document.getElementById('arr-' + k);
+  if (el) el.textContent = sortAsc ? ' [A-Z]' : ' [Z-A]';
+  render();
+}
+
+function onSearch() {
+  const inp = document.getElementById('q');
+  currentQuery = inp.value;
+  document.getElementById('clr').style.display = currentQuery ? 'block' : 'none';
+  render();
+}
+
+function clearSearch() {
+  document.getElementById('q').value = '';
+  currentQuery = '';
+  document.getElementById('clr').style.display = 'none';
+  render();
+}
+
+render();
+document.getElementById('arr-name').textContent = ' [A-Z]';
+</script>
+
+<div style="padding:16px 24px;background:#0f0f0f;border-top:1px solid #1e1e1e;color:#555;font-size:11px;line-height:1.7;">
+  <strong style="color:#666;">Legend:</strong> &nbsp;
+  <span style="color:#f5c26b">MT-32</span> = Roland MT-32 (1987) &nbsp;|&nbsp;
+  <span style="color:#ffa830">MT-32 Old</span> = First-gen MT-32 required (exploits firmware bugs) &nbsp;|&nbsp;
+  <span style="color:#ffa070">CM-32L</span> = Roland CM-32L or CM-64 (extra PCM sounds) &nbsp;|&nbsp;
+  <span style="color:#5db8f5">SC-55</span> = Roland Sound Canvas SC-55 / General MIDI &nbsp;|&nbsp;
+  <span style="color:#c49fff">SC-88</span> = Roland Sound Canvas SC-88 (natively) &nbsp;|&nbsp;
+  <span style="color:#a882ff">SC-88 Pro</span> = Roland SC-88 Pro (natively) &nbsp;|&nbsp;
+  <span style="color:#6dcc6d">OPL2</span> = Yamaha OPL2 / AdLib / Sound Blaster &nbsp;|&nbsp;
+  <span style="color:#88ee88">OPL3</span> = Yamaha OPL3 / Sound Blaster 16+ &nbsp;|&nbsp;
+  <span style="color:#f07090">AWE32</span> = Creative AWE32/AWE64 wavetable &nbsp;|&nbsp;
+  <span style="color:#d4c44a">GUS</span> = Gravis UltraSound &nbsp;|&nbsp;
+  <span style="color:#ff7070">XG</span> = Yamaha XG (MU-series / DB50XG / YMF7xx)
+  <br><br>
+  <strong style="color:#666;">Key principle:</strong> "Ideal synth" = the hardware the composer used or the device confirmed by community testing to sound closest to original intent. A game supporting SC-55 can still be played on OPL — it just sounds different. MT-32 and SC-55 are NOT interchangeable standards.
+  <br><br>
+  <strong style="color:#666;">Modern emulation options:</strong> MT-32 → Munt emulator or MT-32 Pi &nbsp;|&nbsp; SC-55 → Nuked-SC55 (cycle-accurate) at github.com/jcmoyer/Nuked-SC55 &nbsp;|&nbsp; SC-55/SC-88 → Roland Sound Canvas VA (VST plugin, requires SC-8820 basis) &nbsp;|&nbsp; OPL → DOSBox built-in or Nuked-OPL3 &nbsp;|&nbsp; XG → Yamaha S-YXG50 softsynth
+</div>
+
+</body>
+</html>
